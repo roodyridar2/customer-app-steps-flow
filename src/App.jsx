@@ -1387,35 +1387,7 @@ function OrderDetailsScreen({
 
         {/* Status section */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-[15px] font-bold text-gray-900">Status</h3>
-
-            {/* View Mode Toggle: Default vs Tabs (only for 2 service or 5 service) */}
-            {isMultiService && (
-              <div className="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200/60 shadow-2xs">
-                <button
-                  onClick={() => setMultiServiceMode && setMultiServiceMode('default')}
-                  className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
-                    multiServiceMode === 'default'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-400 hover:text-slate-600'
-                  }`}
-                >
-                  Default
-                </button>
-                <button
-                  onClick={() => setMultiServiceMode && setMultiServiceMode('tabs')}
-                  className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
-                    multiServiceMode === 'tabs'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-400 hover:text-slate-600'
-                  }`}
-                >
-                  Tabs
-                </button>
-              </div>
-            )}
-          </div>
+          <h3 className="text-[15px] font-bold text-gray-900 mb-2">Status</h3>
 
           {/* Service tabs section: ONLY in 2 service or 5 service orders AND when in tabs mode */}
           {isTabsMode && (
