@@ -1527,49 +1527,12 @@ function OrderDetailsScreen({
             >
               {currentStyle === 'service-tabs' && (
                 <div>
-                  {isMultiService ? (
+                  {isMultiService && (
                     <ServiceTabsBar
                       subServices={subServices}
                       activeSubId={activeSubId}
                       onSelect={handleSelectSubId}
                     />
-                  ) : (
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl mb-3 bg-slate-50 border border-slate-100">
-                      <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center bg-white shrink-0 shadow-2xs">
-                        <img src={service.serviceIcons[0]} alt="" className="w-3.5 h-3.5 object-contain" />
-                      </div>
-                      <span className="text-[11.5px] font-bold text-gray-800">{service.serviceName}</span>
-                      <span className="text-[10px] text-gray-400">• {stepsList.length} steps</span>
-                    </div>
-                  )}
-
-                  {/* Active service summary card */}
-                  {isMultiService && (
-                    <div
-                      className="flex items-center justify-between px-3 py-1.5 rounded-xl mb-3"
-                      style={{
-                        background: activeDisplayService.badgeColor,
-                        border: `1px solid ${activeDisplayService.badgeBorder}`,
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-2xs">
-                          <img src={activeDisplayService.serviceIcons[0]} alt="" className="w-3 h-3 object-contain" />
-                        </div>
-                        <span className="text-[11px] font-bold" style={{ color: activeDisplayService.badgeText }}>
-                          {activeDisplayService.serviceName}
-                        </span>
-                        <span className="text-[9.5px] font-medium opacity-70" style={{ color: activeDisplayService.badgeText }}>
-                          • {stepsList.length} Steps
-                        </span>
-                      </div>
-                      <span
-                        className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 shadow-2xs"
-                        style={{ color: activeDisplayService.themeColor }}
-                      >
-                        {currentStep.label}
-                      </span>
-                    </div>
                   )}
 
                   <StatusStepper
