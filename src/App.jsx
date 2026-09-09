@@ -145,6 +145,7 @@ const servicesData = {
     currency: 'IQD',
     status: 'Pending',
     serviceIcons: ['/service/Wash and fold.png', '/service/clean and press.png'],
+    subServiceIds: ['wash-fold', 'clean-press'],
     accentColor: '#F59E0B',
     themeColor: '#D97706',
     badgeColor: '#FFFBEB',
@@ -166,6 +167,7 @@ const servicesData = {
       '/service/bags and shoes.png',
       '/service/premium care.png',
     ],
+    subServiceIds: ['wash-fold', 'press-only', 'clean-press', 'bags-shoes', 'premium-care'],
     accentColor: '#14B8A6',
     themeColor: '#0D9488',
     badgeColor: '#F0FDFA',
@@ -275,11 +277,12 @@ function StatusBar() {
 
 // ─── Status style options ───────────────────────────────────────────────────
 const styleOptions = [
-  { id: 'list',         label: 'List' },
+  { id: 'service-tabs', label: 'Service Tabs' },
+  { id: 'overlap',      label: 'Overlap Stack' },
   { id: 'stepper',      label: 'Service Below' },
   { id: 'service-icon', label: 'Icon Below' },
-  { id: 'overlap',      label: 'Overlap Stack' },
   { id: 'spotlight',    label: 'Spotlight' },
+  { id: 'list',         label: 'List' },
 ]
 
 // ─── Global Line Styles ───────────────────────────────────────────────────────
@@ -1259,6 +1262,113 @@ function StatusSpotlight({
   )
 }
 
+// ─── Service Tabs Component for Multi-Service Orders ──────────────────────────
+function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
+  const isPair = subServices.length === 2
+
+  if (isPair) {
+    return (
+      <div className="p-1 rounded-2xl bg-slate-100/90 grid grid-cols-2 gap-1 mb-3">
+        {subServices.map((sub) => {
+          const isSelected = sub.id === activeSubId
+          return (
+            <button
+              key={sub.id}
+              onClick={() => onSelect(sub.id)}
+              className="relative flex items-center justify-center gap-2 py-2 px-2.5 rounded-xl transition-all select-none"
+              style={{
+                color: isSelected ? '#0F172A' : '#64748B',
+                fontWeight: isSelected ? 700 : 500,
+              }}
+            >
+              {isSelected && (
+                <motion.div
+                  layoutId="service-tab-pill-pair"
+                  className="absolute inset-0 rounded-xl bg-white shadow-xs border border-slate-200/80"
+                  transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                />
+              )}
+              <div
+                className="relative z-10 w-5 h-5 rounded-full overflow-hidden flex items-center justify-center shrink-0"
+                style={{
+                  background: isSelected ? sub.badgeColor : '#E2E8F0',
+                  border: `1px solid ${isSelected ? sub.badgeBorder : '#CBD5E1'}`,
+                }}
+              >
+                <img src={sub.serviceIcons[0]} alt="" className="w-3.5 h-3.5 object-contain" />
+              </div>
+              <span className="relative z-10 text-[11.5px] truncate leading-none">
+                {sub.serviceName}
+              </span>
+              <span
+                className="relative z-10 text-[9.5px] px-1.5 py-0.5 rounded-full font-mono leading-none"
+                style={{
+                  background: isSelected ? sub.badgeColor : '#E2E8F0',
+                  color: isSelected ? sub.themeColor : '#94A3B8',
+                  fontWeight: 700,
+                }}
+              >
+                {sub.steps.length}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative mb-3">
+      <div
+        className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-0.5 ios-scrollbar"
+        style={{
+          scrollSnapType: 'x proximity',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        {subServices.map((sub) => {
+          const isSelected = sub.id === activeSubId
+          return (
+            <button
+              key={sub.id}
+              onClick={() => onSelect(sub.id)}
+              className="relative flex items-center gap-1.5 py-1.5 px-2.5 rounded-xl text-[11px] shrink-0 transition-all select-none"
+              style={{
+                background: isSelected ? sub.badgeColor : '#F1F5F9',
+                border: `1px solid ${isSelected ? sub.badgeBorder : '#E2E8F0'}`,
+                color: isSelected ? sub.badgeText : '#64748B',
+                fontWeight: isSelected ? 700 : 500,
+                boxShadow: isSelected ? `0 2px 8px ${sub.accentColor}25` : 'none',
+                scrollSnapAlign: 'start',
+              }}
+            >
+              <div
+                className="w-4 h-4 rounded-full overflow-hidden flex items-center justify-center shrink-0 bg-white"
+                style={{
+                  border: `1px solid ${isSelected ? sub.badgeBorder : '#E2E8F0'}`,
+                }}
+              >
+                <img src={sub.serviceIcons[0]} alt="" className="w-3.5 h-3.5 object-contain" />
+              </div>
+              <span className="whitespace-nowrap leading-none">{sub.serviceName}</span>
+              <span
+                className="text-[9px] px-1.5 py-0.5 rounded-full font-mono leading-none"
+                style={{
+                  background: isSelected ? '#FFFFFF' : '#E2E8F0',
+                  color: isSelected ? sub.themeColor : '#94A3B8',
+                  fontWeight: 700,
+                }}
+              >
+                {sub.steps.length}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 // ─── Order Details Screen (Generalized from Wash & Fold, used for Clean & Press & all services) ────
 function OrderDetailsScreen({
   service = servicesData['wash-fold'],
@@ -1266,10 +1376,37 @@ function OrderDetailsScreen({
   statusStyle: propStatusStyle,
   setStatusStyle: propSetStatusStyle,
   lineStyle = 'solid',
+  selectedSubId,
+  onSelectSubId,
 }) {
   const [internalStatusStyle, setInternalStatusStyle] = useState('stepper')
   const currentStyle = propStatusStyle ?? internalStatusStyle
-  const stepsList = service.steps || NINE_STEPS
+
+  const isMultiService = Boolean(service.subServiceIds && service.subServiceIds.length > 1)
+  const subServices = isMultiService
+    ? service.subServiceIds.map(id => servicesData[id]).filter(Boolean)
+    : [service]
+
+  const [internalSubId, setInternalSubId] = useState(service.subServiceIds?.[0] || service.id)
+
+  useEffect(() => {
+    if (service.subServiceIds && service.subServiceIds.length > 0) {
+      setInternalSubId(service.subServiceIds[0])
+    }
+  }, [service.id])
+
+  const activeSubId = selectedSubId ?? internalSubId
+  const handleSelectSubId = (id) => {
+    setInternalSubId(id)
+    if (onSelectSubId) onSelectSubId(id)
+  }
+
+  // Active display service depends on whether we are using Service Tabs or standard layout
+  const activeDisplayService = (currentStyle === 'service-tabs' && isMultiService && servicesData[activeSubId])
+    ? servicesData[activeSubId]
+    : service
+
+  const stepsList = activeDisplayService.steps || NINE_STEPS
   const safeActiveStep = Math.min(activeStep, stepsList.length - 1)
   const currentStep = stepsList[safeActiveStep] || stepsList[0]
 
@@ -1370,17 +1507,85 @@ function OrderDetailsScreen({
 
         {/* Status section */}
         <div>
-          <h3 className="text-[15px] font-bold text-gray-900 mb-2">Status</h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-[15px] font-bold text-gray-900">Status</h3>
+            {isMultiService && currentStyle === 'service-tabs' && (
+              <span className="text-[11px] font-medium text-gray-400">
+                {subServices.length} services • Tap to switch
+              </span>
+            )}
+          </div>
 
           {/* Render selected variant */}
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentStyle + service.id}
+              key={currentStyle + service.id + (currentStyle === 'service-tabs' ? `-${activeSubId}` : '')}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.18 }}
             >
+              {currentStyle === 'service-tabs' && (
+                <div>
+                  {isMultiService ? (
+                    <ServiceTabsBar
+                      subServices={subServices}
+                      activeSubId={activeSubId}
+                      onSelect={handleSelectSubId}
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl mb-3 bg-slate-50 border border-slate-100">
+                      <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center bg-white shrink-0 shadow-2xs">
+                        <img src={service.serviceIcons[0]} alt="" className="w-3.5 h-3.5 object-contain" />
+                      </div>
+                      <span className="text-[11.5px] font-bold text-gray-800">{service.serviceName}</span>
+                      <span className="text-[10px] text-gray-400">• {stepsList.length} steps</span>
+                    </div>
+                  )}
+
+                  {/* Active service summary card */}
+                  {isMultiService && (
+                    <div
+                      className="flex items-center justify-between px-3 py-1.5 rounded-xl mb-3"
+                      style={{
+                        background: activeDisplayService.badgeColor,
+                        border: `1px solid ${activeDisplayService.badgeBorder}`,
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-2xs">
+                          <img src={activeDisplayService.serviceIcons[0]} alt="" className="w-3 h-3 object-contain" />
+                        </div>
+                        <span className="text-[11px] font-bold" style={{ color: activeDisplayService.badgeText }}>
+                          {activeDisplayService.serviceName}
+                        </span>
+                        <span className="text-[9.5px] font-medium opacity-70" style={{ color: activeDisplayService.badgeText }}>
+                          • {stepsList.length} Steps
+                        </span>
+                      </div>
+                      <span
+                        className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 shadow-2xs"
+                        style={{ color: activeDisplayService.themeColor }}
+                      >
+                        {currentStep.label}
+                      </span>
+                    </div>
+                  )}
+
+                  <StatusStepper
+                    steps={stepsList}
+                    activeStep={safeActiveStep}
+                    serviceIcons={activeDisplayService.serviceIcons}
+                    serviceName={activeDisplayService.serviceName}
+                    badgeColor={activeDisplayService.badgeColor}
+                    badgeBorder={activeDisplayService.badgeBorder}
+                    badgeText={activeDisplayService.badgeText}
+                    lineStyle={lineStyle}
+                    showServiceText={true}
+                  />
+                </div>
+              )}
+
               {(currentStyle === 'list' || currentStyle === 'track') && (
                 <StatusList
                   steps={stepsList}
@@ -1440,7 +1645,7 @@ function OrderDetailsScreen({
                   lineStyle={lineStyle}
                 />
               )}
-              {!['list', 'track', 'stepper', 'service-icon', 'overlap', 'cards', 'spotlight', 'inline'].includes(currentStyle) && (
+              {!['list', 'track', 'stepper', 'service-icon', 'overlap', 'cards', 'spotlight', 'inline', 'service-tabs'].includes(currentStyle) && (
                 <StatusStepper
                   steps={stepsList}
                   activeStep={safeActiveStep}
@@ -1466,14 +1671,14 @@ function OrderDetailsScreen({
           </div>
           <div className="flex flex-col">
             <span className="text-[13px] font-bold text-gray-800 leading-tight">Estimated time arrival</span>
-            {(service.id === 'press-only' || service.id === 'bags-shoes') && (
+            {(activeDisplayService.id === 'press-only' || activeDisplayService.id === 'bags-shoes') && (
               <span className="text-[11px] text-gray-500 font-medium mt-0.5">09 Sep 2026 (11:00 - 14:00)</span>
             )}
           </div>
         </div>
 
         {/* Drop-off banner for press-only and bags-shoes matching screenshot */}
-        {(service.id === 'press-only' || service.id === 'bags-shoes') && (
+        {(activeDisplayService.id === 'press-only' || activeDisplayService.id === 'bags-shoes') && (
           <div className="flex items-center gap-3 px-4 py-3" style={{ background: '#EDF2FE', borderRadius: 16 }}>
             <div className="w-5 h-5 flex items-center justify-center shrink-0 text-slate-800">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -1563,13 +1768,25 @@ function IPhoneShell({ children }) {
 export default function App() {
   const [activeTab,   setActiveTab]   = useState('2-service')
   const [activeStep,  setActiveStep]  = useState(1)
-  const [statusStyle, setStatusStyle] = useState('overlap')
+  const [statusStyle, setStatusStyle] = useState('service-tabs')
   const [lineStyle,   setLineStyle]   = useState('numbers')
   const [simulating,  setSimulating]  = useState(false)
+  const [selectedSubId, setSelectedSubId] = useState(null)
   const intervalRef = useRef(null)
   const active = tabs.find(t => t.id === activeTab)
   const activeService = servicesData[activeTab]
-  const currentSteps = activeService?.steps || NINE_STEPS
+
+  // Multi-service sub-service tracking
+  const effectiveSubId = (activeService?.subServiceIds && activeService.subServiceIds.length > 0)
+    ? (selectedSubId && activeService.subServiceIds.includes(selectedSubId) ? selectedSubId : activeService.subServiceIds[0])
+    : null
+
+  const activeSubService = (statusStyle === 'service-tabs' && effectiveSubId)
+    ? servicesData[effectiveSubId]
+    : null
+
+  const currentSteps = activeSubService?.steps || activeService?.steps || NINE_STEPS
+  const safeActiveStep = Math.min(activeStep, currentSteps.length - 1)
 
   function startSimulate() {
     if (simulating) {
@@ -1598,6 +1815,12 @@ export default function App() {
     clearInterval(intervalRef.current)
     setSimulating(false)
     setActiveStep(0)
+    const nextService = servicesData[activeTab]
+    if (nextService?.subServiceIds?.length > 0) {
+      setSelectedSubId(nextService.subServiceIds[0])
+    } else {
+      setSelectedSubId(null)
+    }
   }, [activeTab])
 
   return (
@@ -1713,6 +1936,8 @@ export default function App() {
                       statusStyle={statusStyle}
                       setStatusStyle={setStatusStyle}
                       lineStyle={lineStyle}
+                      selectedSubId={effectiveSubId}
+                      onSelectSubId={setSelectedSubId}
                     />
                   ) : (
                     <PlaceholderScreen
@@ -1808,11 +2033,11 @@ export default function App() {
                     <motion.div
                       key={s.label}
                       animate={{
-                        width:      i === activeStep ? 24 : 8,
-                        background: i < activeStep  ? '#0EA5E9'
-                                  : i === activeStep ? '#38BDF8'
+                        width:      i === safeActiveStep ? 24 : 8,
+                        background: i < safeActiveStep  ? '#0EA5E9'
+                                  : i === safeActiveStep ? '#38BDF8'
                                   : '#E5E7EB',
-                        opacity: i <= activeStep ? 1 : 0.4,
+                        opacity: i <= safeActiveStep ? 1 : 0.4,
                       }}
                       transition={{ duration: 0.35, type: 'spring', stiffness: 300, damping: 24 }}
                       className="rounded-full"
@@ -1824,7 +2049,7 @@ export default function App() {
                 {/* Step label */}
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={activeStep}
+                    key={`${activeTab}-${effectiveSubId || ''}-${safeActiveStep}`}
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{    opacity: 0, y: -6 }}
@@ -1832,10 +2057,10 @@ export default function App() {
                     className="text-center"
                   >
                     <div className="text-[11px] font-bold" style={{ color: '#0EA5E9' }}>
-                      {currentSteps[activeStep]?.label || ''}
+                      {currentSteps[safeActiveStep]?.label || ''}
                     </div>
                     <div className="text-[10px] text-gray-400">
-                      {activeStep + 1} / {currentSteps.length}
+                      {safeActiveStep + 1} / {currentSteps.length}
                     </div>
                   </motion.div>
                 </AnimatePresence>
