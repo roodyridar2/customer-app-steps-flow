@@ -1297,18 +1297,6 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
                   {sub.serviceName}
                 </span>
               )}
-
-              {/* Animated micro indicator dot */}
-              <div className="h-1.5 flex items-center justify-center mt-1">
-                {isSelected && (
-                  <motion.div
-                    layoutId="service-ring-dot"
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: sub.themeColor }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                  />
-                )}
-              </div>
             </button>
           )
         })}
