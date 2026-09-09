@@ -1254,11 +1254,15 @@ function OrderDetailsScreen({
   lineStyle = 'solid',
   selectedSubId,
   onSelectSubId,
+  multiServiceMode = 'tabs',
+  setMultiServiceMode,
 }) {
   const [internalStatusStyle, setInternalStatusStyle] = useState('stepper')
   const currentStyle = propStatusStyle ?? internalStatusStyle
 
   const isMultiService = Boolean(service.subServiceIds && service.subServiceIds.length > 1)
+  const isTabsMode = isMultiService && multiServiceMode === 'tabs'
+
   const subServices = isMultiService
     ? service.subServiceIds.map(id => servicesData[id]).filter(Boolean)
     : [service]
@@ -1277,8 +1281,8 @@ function OrderDetailsScreen({
     if (onSelectSubId) onSelectSubId(id)
   }
 
-  // Active display service depends on whether this is a multi-service order with an active tab
-  const activeDisplayService = (isMultiService && servicesData[activeSubId])
+  // If in tabs mode, display selected sub-service; otherwise if in default mode, display full bundle (service)
+  const activeDisplayService = (isTabsMode && servicesData[activeSubId])
     ? servicesData[activeSubId]
     : service
 
@@ -1385,10 +1389,36 @@ function OrderDetailsScreen({
         <div>
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-[15px] font-bold text-gray-900">Status</h3>
+
+            {/* View Mode Toggle: Default vs Tabs (only for 2 service or 5 service) */}
+            {isMultiService && (
+              <div className="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200/60 shadow-2xs">
+                <button
+                  onClick={() => setMultiServiceMode && setMultiServiceMode('default')}
+                  className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
+                    multiServiceMode === 'default'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  Default
+                </button>
+                <button
+                  onClick={() => setMultiServiceMode && setMultiServiceMode('tabs')}
+                  className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
+                    multiServiceMode === 'tabs'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  Tabs
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Service tabs section: ONLY in 2 service or 5 service orders */}
-          {isMultiService && (
+          {/* Service tabs section: ONLY in 2 service or 5 service orders AND when in tabs mode */}
+          {isTabsMode && (
             <ServiceTabsBar
               subServices={subServices}
               activeSubId={activeSubId}
@@ -1399,7 +1429,7 @@ function OrderDetailsScreen({
           {/* Render selected timeline layout */}
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${currentStyle}-${service.id}-${isMultiService ? activeSubId : ''}`}
+              key={`${currentStyle}-${service.id}-${isTabsMode ? activeSubId : 'default'}`}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
@@ -1574,22 +1604,25 @@ function IPhoneShell({ children }) {
 
 // ─── Root App ─────────────────────────────────────────────────────────────────
 export default function App() {
-  const [activeTab,   setActiveTab]   = useState('2-service')
-  const [activeStep,  setActiveStep]  = useState(1)
-  const [statusStyle, setStatusStyle] = useState('overlap')
-  const [lineStyle,   setLineStyle]   = useState('numbers')
-  const [simulating,  setSimulating]  = useState(false)
-  const [selectedSubId, setSelectedSubId] = useState(null)
+  const [activeTab,        setActiveTab]        = useState('2-service')
+  const [activeStep,       setActiveStep]       = useState(1)
+  const [statusStyle,      setStatusStyle]      = useState('overlap')
+  const [lineStyle,        setLineStyle]        = useState('numbers')
+  const [multiServiceMode, setMultiServiceMode] = useState('tabs') // 'tabs' | 'default'
+  const [simulating,       setSimulating]       = useState(false)
+  const [selectedSubId,    setSelectedSubId]    = useState(null)
   const intervalRef = useRef(null)
   const active = tabs.find(t => t.id === activeTab)
   const activeService = servicesData[activeTab]
 
   // Multi-service sub-service tracking
-  const effectiveSubId = (activeService?.subServiceIds && activeService.subServiceIds.length > 0)
+  const isMultiService = Boolean(activeService?.subServiceIds && activeService.subServiceIds.length > 1)
+  const effectiveSubId = isMultiService
     ? (selectedSubId && activeService.subServiceIds.includes(selectedSubId) ? selectedSubId : activeService.subServiceIds[0])
     : null
 
-  const activeSubService = effectiveSubId ? servicesData[effectiveSubId] : null
+  const isTabsMode = isMultiService && multiServiceMode === 'tabs'
+  const activeSubService = (isTabsMode && effectiveSubId) ? servicesData[effectiveSubId] : null
 
   const currentSteps = activeSubService?.steps || activeService?.steps || NINE_STEPS
   const safeActiveStep = Math.min(activeStep, currentSteps.length - 1)
@@ -1744,6 +1777,8 @@ export default function App() {
                       lineStyle={lineStyle}
                       selectedSubId={effectiveSubId}
                       onSelectSubId={setSelectedSubId}
+                      multiServiceMode={multiServiceMode}
+                      setMultiServiceMode={setMultiServiceMode}
                     />
                   ) : (
                     <PlaceholderScreen
@@ -1761,6 +1796,35 @@ export default function App() {
             {/* Simulate panel — available for activeService */}
             {activeService && (
               <div className="flex flex-col items-center gap-3">
+
+                {/* Multi-Service section — visible for 2-service and 5-service */}
+                {isMultiService && (
+                  <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm" style={{ width: 140 }}>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Multi-Service</span>
+                    <div className="flex flex-col gap-1 w-full">
+                      <button
+                        onClick={() => setMultiServiceMode('default')}
+                        className="py-1 px-1.5 rounded-lg text-[10px] font-bold transition-all text-center"
+                        style={{
+                          background: multiServiceMode === 'default' ? '#141C3C' : '#F1F5F9',
+                          color: multiServiceMode === 'default' ? '#fff' : '#64748B',
+                        }}
+                      >
+                        Default (Combined)
+                      </button>
+                      <button
+                        onClick={() => setMultiServiceMode('tabs')}
+                        className="py-1 px-1.5 rounded-lg text-[10px] font-bold transition-all text-center"
+                        style={{
+                          background: multiServiceMode === 'tabs' ? '#141C3C' : '#F1F5F9',
+                          color: multiServiceMode === 'tabs' ? '#fff' : '#64748B',
+                        }}
+                      >
+                        Service Tabs
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Status layout switcher */}
                 <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm" style={{ width: 140 }}>
