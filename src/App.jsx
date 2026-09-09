@@ -277,11 +277,9 @@ function StatusBar() {
 
 // ─── Status style options ───────────────────────────────────────────────────
 const styleOptions = [
-  { id: 'service-tabs', label: 'Service Tabs' },
   { id: 'overlap',      label: 'Overlap Stack' },
   { id: 'stepper',      label: 'Service Below' },
   { id: 'service-icon', label: 'Icon Below' },
-  { id: 'spotlight',    label: 'Spotlight' },
   { id: 'list',         label: 'List' },
 ]
 
@@ -1139,128 +1137,6 @@ function StatusStepper({
   )
 }
 
-// ─── Status Design 4: Spotlight Focus Pod on active step ──────────────────────
-function StatusSpotlight({
-  steps = NINE_STEPS,
-  activeStep,
-  serviceIcons = ['/service/clean and press.png'],
-  serviceName = 'Clean & Press',
-  badgeColor = '#F0FDF4',
-  badgeBorder = '#BBF7D0',
-  badgeText = '#166534',
-  lineStyle = 'solid',
-}) {
-  const ROW_H = 46
-
-  return (
-    <div className="flex gap-2">
-      <div className="flex-1 relative">
-        <TimelineLine activeStep={activeStep} totalSteps={steps.length} rowHeight={ROW_H} lineStyle={lineStyle} />
-
-        {/* Step rows */}
-        {steps.map((step, i) => {
-          const isCurrent  = i === activeStep
-          const isComplete = i < activeStep
-
-          return (
-            <div
-              key={step.label}
-              className="relative flex items-center gap-2"
-              style={{ height: ROW_H }}
-            >
-              {/* Spacer column where the line runs */}
-              <div className="shrink-0 z-10" style={{ width: 20 }} />
-
-              {/* Step item */}
-              {isCurrent ? (
-                /* Active Spotlight Card */
-                <motion.div
-                  initial={{ scale: 0.96, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 360, damping: 24 }}
-                  className="flex items-center flex-1 min-w-0 px-2.5 py-1.5 rounded-xl shadow-xs"
-                  style={{
-                    background: badgeColor,
-                    border: `1.5px solid ${badgeBorder}`,
-                  }}
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    {/* Status icon in clean white container */}
-                    <div className="shrink-0 flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-gray-100 shadow-xs">
-                      {step.icon ? (
-                        <img src={step.icon} alt={step.label} className="w-4 h-4 object-contain" />
-                      ) : (
-                        <DriedSVG dim={false} />
-                      )}
-                    </div>
-
-                    {/* Step label & service tag */}
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[12.5px] font-bold text-slate-900 leading-tight truncate">
-                        {step.label}
-                      </span>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <div className="flex items-center -space-x-1">
-                          {serviceIcons.map((icon, idx) => (
-                            <img
-                              key={idx}
-                              src={icon}
-                              alt=""
-                              className="w-3 h-3 object-contain rounded-full bg-white ring-1 ring-white"
-                            />
-                          ))}
-                        </div>
-                        <span className="text-[9px] font-semibold truncate" style={{ color: badgeText }}>
-                          {serviceName}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ) : (
-                /* Inactive clean row */
-                <div className="flex items-center gap-2.5 flex-1 min-w-0 px-1">
-                  <div className="shrink-0 flex items-center justify-center" style={{ width: 24, height: 24 }}>
-                    {step.icon ? (
-                      <img
-                        src={step.icon}
-                        alt={step.label}
-                        className="w-[20px] h-[20px] object-contain transition-opacity duration-200"
-                        style={{ opacity: isComplete ? 0.75 : 0.28 }}
-                      />
-                    ) : (
-                      <DriedSVG dim={!isComplete} />
-                    )}
-                  </div>
-
-                  <span
-                    className="text-[13px] leading-tight transition-colors duration-200 truncate"
-                    style={{
-                      color: isComplete ? '#64748B' : '#CBD5E1',
-                      fontWeight: isComplete ? 500 : 400,
-                    }}
-                  >
-                    {step.label}
-                  </span>
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* QR Code on the right */}
-      <div className="shrink-0 flex flex-col items-center gap-1.5" style={{ paddingTop: 2 }}>
-        <div className="overflow-hidden border border-gray-200 rounded-xl bg-white p-1.5 shadow-xs flex items-center justify-center" style={{ width: 66, height: 66 }}>
-          <QRCodeSVG />
-        </div>
-        <span className="text-center text-gray-400 font-medium leading-tight" style={{ fontSize: 9 }}>
-          Click for<br />details
-        </span>
-      </div>
-    </div>
-  )
-}
 
 // ─── Service Tabs Component for Multi-Service Orders ──────────────────────────
 function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
@@ -1401,8 +1277,8 @@ function OrderDetailsScreen({
     if (onSelectSubId) onSelectSubId(id)
   }
 
-  // Active display service depends on whether we are using Service Tabs or standard layout
-  const activeDisplayService = (currentStyle === 'service-tabs' && isMultiService && servicesData[activeSubId])
+  // Active display service depends on whether this is a multi-service order with an active tab
+  const activeDisplayService = (isMultiService && servicesData[activeSubId])
     ? servicesData[activeSubId]
     : service
 
@@ -1509,46 +1385,26 @@ function OrderDetailsScreen({
         <div>
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-[15px] font-bold text-gray-900">Status</h3>
-            {isMultiService && currentStyle === 'service-tabs' && (
-              <span className="text-[11px] font-medium text-gray-400">
-                {subServices.length} services • Tap to switch
-              </span>
-            )}
           </div>
 
-          {/* Render selected variant */}
+          {/* Service tabs section: ONLY in 2 service or 5 service orders */}
+          {isMultiService && (
+            <ServiceTabsBar
+              subServices={subServices}
+              activeSubId={activeSubId}
+              onSelect={handleSelectSubId}
+            />
+          )}
+
+          {/* Render selected timeline layout */}
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentStyle + service.id + (currentStyle === 'service-tabs' ? `-${activeSubId}` : '')}
+              key={`${currentStyle}-${service.id}-${isMultiService ? activeSubId : ''}`}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.18 }}
             >
-              {currentStyle === 'service-tabs' && (
-                <div>
-                  {isMultiService && (
-                    <ServiceTabsBar
-                      subServices={subServices}
-                      activeSubId={activeSubId}
-                      onSelect={handleSelectSubId}
-                    />
-                  )}
-
-                  <StatusStepper
-                    steps={stepsList}
-                    activeStep={safeActiveStep}
-                    serviceIcons={activeDisplayService.serviceIcons}
-                    serviceName={activeDisplayService.serviceName}
-                    badgeColor={activeDisplayService.badgeColor}
-                    badgeBorder={activeDisplayService.badgeBorder}
-                    badgeText={activeDisplayService.badgeText}
-                    lineStyle={lineStyle}
-                    showServiceText={true}
-                  />
-                </div>
-              )}
-
               {(currentStyle === 'list' || currentStyle === 'track') && (
                 <StatusList
                   steps={stepsList}
@@ -1560,11 +1416,11 @@ function OrderDetailsScreen({
                 <StatusStepper
                   steps={stepsList}
                   activeStep={safeActiveStep}
-                  serviceIcons={service.serviceIcons}
-                  serviceName={service.serviceName}
-                  badgeColor={service.badgeColor}
-                  badgeBorder={service.badgeBorder}
-                  badgeText={service.badgeText}
+                  serviceIcons={activeDisplayService.serviceIcons}
+                  serviceName={activeDisplayService.serviceName}
+                  badgeColor={activeDisplayService.badgeColor}
+                  badgeBorder={activeDisplayService.badgeBorder}
+                  badgeText={activeDisplayService.badgeText}
                   lineStyle={lineStyle}
                   showServiceText={true}
                 />
@@ -1573,11 +1429,11 @@ function OrderDetailsScreen({
                 <StatusStepper
                   steps={stepsList}
                   activeStep={safeActiveStep}
-                  serviceIcons={service.serviceIcons}
-                  serviceName={service.serviceName}
-                  badgeColor={service.badgeColor}
-                  badgeBorder={service.badgeBorder}
-                  badgeText={service.badgeText}
+                  serviceIcons={activeDisplayService.serviceIcons}
+                  serviceName={activeDisplayService.serviceName}
+                  badgeColor={activeDisplayService.badgeColor}
+                  badgeBorder={activeDisplayService.badgeBorder}
+                  badgeText={activeDisplayService.badgeText}
                   lineStyle={lineStyle}
                   showServiceText={false}
                 />
@@ -1586,39 +1442,28 @@ function OrderDetailsScreen({
                 <StatusStepper
                   steps={stepsList}
                   activeStep={safeActiveStep}
-                  serviceIcons={service.serviceIcons}
-                  serviceName={service.serviceName}
-                  badgeColor={service.badgeColor}
-                  badgeBorder={service.badgeBorder}
-                  badgeText={service.badgeText}
+                  serviceIcons={activeDisplayService.serviceIcons}
+                  serviceName={activeDisplayService.serviceName}
+                  badgeColor={activeDisplayService.badgeColor}
+                  badgeBorder={activeDisplayService.badgeBorder}
+                  badgeText={activeDisplayService.badgeText}
                   lineStyle={lineStyle}
                   showServiceText={false}
                   overlap={true}
                 />
               )}
-              {(currentStyle === 'spotlight' || currentStyle === 'inline') && (
-                <StatusSpotlight
-                  steps={stepsList}
-                  activeStep={safeActiveStep}
-                  serviceIcons={service.serviceIcons}
-                  serviceName={service.serviceName}
-                  badgeColor={service.badgeColor}
-                  badgeBorder={service.badgeBorder}
-                  badgeText={service.badgeText}
-                  lineStyle={lineStyle}
-                />
-              )}
-              {!['list', 'track', 'stepper', 'service-icon', 'overlap', 'cards', 'spotlight', 'inline', 'service-tabs'].includes(currentStyle) && (
+              {!['list', 'track', 'stepper', 'service-icon', 'overlap', 'cards'].includes(currentStyle) && (
                 <StatusStepper
                   steps={stepsList}
                   activeStep={safeActiveStep}
-                  serviceIcons={service.serviceIcons}
-                  serviceName={service.serviceName}
-                  badgeColor={service.badgeColor}
-                  badgeBorder={service.badgeBorder}
-                  badgeText={service.badgeText}
+                  serviceIcons={activeDisplayService.serviceIcons}
+                  serviceName={activeDisplayService.serviceName}
+                  badgeColor={activeDisplayService.badgeColor}
+                  badgeBorder={activeDisplayService.badgeBorder}
+                  badgeText={activeDisplayService.badgeText}
                   lineStyle={lineStyle}
-                  showServiceText={true}
+                  showServiceText={false}
+                  overlap={true}
                 />
               )}
             </motion.div>
@@ -1731,7 +1576,7 @@ function IPhoneShell({ children }) {
 export default function App() {
   const [activeTab,   setActiveTab]   = useState('2-service')
   const [activeStep,  setActiveStep]  = useState(1)
-  const [statusStyle, setStatusStyle] = useState('service-tabs')
+  const [statusStyle, setStatusStyle] = useState('overlap')
   const [lineStyle,   setLineStyle]   = useState('numbers')
   const [simulating,  setSimulating]  = useState(false)
   const [selectedSubId, setSelectedSubId] = useState(null)
@@ -1744,9 +1589,7 @@ export default function App() {
     ? (selectedSubId && activeService.subServiceIds.includes(selectedSubId) ? selectedSubId : activeService.subServiceIds[0])
     : null
 
-  const activeSubService = (statusStyle === 'service-tabs' && effectiveSubId)
-    ? servicesData[effectiveSubId]
-    : null
+  const activeSubService = effectiveSubId ? servicesData[effectiveSubId] : null
 
   const currentSteps = activeSubService?.steps || activeService?.steps || NINE_STEPS
   const safeActiveStep = Math.min(activeStep, currentSteps.length - 1)
