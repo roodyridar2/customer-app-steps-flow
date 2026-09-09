@@ -1138,109 +1138,48 @@ function StatusStepper({
 }
 
 
-// ─── Service Tabs Component for Multi-Service Orders ──────────────────────────
+// ─── Service Pill Tabs Component for Multi-Service Orders (Only Icons) ───────────
 function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
-  if (isPair) {
-    return (
-      <div className="p-1 rounded-2xl bg-slate-100/90 grid grid-cols-2 gap-1 mb-3">
-        {subServices.map((sub) => {
-          const isSelected = sub.id === activeSubId
-          return (
-            <button
-              key={sub.id}
-              onClick={() => onSelect(sub.id)}
-              className="relative flex items-center justify-center gap-2 py-2 px-2.5 rounded-xl transition-all select-none"
-              style={{
-                color: isSelected ? '#0F172A' : '#64748B',
-                fontWeight: isSelected ? 700 : 500,
-              }}
-            >
-              {isSelected && (
-                <motion.div
-                  layoutId="service-tab-pill-pair"
-                  className="absolute inset-0 rounded-xl bg-white shadow-xs border border-slate-200/80"
-                  transition={{ type: 'spring', stiffness: 450, damping: 32 }}
-                />
-              )}
-              <div
-                className="relative z-10 w-5 h-5 rounded-full overflow-hidden flex items-center justify-center shrink-0"
-                style={{
-                  background: isSelected ? sub.badgeColor : '#E2E8F0',
-                  border: `1px solid ${isSelected ? sub.badgeBorder : '#CBD5E1'}`,
-                }}
-              >
-                <img src={sub.serviceIcons[0]} alt="" className="w-3.5 h-3.5 object-contain" />
-              </div>
-              <span className="relative z-10 text-[11.5px] truncate leading-none">
-                {sub.serviceName}
-              </span>
-              <span
-                className="relative z-10 text-[9.5px] px-1.5 py-0.5 rounded-full font-mono leading-none"
-                style={{
-                  background: isSelected ? sub.badgeColor : '#E2E8F0',
-                  color: isSelected ? sub.themeColor : '#94A3B8',
-                  fontWeight: 700,
-                }}
-              >
-                {sub.steps.length}
-              </span>
-            </button>
-          )
-        })}
-      </div>
-    )
-  }
-
   return (
-    <div className="relative mb-3">
-      <div
-        className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-0.5 ios-scrollbar"
-        style={{
-          scrollSnapType: 'x proximity',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
-        {subServices.map((sub) => {
-          const isSelected = sub.id === activeSubId
-          return (
-            <button
-              key={sub.id}
-              onClick={() => onSelect(sub.id)}
-              className="relative flex items-center gap-1.5 py-1.5 px-2.5 rounded-xl text-[11px] shrink-0 transition-all select-none"
+    <div
+      className={`p-1 rounded-2xl bg-slate-100/90 grid ${
+        isPair ? 'grid-cols-2' : 'grid-cols-5'
+      } gap-1 mb-3 select-none`}
+    >
+      {subServices.map((sub) => {
+        const isSelected = sub.id === activeSubId
+        return (
+          <button
+            key={sub.id}
+            onClick={() => onSelect(sub.id)}
+            className="relative flex items-center justify-center py-2 px-2 rounded-xl transition-all select-none cursor-pointer active:scale-95"
+            title={sub.serviceName}
+          >
+            {isSelected && (
+              <motion.div
+                layoutId="service-tab-pill-active"
+                className="absolute inset-0 rounded-xl bg-white shadow-xs border border-slate-200/80"
+                transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+              />
+            )}
+            <div
+              className="relative z-10 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all"
               style={{
-                background: isSelected ? sub.badgeColor : '#F1F5F9',
-                border: `1px solid ${isSelected ? sub.badgeBorder : '#E2E8F0'}`,
-                color: isSelected ? sub.badgeText : '#64748B',
-                fontWeight: isSelected ? 700 : 500,
-                boxShadow: isSelected ? `0 2px 8px ${sub.accentColor}25` : 'none',
-                scrollSnapAlign: 'start',
+                background: isSelected ? sub.badgeColor : 'transparent',
               }}
             >
-              <div
-                className="w-4 h-4 rounded-full overflow-hidden flex items-center justify-center shrink-0 bg-white"
-                style={{
-                  border: `1px solid ${isSelected ? sub.badgeBorder : '#E2E8F0'}`,
-                }}
-              >
-                <img src={sub.serviceIcons[0]} alt="" className="w-3.5 h-3.5 object-contain" />
-              </div>
-              <span className="whitespace-nowrap leading-none">{sub.serviceName}</span>
-              <span
-                className="text-[9px] px-1.5 py-0.5 rounded-full font-mono leading-none"
-                style={{
-                  background: isSelected ? '#FFFFFF' : '#E2E8F0',
-                  color: isSelected ? sub.themeColor : '#94A3B8',
-                  fontWeight: 700,
-                }}
-              >
-                {sub.steps.length}
-              </span>
-            </button>
-          )
-        })}
-      </div>
+              <img
+                src={sub.serviceIcons[0]}
+                alt={sub.serviceName}
+                className="w-5 h-5 object-contain transition-opacity"
+                style={{ opacity: isSelected ? 1 : 0.55 }}
+              />
+            </div>
+          </button>
+        )
+      })}
     </div>
   )
 }
