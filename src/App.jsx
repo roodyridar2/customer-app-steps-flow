@@ -1248,6 +1248,139 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
   )
 }
 
+// ─── Minimal Rings Tabs Component for Multi-Service Orders ────────────────────
+function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
+  const isPair = subServices.length === 2
+
+  return (
+    <div className="mb-3 select-none">
+      <div className={`grid ${isPair ? 'grid-cols-2 gap-2' : 'grid-cols-5 gap-1.5'}`}>
+        {subServices.map((sub) => {
+          const isSelected = sub.id === activeSubId
+          return (
+            <button
+              key={sub.id}
+              onClick={() => onSelect(sub.id)}
+              className="relative flex flex-col items-center justify-center py-1 rounded-xl transition-all cursor-pointer group active:scale-95"
+              title={sub.serviceName}
+            >
+              {/* Ring token */}
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  isSelected
+                    ? 'ring-2 ring-offset-2'
+                    : 'border border-slate-200/80 bg-slate-50/60 group-hover:border-slate-300'
+                }`}
+                style={{
+                  '--tw-ring-color': sub.themeColor,
+                  background: isSelected ? sub.badgeColor : undefined,
+                  transform: isSelected ? 'scale(1.05)' : 'scale(0.95)',
+                }}
+              >
+                <img
+                  src={sub.serviceIcons[0]}
+                  alt={sub.serviceName}
+                  className="w-4 h-4 object-contain transition-opacity duration-200"
+                  style={{ opacity: isSelected ? 1 : 0.4 }}
+                />
+              </div>
+
+              {/* Label for 2-service pair */}
+              {isPair && (
+                <span
+                  className="text-[11px] mt-1 truncate max-w-full px-1 leading-none transition-colors"
+                  style={{
+                    color: isSelected ? '#0F172A' : '#94A3B8',
+                    fontWeight: isSelected ? 600 : 500,
+                  }}
+                >
+                  {sub.serviceName}
+                </span>
+              )}
+
+              {/* Animated micro indicator dot */}
+              <div className="h-1.5 flex items-center justify-center mt-1">
+                {isSelected && (
+                  <motion.div
+                    layoutId="service-ring-dot"
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: sub.themeColor }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  />
+                )}
+              </div>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ─── Minimal Ghost Chips Component for Multi-Service Orders ───────────────────
+function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
+  const isPair = subServices.length === 2
+
+  return (
+    <div className="mb-3 select-none">
+      <div className={`grid ${isPair ? 'grid-cols-2 gap-2' : 'grid-cols-5 gap-1.5'}`}>
+        {subServices.map((sub) => {
+          const isSelected = sub.id === activeSubId
+          return (
+            <button
+              key={sub.id}
+              onClick={() => onSelect(sub.id)}
+              className="relative cursor-pointer group active:scale-95 transition-transform"
+              title={sub.serviceName}
+            >
+              <div
+                className={`relative flex items-center justify-center transition-all duration-200 ${
+                  isPair ? 'py-1.5 px-2.5 gap-1.5 rounded-full' : 'h-8 rounded-full'
+                }`}
+                style={{
+                  borderWidth: '1.5px',
+                  borderStyle: 'solid',
+                  borderColor: isSelected ? sub.themeColor : 'rgba(226, 232, 240, 0.9)',
+                  background: isSelected ? sub.badgeColor : '#FAFAFA',
+                  transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                }}
+              >
+                <img
+                  src={sub.serviceIcons[0]}
+                  alt={sub.serviceName}
+                  className="w-4 h-4 object-contain transition-opacity duration-200"
+                  style={{ opacity: isSelected ? 1 : 0.4 }}
+                />
+                {isPair && (
+                  <span
+                    className="text-[11px] truncate leading-none transition-colors"
+                    style={{
+                      color: isSelected ? '#0F172A' : '#94A3B8',
+                      fontWeight: isSelected ? 600 : 500,
+                    }}
+                  >
+                    {sub.serviceName}
+                  </span>
+                )}
+                {isSelected && (
+                  <motion.div
+                    layoutId="service-chip-glow"
+                    className="absolute inset-0 rounded-full pointer-events-none"
+                    style={{
+                      boxShadow: `0 2px 8px -2px ${sub.themeColor}33`,
+                    }}
+                    transition={{ type: 'spring', stiffness: 450, damping: 30 }}
+                  />
+                )}
+              </div>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 // ─── Order Details Screen (Generalized from Wash & Fold, used for Clean & Press & all services) ────
 function OrderDetailsScreen({
   service = servicesData['wash-fold'],
@@ -1423,6 +1556,22 @@ function OrderDetailsScreen({
 
           {isTabsMode && multiServiceMode === 'pills' && (
             <ServiceTabsBar
+              subServices={subServices}
+              activeSubId={activeSubId}
+              onSelect={handleSelectSubId}
+            />
+          )}
+
+          {isTabsMode && multiServiceMode === 'rings' && (
+            <ServiceRingTabsBar
+              subServices={subServices}
+              activeSubId={activeSubId}
+              onSelect={handleSelectSubId}
+            />
+          )}
+
+          {isTabsMode && multiServiceMode === 'chips' && (
+            <ServiceGhostChipsBar
               subServices={subServices}
               activeSubId={activeSubId}
               onSelect={handleSelectSubId}
@@ -1609,11 +1758,23 @@ function IPhoneShell({ children }) {
 
 // ─── Root App ─────────────────────────────────────────────────────────────────
 export default function App() {
-  const [activeTab,        setActiveTab]        = useState('2-service')
+  const [activeTab,        setActiveTab]        = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search)
+      return p.get('tab') || '2-service'
+    }
+    return '2-service'
+  })
   const [activeStep,       setActiveStep]       = useState(1)
   const [statusStyle,      setStatusStyle]      = useState('overlap')
   const [lineStyle,        setLineStyle]        = useState('numbers')
-  const [multiServiceMode, setMultiServiceMode] = useState('minimal') // 'minimal' | 'pills' | 'default'
+  const [multiServiceMode, setMultiServiceMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search)
+      return p.get('multiMode') || 'minimal'
+    }
+    return 'minimal'
+  }) // 'minimal' | 'pills' | 'rings' | 'chips' | 'default'
   const [simulating,       setSimulating]       = useState(false)
   const [selectedSubId,    setSelectedSubId]    = useState(null)
   const intervalRef = useRef(null)
@@ -1809,16 +1970,20 @@ export default function App() {
                 {isMultiService && (
                   <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm w-full">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Multi-Service</span>
-                    <div className="flex flex-col gap-1 w-full">
+                    <div className="grid grid-cols-2 gap-1 w-full">
                       {[
-                        { id: 'minimal', label: 'Minimal Tabs' },
-                        { id: 'pills',   label: 'Pill Tabs' },
-                        { id: 'default', label: 'Default' },
+                        { id: 'minimal', label: 'Underline' },
+                        { id: 'pills',   label: 'Pills' },
+                        { id: 'rings',   label: 'Rings' },
+                        { id: 'chips',   label: 'Chips' },
+                        { id: 'default', label: 'Default', span: 2 },
                       ].map(opt => (
                         <button
                           key={opt.id}
                           onClick={() => setMultiServiceMode(opt.id)}
-                          className="py-1 px-1.5 rounded-lg text-[10px] font-bold transition-all text-center cursor-pointer"
+                          className={`py-1 px-1 rounded-lg text-[9px] font-bold transition-all text-center cursor-pointer ${
+                            opt.span === 2 ? 'col-span-2' : ''
+                          }`}
                           style={{
                             background: multiServiceMode === opt.id ? '#141C3C' : '#F1F5F9',
                             color: multiServiceMode === opt.id ? '#fff' : '#64748B',
