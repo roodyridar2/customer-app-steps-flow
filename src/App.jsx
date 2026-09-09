@@ -1677,7 +1677,7 @@ export default function App() {
       </div>
 
       {/* Main card */}
-      <div className="flex rounded-3xl overflow-hidden shadow-2xl my-auto" style={{ background: '#fff', minHeight: 780 }}>
+      <div className="flex rounded-3xl overflow-hidden shadow-2xl my-auto" style={{ background: '#fff', height: 760 }}>
 
         {/* ── Left sidebar ── */}
         <div
@@ -1743,7 +1743,7 @@ export default function App() {
 
         {/* ── Right: phone + simulate ── */}
         <div
-          className="flex-1 flex flex-col items-center justify-center px-8 py-8 gap-6"
+          className="flex-1 flex flex-col items-center justify-center px-8 py-5 gap-4 h-full"
           style={{ background: `linear-gradient(135deg, ${active.color}80 0%, #fff 60%)` }}
         >
           {/* Label above phone */}
@@ -1761,7 +1761,7 @@ export default function App() {
           </div>
 
           {/* Phone + Simulate side by side */}
-          <div className="flex items-center gap-6" style={{ minHeight: 640 }}>
+          <div className="flex items-center gap-6 shrink-0" style={{ height: 640 }}>
 
             {/* Phone */}
             <div className="shrink-0" style={{ width: 300, height: 640 }}>
@@ -1803,11 +1803,11 @@ export default function App() {
 
             {/* Simulate panel — available for activeService */}
             {activeService && (
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center justify-center gap-2 shrink-0" style={{ width: 140, height: 640 }}>
 
                 {/* Multi-Service section — visible for 2-service and 5-service */}
                 {isMultiService && (
-                  <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm" style={{ width: 140 }}>
+                  <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm w-full">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Multi-Service</span>
                     <div className="flex flex-col gap-1 w-full">
                       {[
@@ -1831,15 +1831,15 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Status layout switcher */}
-                <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm" style={{ width: 140 }}>
+                {/* Status layout switcher — compact 2x2 grid */}
+                <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm w-full">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Layout</span>
-                  <div className="flex flex-col gap-1 w-full">
+                  <div className="grid grid-cols-2 gap-1 w-full">
                     {styleOptions.map(opt => (
                       <button
                         key={opt.id}
                         onClick={() => setStatusStyle(opt.id)}
-                        className="py-1 px-1.5 rounded-lg text-[10px] font-bold transition-all text-center"
+                        className="py-1 px-0.5 rounded-lg text-[9px] font-bold transition-all text-center leading-tight cursor-pointer"
                         style={{
                           background: statusStyle === opt.id ? '#141C3C' : '#F1F5F9',
                           color: statusStyle === opt.id ? '#fff' : '#64748B',
@@ -1852,7 +1852,7 @@ export default function App() {
                 </div>
 
                 {/* Line style switcher (changes line globally across styles) */}
-                <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm" style={{ width: 140 }}>
+                <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm w-full">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Line Style</span>
                   <div className="grid grid-cols-2 gap-1 w-full">
                     {lineStyles.map((opt, i) => (
@@ -1878,32 +1878,31 @@ export default function App() {
                   onClick={startSimulate}
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.93 }}
-                  className="flex flex-col items-center gap-2 px-5 py-4 rounded-2xl text-white font-bold text-sm"
+                  className="flex flex-col items-center gap-1.5 px-4 py-2.5 rounded-2xl text-white font-bold text-xs w-full cursor-pointer shadow-xs"
                   style={{
                     background: simulating
                       ? 'linear-gradient(135deg, #0EA5E9, #0284C7)'
                       : 'linear-gradient(135deg, #38BDF8, #0EA5E9)',
-                    minWidth: 100,
                   }}
                 >
                   {simulating ? (
                     <motion.svg
-                      viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"
+                      viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"
                       animate={{ rotate: [0, 180, 360] }}
                       transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
                     >
                       <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/>
                     </motion.svg>
                   ) : (
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
                       <path d="M8 5.14v14l11-7-11-7z"/>
                     </svg>
                   )}
-                  {simulating ? 'Stop' : 'Simulate'}
+                  <span>{simulating ? 'Stop' : 'Simulate'}</span>
                 </motion.button>
 
-                {/* Step progress bar */}
-                <div className="flex flex-col gap-[5px] items-center">
+                {/* Step progress bar with fixed height container so 7 vs 9 dots never changes height */}
+                <div className="flex flex-col gap-[4px] items-center justify-center shrink-0" style={{ height: 75 }}>
                   {currentSteps.map((s, i) => (
                     <motion.div
                       key={s.label}
@@ -1916,29 +1915,31 @@ export default function App() {
                       }}
                       transition={{ duration: 0.35, type: 'spring', stiffness: 300, damping: 24 }}
                       className="rounded-full"
-                      style={{ height: 7 }}
+                      style={{ height: 5 }}
                     />
                   ))}
                 </div>
 
-                {/* Step label */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`${activeTab}-${effectiveSubId || ''}-${safeActiveStep}`}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{    opacity: 0, y: -6 }}
-                    transition={{ duration: 0.2 }}
-                    className="text-center"
-                  >
-                    <div className="text-[11px] font-bold" style={{ color: '#0EA5E9' }}>
-                      {currentSteps[safeActiveStep]?.label || ''}
-                    </div>
-                    <div className="text-[10px] text-gray-400">
-                      {safeActiveStep + 1} / {currentSteps.length}
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
+                {/* Step label with fixed height container */}
+                <div className="h-7 flex items-center justify-center shrink-0">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`${activeTab}-${effectiveSubId || ''}-${safeActiveStep}`}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{    opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="text-center"
+                    >
+                      <div className="text-[10.5px] font-bold leading-tight" style={{ color: '#0EA5E9' }}>
+                        {currentSteps[safeActiveStep]?.label || ''}
+                      </div>
+                      <div className="text-[9.5px] text-gray-400 font-mono">
+                        {safeActiveStep + 1} / {currentSteps.length}
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
             )}
           </div>
