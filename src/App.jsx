@@ -1565,7 +1565,7 @@ function PlaceholderScreen({ label, color, dot, icon, short }) {
 // ─── iPhone Shell ─────────────────────────────────────────────────────────────
 function IPhoneShell({ children }) {
   return (
-    <div className="relative" style={{ width: 300 }}>
+    <div className="relative shrink-0" style={{ width: 300, height: 640 }}>
       {/* Volume buttons */}
       <div className="absolute rounded-l-sm" style={{ left: -5, top: 90,  width: 4, height: 28, background: '#555' }} />
       <div className="absolute rounded-l-sm" style={{ left: -5, top: 128, width: 4, height: 28, background: '#555' }} />
@@ -1577,6 +1577,8 @@ function IPhoneShell({ children }) {
       <div
         className="rounded-[44px] overflow-hidden"
         style={{
+          width: 300,
+          height: 640,
           padding: 10,
           background: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 100%)',
           boxShadow: '0 0 0 1px #444, inset 0 0 0 1px #333, 0 40px 80px rgba(0,0,0,0.4)',
@@ -1584,7 +1586,7 @@ function IPhoneShell({ children }) {
       >
         <div
           className="rounded-[36px] overflow-hidden bg-white relative flex flex-col"
-          style={{ height: 620 }}
+          style={{ width: 280, height: 620 }}
         >
           {/* Dynamic Island — overlays the status bar center */}
           <div
@@ -1596,7 +1598,7 @@ function IPhoneShell({ children }) {
           <StatusBar />
 
           {/* Screen content below the status bar */}
-          <div className="flex-1 min-h-0 flex flex-col relative overflow-hidden">
+          <div className="flex-1 min-h-0 flex flex-col relative overflow-hidden h-full">
             {children}
           </div>
         </div>
@@ -1675,7 +1677,7 @@ export default function App() {
       </div>
 
       {/* Main card */}
-      <div className="flex rounded-3xl overflow-hidden shadow-2xl my-auto" style={{ background: '#fff', minHeight: 680 }}>
+      <div className="flex rounded-3xl overflow-hidden shadow-2xl my-auto" style={{ background: '#fff', minHeight: 780 }}>
 
         {/* ── Left sidebar ── */}
         <div
@@ -1759,42 +1761,45 @@ export default function App() {
           </div>
 
           {/* Phone + Simulate side by side */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6" style={{ minHeight: 640 }}>
 
             {/* Phone */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, x: 20, scale: 0.97 }}
-                animate={{ opacity: 1, x: 0,  scale: 1    }}
-                exit={{    opacity: 0, x: -20, scale: 0.97 }}
-                transition={{ duration: 0.22, ease: 'easeInOut' }}
-              >
-                <IPhoneShell>
-                  {activeService ? (
-                    <OrderDetailsScreen
-                      service={activeService}
-                      activeStep={activeStep}
-                      statusStyle={statusStyle}
-                      setStatusStyle={setStatusStyle}
-                      lineStyle={lineStyle}
-                      selectedSubId={effectiveSubId}
-                      onSelectSubId={setSelectedSubId}
-                      multiServiceMode={multiServiceMode}
-                      setMultiServiceMode={setMultiServiceMode}
-                    />
-                  ) : (
-                    <PlaceholderScreen
-                      label={active.label}
-                      color={active.color}
-                      dot={active.dot}
-                      icon={active.icon}
-                      short={active.short}
-                    />
-                  )}
-                </IPhoneShell>
-              </motion.div>
-            </AnimatePresence>
+            <div className="shrink-0" style={{ width: 300, height: 640 }}>
+              <IPhoneShell>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.15, ease: 'easeInOut' }}
+                    className="flex-1 min-h-0 flex flex-col h-full"
+                  >
+                    {activeService ? (
+                      <OrderDetailsScreen
+                        service={activeService}
+                        activeStep={activeStep}
+                        statusStyle={statusStyle}
+                        setStatusStyle={setStatusStyle}
+                        lineStyle={lineStyle}
+                        selectedSubId={effectiveSubId}
+                        onSelectSubId={setSelectedSubId}
+                        multiServiceMode={multiServiceMode}
+                        setMultiServiceMode={setMultiServiceMode}
+                      />
+                    ) : (
+                      <PlaceholderScreen
+                        label={active.label}
+                        color={active.color}
+                        dot={active.dot}
+                        icon={active.icon}
+                        short={active.short}
+                      />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </IPhoneShell>
+            </div>
 
             {/* Simulate panel — available for activeService */}
             {activeService && (
