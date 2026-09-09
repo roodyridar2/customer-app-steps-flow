@@ -1245,6 +1245,177 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
   )
 }
 
+// ─── Service Icon Tabs Component for Multi-Service Orders ─────────────────────
+function ServiceIconTabsBar({ subServices = [], activeSubId, onSelect }) {
+  const isPair = subServices.length === 2
+  const activeSub = subServices.find(s => s.id === activeSubId) || subServices[0]
+
+  const shortNames = {
+    'wash-fold': 'Wash',
+    'press-only': 'Press',
+    'clean-press': 'Clean',
+    'bags-shoes': 'Bags',
+    'premium-care': 'Care',
+  }
+
+  if (isPair) {
+    return (
+      <div className="grid grid-cols-2 gap-2 mb-3">
+        {subServices.map((sub) => {
+          const isSelected = sub.id === activeSubId
+          return (
+            <button
+              key={sub.id}
+              onClick={() => onSelect(sub.id)}
+              className="relative flex items-center gap-2 p-2 rounded-2xl transition-all select-none text-left cursor-pointer active:scale-[0.98]"
+              style={{
+                background: isSelected ? sub.badgeColor : '#F8FAFC',
+                border: `1.5px solid ${isSelected ? sub.badgeBorder : '#E2E8F0'}`,
+                boxShadow: isSelected ? `0 3px 10px ${sub.accentColor}25` : 'none',
+              }}
+            >
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform"
+                style={{
+                  background: '#FFFFFF',
+                  border: `1px solid ${isSelected ? sub.badgeBorder : '#E2E8F0'}`,
+                  boxShadow: isSelected ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
+                }}
+              >
+                <img src={sub.serviceIcons[0]} alt="" className="w-5 h-5 object-contain" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div
+                  className="text-[11.5px] font-bold truncate leading-tight"
+                  style={{ color: isSelected ? sub.badgeText : '#334155' }}
+                >
+                  {sub.serviceName}
+                </div>
+                <div className="text-[10px] text-slate-400 font-medium leading-none mt-1 flex items-center gap-1">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full inline-block shrink-0"
+                    style={{ background: isSelected ? sub.themeColor : '#94A3B8' }}
+                  />
+                  <span>{sub.steps.length} steps</span>
+                </div>
+              </div>
+              {isSelected && (
+                <motion.div
+                  layoutId="service-icon-active-pair-dot"
+                  className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
+                  style={{ background: sub.themeColor }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                />
+              )}
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
+
+  // 5 Services (or 3+): Icon-first tiles grid + active caption
+  return (
+    <div className="mb-3">
+      {/* 5-column icon tab tiles */}
+      <div className="grid grid-cols-5 gap-1.5 mb-1.5">
+        {subServices.map((sub) => {
+          const isSelected = sub.id === activeSubId
+          const shortName = shortNames[sub.id] || sub.serviceName.split(' ')[0]
+          return (
+            <button
+              key={sub.id}
+              onClick={() => onSelect(sub.id)}
+              className="relative flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all select-none cursor-pointer active:scale-[0.96]"
+              style={{
+                background: isSelected ? sub.badgeColor : '#F8FAFC',
+                border: `1.5px solid ${isSelected ? sub.badgeBorder : '#E2E8F0'}`,
+                boxShadow: isSelected ? `0 3px 10px ${sub.accentColor}30` : 'none',
+              }}
+            >
+              {/* Icon container */}
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform"
+                style={{
+                  background: '#FFFFFF',
+                  border: `1px solid ${isSelected ? sub.badgeBorder : '#E2E8F0'}`,
+                  boxShadow: isSelected ? '0 1px 4px rgba(0,0,0,0.06)' : 'none',
+                }}
+              >
+                <img
+                  src={sub.serviceIcons[0]}
+                  alt=""
+                  className="w-5 h-5 object-contain"
+                  style={{ opacity: isSelected ? 1 : 0.65 }}
+                />
+              </div>
+
+              {/* Short label */}
+              <span
+                className="text-[9px] font-bold leading-none mt-1 truncate max-w-full px-0.5"
+                style={{ color: isSelected ? sub.badgeText : '#64748B' }}
+              >
+                {shortName}
+              </span>
+
+              {/* Active dot indicator */}
+              <div className="h-1.5 flex items-center justify-center mt-0.5">
+                {isSelected ? (
+                  <motion.div
+                    layoutId="service-icon-active-5-dot"
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: sub.themeColor }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  />
+                ) : (
+                  <div className="w-1 h-1 rounded-full bg-transparent" />
+                )}
+              </div>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Active Service Caption Info Banner */}
+      {activeSub && (
+        <motion.div
+          key={activeSub.id}
+          initial={{ opacity: 0, y: -2 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.15 }}
+          className="flex items-center justify-between px-2.5 py-1.5 rounded-xl"
+          style={{
+            background: activeSub.badgeColor,
+            border: `1px solid ${activeSub.badgeBorder}`,
+          }}
+        >
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span
+              className="w-2 h-2 rounded-full shrink-0"
+              style={{ background: activeSub.themeColor }}
+            />
+            <span
+              className="text-[11.5px] font-bold truncate leading-none"
+              style={{ color: activeSub.badgeText }}
+            >
+              {activeSub.serviceName}
+            </span>
+          </div>
+          <span
+            className="text-[9.5px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-white shrink-0 leading-none"
+            style={{
+              color: activeSub.themeColor,
+              border: `1px solid ${activeSub.badgeBorder}`,
+            }}
+          >
+            {activeSub.steps.length} steps workflow
+          </span>
+        </motion.div>
+      )}
+    </div>
+  )
+}
+
 // ─── Order Details Screen (Generalized from Wash & Fold, used for Clean & Press & all services) ────
 function OrderDetailsScreen({
   service = servicesData['wash-fold'],
@@ -1254,14 +1425,14 @@ function OrderDetailsScreen({
   lineStyle = 'solid',
   selectedSubId,
   onSelectSubId,
-  multiServiceMode = 'tabs',
+  multiServiceMode = 'icons',
   setMultiServiceMode,
 }) {
   const [internalStatusStyle, setInternalStatusStyle] = useState('stepper')
   const currentStyle = propStatusStyle ?? internalStatusStyle
 
   const isMultiService = Boolean(service.subServiceIds && service.subServiceIds.length > 1)
-  const isTabsMode = isMultiService && multiServiceMode === 'tabs'
+  const isTabsMode = isMultiService && multiServiceMode !== 'default'
 
   const subServices = isMultiService
     ? service.subServiceIds.map(id => servicesData[id]).filter(Boolean)
@@ -1389,8 +1560,16 @@ function OrderDetailsScreen({
         <div>
           <h3 className="text-[15px] font-bold text-gray-900 mb-2">Status</h3>
 
-          {/* Service tabs section: ONLY in 2 service or 5 service orders AND when in tabs mode */}
-          {isTabsMode && (
+          {/* Service tabs section: ONLY in 2 service or 5 service orders AND when not in default mode */}
+          {isTabsMode && multiServiceMode === 'icons' && (
+            <ServiceIconTabsBar
+              subServices={subServices}
+              activeSubId={activeSubId}
+              onSelect={handleSelectSubId}
+            />
+          )}
+
+          {isTabsMode && multiServiceMode === 'pills' && (
             <ServiceTabsBar
               subServices={subServices}
               activeSubId={activeSubId}
@@ -1580,7 +1759,7 @@ export default function App() {
   const [activeStep,       setActiveStep]       = useState(1)
   const [statusStyle,      setStatusStyle]      = useState('overlap')
   const [lineStyle,        setLineStyle]        = useState('numbers')
-  const [multiServiceMode, setMultiServiceMode] = useState('tabs') // 'tabs' | 'default'
+  const [multiServiceMode, setMultiServiceMode] = useState('icons') // 'icons' | 'pills' | 'default'
   const [simulating,       setSimulating]       = useState(false)
   const [selectedSubId,    setSelectedSubId]    = useState(null)
   const intervalRef = useRef(null)
@@ -1593,7 +1772,7 @@ export default function App() {
     ? (selectedSubId && activeService.subServiceIds.includes(selectedSubId) ? selectedSubId : activeService.subServiceIds[0])
     : null
 
-  const isTabsMode = isMultiService && multiServiceMode === 'tabs'
+  const isTabsMode = isMultiService && multiServiceMode !== 'default'
   const activeSubService = (isTabsMode && effectiveSubId) ? servicesData[effectiveSubId] : null
 
   const currentSteps = activeSubService?.steps || activeService?.steps || NINE_STEPS
@@ -1774,26 +1953,23 @@ export default function App() {
                   <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm" style={{ width: 140 }}>
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Multi-Service</span>
                     <div className="flex flex-col gap-1 w-full">
-                      <button
-                        onClick={() => setMultiServiceMode('default')}
-                        className="py-1 px-1.5 rounded-lg text-[10px] font-bold transition-all text-center"
-                        style={{
-                          background: multiServiceMode === 'default' ? '#141C3C' : '#F1F5F9',
-                          color: multiServiceMode === 'default' ? '#fff' : '#64748B',
-                        }}
-                      >
-                        Default (Combined)
-                      </button>
-                      <button
-                        onClick={() => setMultiServiceMode('tabs')}
-                        className="py-1 px-1.5 rounded-lg text-[10px] font-bold transition-all text-center"
-                        style={{
-                          background: multiServiceMode === 'tabs' ? '#141C3C' : '#F1F5F9',
-                          color: multiServiceMode === 'tabs' ? '#fff' : '#64748B',
-                        }}
-                      >
-                        Service Tabs
-                      </button>
+                      {[
+                        { id: 'icons',   label: 'Icon Tabs' },
+                        { id: 'pills',   label: 'Pill Tabs' },
+                        { id: 'default', label: 'Default' },
+                      ].map(opt => (
+                        <button
+                          key={opt.id}
+                          onClick={() => setMultiServiceMode(opt.id)}
+                          className="py-1 px-1.5 rounded-lg text-[10px] font-bold transition-all text-center cursor-pointer"
+                          style={{
+                            background: multiServiceMode === opt.id ? '#141C3C' : '#F1F5F9',
+                            color: multiServiceMode === opt.id ? '#fff' : '#64748B',
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
