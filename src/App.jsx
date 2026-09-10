@@ -377,7 +377,7 @@ const lineStyles = [
 ]
 
 // ─── Modular Timeline Line Component (swappable across all styles) ────────────
-function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, lineStyle = 'solid', stepTops = null }) {
+function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, lineStyle = 'nodes', stepTops = null }) {
   const getTop = (i) => (stepTops && stepTops[i] !== undefined ? stepTops[i] : i * rowHeight)
   const totalLineH = stepTops && stepTops.length > 1 ? (stepTops[totalSteps - 1] - stepTops[0]) : (totalSteps - 1) * rowHeight
   const circleTop = getTop(activeStep) + (rowHeight - 18) / 2
@@ -1518,7 +1518,7 @@ function MultiServicePattern({ themeColor, badgeColor }) {
 
 // ─── Right Side Graphic (Empty / Pattern / Image / Watermark) ─────────────────
 function RightSideGraphic({
-  style = 'pattern',
+  style = 'none',
   serviceId = '',
   themeColor = '#3B82F6',
   badgeColor = '#EFF6FF',
@@ -1683,7 +1683,7 @@ function RightSideGraphic({
 function StatusList({
   steps = NINE_STEPS,
   activeStep,
-  lineStyle = 'solid',
+  lineStyle = 'nodes',
   rawActiveStep,
   processDesign = 'drawer',
   isProcessExpanded = false,
@@ -1698,8 +1698,8 @@ function StatusList({
   isMultiService = false,
   isTabsMode = false,
   multiServiceMode = 'minimal',
-  showQRCode = true,
-  rightSideStyle = 'pattern',
+  showQRCode = false,
+  rightSideStyle = 'none',
   themeColor = '#3B82F6',
   badgeColor = '#EFF6FF',
 }) {
@@ -2081,7 +2081,7 @@ function StatusStepper({
   badgeColor = '#F0FDF4',
   badgeBorder = '#BBF7D0',
   badgeText = '#166534',
-  lineStyle = 'solid',
+  lineStyle = 'nodes',
   showServiceText = true,
   overlap = false,
   rawActiveStep,
@@ -2094,8 +2094,8 @@ function StatusStepper({
   isMultiService = false,
   isTabsMode = false,
   multiServiceMode = 'minimal',
-  showQRCode = true,
-  rightSideStyle = 'pattern',
+  showQRCode = false,
+  rightSideStyle = 'none',
   themeColor = '#3B82F6',
 }) {
   const ROW_H = 44
@@ -2804,20 +2804,20 @@ function OrderDetailsScreen({
   serviceSteps,
   statusStyle: propStatusStyle,
   setStatusStyle: propSetStatusStyle,
-  lineStyle = 'solid',
+  lineStyle = 'nodes',
   selectedSubId,
   onSelectSubId,
   multiServiceMode = 'minimal',
   setMultiServiceMode,
-  processMode = 'default',
+  processMode = 'drawer',
   setProcessMode,
   isProcessExpanded = false,
   onToggleProcessExpanded,
   onSelectRawStep,
-  showQRCode = true,
-  rightSideStyle = 'pattern',
+  showQRCode = false,
+  rightSideStyle = 'none',
 }) {
-  const [internalStatusStyle, setInternalStatusStyle] = useState('stepper')
+  const [internalStatusStyle, setInternalStatusStyle] = useState('list')
   const currentStyle = propStatusStyle ?? internalStatusStyle
 
   const isMultiService = Boolean(service.subServiceIds && service.subServiceIds.length > 1)
@@ -3296,8 +3296,20 @@ export default function App() {
       },
     }
   })
-  const [statusStyle,      setStatusStyle]      = useState('overlap')
-  const [lineStyle,        setLineStyle]        = useState('numbers')
+  const [statusStyle,      setStatusStyle]      = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search)
+      return p.get('layout') || 'list'
+    }
+    return 'list'
+  })
+  const [lineStyle,        setLineStyle]        = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search)
+      return p.get('lineStyle') || p.get('line') || 'nodes'
+    }
+    return 'nodes'
+  })
   const [multiServiceMode, setMultiServiceMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search)
@@ -3308,9 +3320,9 @@ export default function App() {
   const [processMode, setProcessMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search)
-      return p.get('processMode') || 'default'
+      return p.get('processMode') || 'drawer'
     }
-    return 'default'
+    return 'drawer'
   }) // 'default' | 'compact'
   const [isProcessExpanded, setIsProcessExpanded] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -3322,16 +3334,16 @@ export default function App() {
   const [showQRCode, setShowQRCode] = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search)
-      return p.get('qr') !== 'false'
+      return p.get('qr') === 'true'
     }
-    return true
+    return false
   })
   const [rightSideStyle,   setRightSideStyle]   = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search)
-      return p.get('rightSide') || 'pattern'
+      return p.get('rightSide') || 'none'
     }
-    return 'pattern'
+    return 'none'
   })
   const [simulating,       setSimulating]       = useState(false)
   const [selectedSubId,    setSelectedSubId]    = useState(null)
