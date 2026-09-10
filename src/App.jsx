@@ -3329,36 +3329,36 @@ function PlaceholderScreen({ label, color, dot, icon, short }) {
   )
 }
 
-// ─── iPhone Shell ─────────────────────────────────────────────────────────────
+// ─── iPhone Shell (393px × 800px inner — standard iPhone 14 Pro / 15 / 16 viewport) ──
 function IPhoneShell({ children }) {
   return (
-    <div className="relative shrink-0" style={{ width: 300, height: 640 }}>
+    <div className="relative shrink-0" style={{ width: 413, height: 820 }}>
       {/* Volume buttons */}
-      <div className="absolute rounded-l-sm" style={{ left: -5, top: 90,  width: 4, height: 28, background: '#555' }} />
-      <div className="absolute rounded-l-sm" style={{ left: -5, top: 128, width: 4, height: 28, background: '#555' }} />
-      <div className="absolute rounded-l-sm" style={{ left: -5, top: 166, width: 4, height: 28, background: '#555' }} />
+      <div className="absolute rounded-l-sm" style={{ left: -5, top: 110, width: 4, height: 36, background: '#555' }} />
+      <div className="absolute rounded-l-sm" style={{ left: -5, top: 158, width: 4, height: 36, background: '#555' }} />
+      <div className="absolute rounded-l-sm" style={{ left: -5, top: 206, width: 4, height: 36, background: '#555' }} />
       {/* Power button */}
-      <div className="absolute rounded-r-sm" style={{ right: -5, top: 120, width: 4, height: 52, background: '#555' }} />
+      <div className="absolute rounded-r-sm" style={{ right: -5, top: 150, width: 4, height: 60, background: '#555' }} />
 
       {/* Frame */}
       <div
-        className="rounded-[44px] overflow-hidden"
+        className="rounded-[48px] overflow-hidden"
         style={{
-          width: 300,
-          height: 640,
+          width: 413,
+          height: 820,
           padding: 10,
           background: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 100%)',
           boxShadow: '0 0 0 1px #444, inset 0 0 0 1px #333, 0 40px 80px rgba(0,0,0,0.4)',
         }}
       >
         <div
-          className="rounded-[36px] overflow-hidden bg-white relative flex flex-col"
-          style={{ width: 280, height: 620 }}
+          className="rounded-[40px] overflow-hidden bg-white relative flex flex-col"
+          style={{ width: 393, height: 800 }}
         >
           {/* Dynamic Island — overlays the status bar center */}
           <div
             className="absolute z-20"
-            style={{ top: 10, left: '50%', transform: 'translateX(-50%)', width: 96, height: 26, background: '#000', borderRadius: 20 }}
+            style={{ top: 11, left: '50%', transform: 'translateX(-50%)', width: 116, height: 30, background: '#000', borderRadius: 20 }}
           />
 
           {/* Status bar sits at the very top, same row as Dynamic Island */}
@@ -3670,7 +3670,7 @@ export default function App() {
       </div>
 
       {/* Main card */}
-      <div className="flex rounded-3xl overflow-hidden shadow-2xl my-auto" style={{ background: '#fff', height: 760 }}>
+      <div className="flex rounded-3xl overflow-hidden shadow-2xl my-auto" style={{ background: '#fff', minHeight: 920 }}>
 
         {/* ── Left sidebar ── */}
         <div
@@ -3754,10 +3754,10 @@ export default function App() {
           </div>
 
           {/* Phone + Simulate side by side */}
-          <div className="flex items-center gap-6 shrink-0" style={{ height: 640 }}>
+          <div className="flex items-center gap-6 shrink-0" style={{ height: 820 }}>
 
             {/* Phone */}
-            <div className="shrink-0" style={{ width: 300, height: 640 }}>
+            <div className="shrink-0" style={{ width: 413, height: 820 }}>
               <IPhoneShell>
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
@@ -3804,7 +3804,7 @@ export default function App() {
 
             {/* Simulate panel — available for activeService */}
             {activeService && (
-              <div className="flex flex-col items-center justify-start py-0.5 gap-1.5 shrink-0 overflow-y-auto no-scrollbar" style={{ width: 140, height: 640 }}>
+              <div className="flex flex-col items-center justify-start py-0.5 gap-1.5 shrink-0 overflow-y-auto no-scrollbar" style={{ width: 144, height: 820 }}>
 
                 {/* Multi-Service section — visible for 2-service and 5-service */}
                 {isMultiService && (
