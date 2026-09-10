@@ -1088,7 +1088,7 @@ function ProcessSegmentsView({
 
   return (
     <div className="flex flex-col flex-1 min-w-0 justify-center">
-      {/* Top row: Label + optional overlap service icons + active pill badge */}
+      {/* Top row: Label + arrow beside process + optional overlap service icons */}
       <div
         onClick={(e) => {
           e.stopPropagation()
@@ -1106,8 +1106,21 @@ function ProcessSegmentsView({
           >
             {step.label}
           </span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+              isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+            }`}
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
           {isCurrent && overlap && serviceIcons.length > 0 && (
-            <div className="flex items-center -space-x-1.5 shrink-0">
+            <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
               {serviceIcons.map((icon, idx) => (
                 <div
                   key={idx}
@@ -1120,32 +1133,6 @@ function ProcessSegmentsView({
             </div>
           )}
         </div>
-
-        <span
-          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold transition-all shrink-0 shadow-2xs"
-          style={{
-            background: isCurrent ? '#E0F2FE' : '#F1F5F9',
-            color: isCurrent ? '#0284C7' : '#64748B',
-            border: `1px solid ${isCurrent ? '#BAE6FD' : '#E2E8F0'}`,
-          }}
-        >
-          <span>
-            {isCurrent && activeSubStepIndex >= 0 && currentSub
-              ? `${currentSub.label} (${activeSubStepIndex + 1}/${step.subSteps.length})`
-              : `${step.subSteps.length} steps`}
-          </span>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={`w-2.5 h-2.5 transition-transform duration-200 ${isProcessExpanded ? 'rotate-180' : ''}`}
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </span>
       </div>
 
       {/* 4-Segment Progress Bar */}
@@ -1245,7 +1232,7 @@ function ProcessPillsView({
 
   return (
     <div className="flex flex-col flex-1 min-w-0 justify-center">
-      {/* Top row: Title + count badge */}
+      {/* Top row: Label + arrow beside process + optional overlap service icons */}
       <div
         onClick={(e) => {
           e.stopPropagation()
@@ -1263,8 +1250,21 @@ function ProcessPillsView({
           >
             {step.label}
           </span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+              isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+            }`}
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
           {isCurrent && overlap && serviceIcons.length > 0 && (
-            <div className="flex items-center -space-x-1.5 shrink-0">
+            <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
               {serviceIcons.map((icon, idx) => (
                 <div
                   key={idx}
@@ -1277,32 +1277,6 @@ function ProcessPillsView({
             </div>
           )}
         </div>
-
-        <span
-          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold transition-all shrink-0 shadow-2xs"
-          style={{
-            background: isCurrent ? '#E0F2FE' : '#F1F5F9',
-            color: isCurrent ? '#0284C7' : '#64748B',
-            border: `1px solid ${isCurrent ? '#BAE6FD' : '#E2E8F0'}`,
-          }}
-        >
-          <span>
-            {isCurrent && activeSubStepIndex >= 0
-              ? `${activeSubStepIndex + 1}/${step.subSteps.length}`
-              : `${step.subSteps.length} steps`}
-          </span>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={`w-2.5 h-2.5 transition-transform duration-200 ${isProcessExpanded ? 'rotate-180' : ''}`}
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </span>
       </div>
 
       {/* Horizontal Simple Text Row (No heavy pill backgrounds) */}
@@ -1522,8 +1496,8 @@ function StatusList({
                     />
                   </div>
 
-                  {/* Label + toggle badge */}
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                  {/* Label + arrow beside process */}
+                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
                     <span
                       className="text-[13px] transition-colors duration-200 truncate"
                       style={{
@@ -1533,31 +1507,19 @@ function StatusList({
                     >
                       {step.label}
                     </span>
-                    <span
-                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-semibold transition-all select-none shrink-0 shadow-2xs"
-                      style={{
-                        background: isCurrent ? '#E0F2FE' : '#F1F5F9',
-                        color: isCurrent ? '#0284C7' : '#64748B',
-                        border: `1px solid ${isCurrent ? '#BAE6FD' : '#E2E8F0'}`,
-                      }}
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                        isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+                      }`}
                     >
-                      <span>
-                        {isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]
-                          ? `${step.subSteps[activeSubStepIndex].label} (${activeSubStepIndex + 1}/${step.subSteps.length})`
-                          : `${step.subSteps.length} steps`}
-                      </span>
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className={`w-2.5 h-2.5 transition-transform duration-200 ${isProcessExpanded ? 'rotate-180' : ''}`}
-                      >
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </span>
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
                   </div>
                 </div>
 
@@ -1806,31 +1768,19 @@ function StatusStepper({
                       >
                         {step.label}
                       </span>
-                      <span
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-semibold transition-all select-none shrink-0 shadow-2xs"
-                        style={{
-                          background: isCurrent ? '#E0F2FE' : '#F1F5F9',
-                          color: isCurrent ? '#0284C7' : '#64748B',
-                          border: `1px solid ${isCurrent ? '#BAE6FD' : '#E2E8F0'}`,
-                        }}
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                          isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+                        }`}
                       >
-                        <span>
-                          {isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]
-                            ? `${step.subSteps[activeSubStepIndex].label} (${activeSubStepIndex + 1}/${step.subSteps.length})`
-                            : `${step.subSteps.length} steps`}
-                        </span>
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className={`w-2.5 h-2.5 transition-transform duration-200 ${isProcessExpanded ? 'rotate-180' : ''}`}
-                        >
-                          <path d="M6 9l6 6 6-6" />
-                        </svg>
-                      </span>
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
                     </div>
 
                     {/* Service from /service/ folder ONLY on active step */}
