@@ -8,7 +8,6 @@ const tabs = [
   { id: 'press-only',   label: 'Press Only',    short: 'Press',   icon: '/service/press only.png',      color: '#FEF9C3', dot: '#EAB308' },
   { id: 'bags-shoes',   label: 'Bags & Shoes',  short: 'Bags',    icon: '/service/bags and shoes.png',  color: '#FCE7F3', dot: '#EC4899' },
   { id: 'premium-care', label: 'Premium Care',  short: 'Premium', icon: '/service/premium care.png',    color: '#EDE9FE', dot: '#8B5CF6' },
-  { id: '2-service',    label: '2 Service',     short: '×2',      icon: null,                           color: '#FEF3C7', dot: '#F59E0B' },
   { id: '5-service',    label: '5 Service',     short: '×5',      icon: null,                           color: '#CCFBF1', dot: '#14B8A6' },
 ]
 
@@ -2827,9 +2826,9 @@ export default function App() {
   const [activeTab,        setActiveTab]        = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search)
-      return p.get('tab') || '2-service'
+      return p.get('tab') || '5-service'
     }
-    return '2-service'
+    return '5-service'
   })
   const [serviceSteps,     setServiceSteps]     = useState(() => {
     const urlStep = (() => {
