@@ -3498,10 +3498,28 @@ export default function App() {
     return 'none'
   })
   const [simulating,       setSimulating]       = useState(false)
+  const [showControls,     setShowControls]     = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search)
+      return p.get('controls') === 'true'
+    }
+    return false
+  })
   const [selectedSubId,    setSelectedSubId]    = useState(null)
   const intervalRef = useRef(null)
   const active = tabs.find(t => t.id === activeTab)
   const activeService = servicesData[activeTab]
+
+  // Keyboard shortcut 'c' to toggle developer controls
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.key === 'c' || e.key === 'C') && !['INPUT', 'TEXTAREA'].includes(e.target?.tagName)) {
+        setShowControls(prev => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // Multi-service sub-service tracking
   const isMultiService = Boolean(activeService?.subServiceIds && activeService.subServiceIds.length > 1)
@@ -3771,8 +3789,11 @@ export default function App() {
 
         {/* ── Right: phone + simulate ── */}
         <div
-          className="flex-1 flex flex-col items-center justify-center px-8 py-5 gap-4 h-full"
-          style={{ background: `linear-gradient(135deg, ${active.color}80 0%, #fff 60%)` }}
+          className="flex-1 flex flex-col items-center justify-center px-8 py-5 gap-4 h-full transition-all duration-300"
+          style={{
+            background: `linear-gradient(135deg, ${active.color}80 0%, #fff 60%)`,
+            minWidth: showControls ? 'auto' : 540,
+          }}
         >
           {/* Label above phone */}
           <div className="flex items-center gap-2">
@@ -3789,7 +3810,7 @@ export default function App() {
           </div>
 
           {/* Phone + Simulate side by side */}
-          <div className="flex items-center gap-6 shrink-0" style={{ height: 820 }}>
+          <div className="flex items-center justify-center gap-6 shrink-0" style={{ height: 820 }}>
 
             {/* Phone */}
             <div className="shrink-0" style={{ width: 413, height: 820 }}>
@@ -3837,8 +3858,8 @@ export default function App() {
               </IPhoneShell>
             </div>
 
-            {/* Simulate panel — available for activeService */}
-            {activeService && (
+            {/* Simulate panel — available for activeService when showControls is true */}
+            {activeService && showControls && (
               <div className="flex flex-col items-center justify-start py-0.5 gap-1.5 shrink-0 overflow-y-auto no-scrollbar" style={{ width: 144, height: 820 }}>
 
                 {/* Multi-Service section — visible for 2-service and 5-service */}
