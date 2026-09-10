@@ -1114,53 +1114,14 @@ function ProcessSubStepsDrawer({
   startIndex = 2,
   endIndex = 5,
   onSelectRawStep,
-  serviceIcons = [],
-  serviceName = '',
-  badgeBorder = '#E2E8F0',
-  subServices = [],
-  serviceSteps,
-  isMultiService = false,
-  isTabsMode = false,
 }) {
   const activeSubStepIndex = rawActiveStep - startIndex
 
   return (
     <div className="ml-9 mr-1 my-1.5 pl-3.5 select-none border-l-1.5 border-slate-200/80 space-y-1.5">
       {subSteps.map((sub, sIdx) => {
-        const rawStep = startIndex + sIdx
         const isSubDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
         const isSubCurrent = rawActiveStep >= startIndex && rawActiveStep <= endIndex && activeSubStepIndex === sIdx
-
-        // Determine which service icon(s) belong beside this sub-step
-        let servicesAtStep = []
-        if (isMultiService && !isTabsMode && subServices && subServices.length > 0 && serviceSteps && typeof serviceSteps === 'object') {
-          subServices.forEach(subSrv => {
-            const srvStep = typeof serviceSteps[subSrv.id] === 'number' ? serviceSteps[subSrv.id] : rawActiveStep
-            if (srvStep === rawStep) {
-              const icon = subSrv.serviceIcons?.[0] || subSrv.icon || (servicesData[subSrv.id]?.serviceIcons?.[0])
-              if (icon) {
-                servicesAtStep.push({
-                  id: subSrv.id,
-                  name: subSrv.serviceName || subSrv.name,
-                  icon,
-                  border: subSrv.badgeBorder || badgeBorder,
-                })
-              }
-            }
-          })
-        } else {
-          // Single service or active tab view
-          if (isSubCurrent && serviceIcons && serviceIcons.length > 0) {
-            serviceIcons.forEach((icon, idx) => {
-              servicesAtStep.push({
-                id: idx,
-                name: serviceName,
-                icon,
-                border: badgeBorder,
-              })
-            })
-          }
-        }
 
         return (
           <div
@@ -1211,26 +1172,6 @@ function ProcessSubStepsDrawer({
               >
                 {sub.label}
               </span>
-
-              {/* Service icon beside each step */}
-              {servicesAtStep.length > 0 && (
-                <div className="flex items-center -space-x-1.5 shrink-0 ml-1">
-                  {servicesAtStep.map((srv, srvIdx) => (
-                    <div
-                      key={srvIdx}
-                      className="w-5 h-5 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
-                      style={{ border: `1px solid ${srv.border || badgeBorder || '#E2E8F0'}` }}
-                      title={srv.name}
-                    >
-                      <img
-                        src={srv.icon}
-                        alt=""
-                        className="w-full h-full object-contain rounded-full"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         )
@@ -2088,13 +2029,6 @@ function StatusList({
                           startIndex={step.startIndex}
                           endIndex={step.endIndex}
                           onSelectRawStep={onSelectRawStep}
-                          serviceIcons={serviceIcons}
-                          serviceName={serviceName}
-                          badgeBorder={badgeBorder}
-                          subServices={subServices}
-                          serviceSteps={serviceSteps}
-                          isMultiService={isMultiService}
-                          isTabsMode={isTabsMode}
                         />
                       )}
                     </motion.div>
@@ -2498,13 +2432,6 @@ function StatusStepper({
                           startIndex={step.startIndex}
                           endIndex={step.endIndex}
                           onSelectRawStep={onSelectRawStep}
-                          serviceIcons={serviceIcons}
-                          serviceName={serviceName}
-                          badgeBorder={badgeBorder}
-                          subServices={subServices}
-                          serviceSteps={serviceSteps}
-                          isMultiService={isMultiService}
-                          isTabsMode={isTabsMode}
                         />
                       )}
                     </motion.div>
