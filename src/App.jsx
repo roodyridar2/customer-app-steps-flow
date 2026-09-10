@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, Fragment } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, Fragment } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ─── Tabs ────────────────────────────────────────────────────────────────────
@@ -1070,252 +1070,100 @@ function ProcessSubStepsDrawer({
   )
 }
 
-// ─── Process Design 2: Segments (Minimal 4-segment progress bar with micro-legend) ─
-function ProcessSegmentsView({
-  step,
-  safeRawActive,
-  isProcessExpanded,
-  onToggleProcessExpanded,
+// ─── Process Design 2: Segments Drawer (Micro-legend with checkmarks) ─────────
+function ProcessSegmentsDrawer({
+  subSteps = [],
+  rawActiveStep = 0,
+  startIndex = 2,
+  endIndex = 5,
   onSelectRawStep,
-  isCurrent,
-  isComplete,
-  serviceIcons = [],
-  overlap = false,
-  badgeBorder = '#E2E8F0',
 }) {
-  const activeSubStepIndex = safeRawActive - step.startIndex
-  const currentSub = step.subSteps[Math.max(0, Math.min(activeSubStepIndex, step.subSteps.length - 1))]
+  const activeSubStepIndex = rawActiveStep - startIndex
 
   return (
-    <div className="flex flex-col flex-1 min-w-0 justify-center">
-      {/* Top row: Label + arrow beside process + optional overlap service icons */}
-      <div
-        onClick={(e) => {
-          e.stopPropagation()
-          onToggleProcessExpanded?.()
-        }}
-        className="flex items-center justify-between gap-1.5 cursor-pointer select-none"
-      >
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span
-            className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
-            style={{
-              color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-              fontWeight: isCurrent ? 700 : 400,
-            }}
-          >
-            {step.label}
-          </span>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
-              isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
-            }`}
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-          {isCurrent && overlap && serviceIcons.length > 0 && (
-            <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
-              {serviceIcons.map((icon, idx) => (
-                <div
-                  key={idx}
-                  className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
-                  style={{ border: `1px solid ${badgeBorder}` }}
-                >
-                  <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 4-Segment Progress Bar */}
-      <div className="flex items-center gap-1 w-full max-w-[200px] mt-1.5">
-        {step.subSteps.map((sub, sIdx) => {
-          const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
-          const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
+    <div className="ml-8 mr-1 mb-1.5 pl-3.5 select-none">
+      <div className="pt-1.5 pb-1 flex items-center justify-between w-full max-w-[200px]">
+        {subSteps.map((sub, sIdx) => {
+          const isDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
+          const isActive = rawActiveStep >= startIndex && rawActiveStep <= endIndex && activeSubStepIndex === sIdx
 
           return (
             <button
               key={sub.label}
               onClick={(e) => {
                 e.stopPropagation()
-                onSelectRawStep?.(step.startIndex + sIdx)
+                onSelectRawStep?.(startIndex + sIdx)
               }}
-              title={`${sub.label} (${isDone ? 'Completed' : isActive ? 'Active' : 'Queued'})`}
-              className="h-1.5 flex-1 rounded-full relative overflow-hidden transition-all cursor-pointer hover:opacity-80"
-              style={{
-                background: isDone ? '#0EA5E9' : isActive ? '#38BDF8' : '#E2E8F0',
-              }}
+              className={`flex flex-col items-center gap-0.5 cursor-pointer transition-transform hover:scale-105 select-none ${
+                isActive ? 'text-sky-600 font-bold' : isDone ? 'text-slate-700 font-medium' : 'text-slate-400'
+              }`}
             >
-              {isActive && (
-                <motion.div
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ repeat: Infinity, duration: 1.4 }}
-                  className="absolute inset-0 bg-sky-400"
-                />
-              )}
+              <span className="text-[9.5px] leading-tight">{sub.label}</span>
+              <span className="text-[8px] font-mono leading-none">
+                {isDone ? '✓' : isActive ? '●' : '○'}
+              </span>
             </button>
           )
         })}
       </div>
-
-      {/* Expanded sub-steps mini-legend */}
-      <AnimatePresence>
-        {isProcessExpanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="pt-2 flex items-center justify-between w-full max-w-[200px]">
-              {step.subSteps.map((sub, sIdx) => {
-                const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
-                const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
-
-                return (
-                  <button
-                    key={sub.label}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onSelectRawStep?.(step.startIndex + sIdx)
-                    }}
-                    className={`flex flex-col items-center gap-0.5 cursor-pointer transition-transform hover:scale-105 select-none ${
-                      isActive ? 'text-sky-600 font-bold' : isDone ? 'text-slate-700 font-medium' : 'text-slate-400'
-                    }`}
-                  >
-                    <span className="text-[9.5px] leading-tight">{sub.label}</span>
-                    <span className="text-[8px] font-mono leading-none">
-                      {isDone ? '✓' : isActive ? '●' : '○'}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }
 
-// ─── Process Design 3: Pills (Clean Minimal Text Steps with 1-Tap Switching) ─────
-function ProcessPillsView({
-  step,
-  safeRawActive,
-  isProcessExpanded,
-  onToggleProcessExpanded,
+// ─── Process Design 3: Pills Drawer (Clean Minimal Text Steps with 1-Tap Switching) ─
+function ProcessPillsDrawer({
+  subSteps = [],
+  rawActiveStep = 0,
+  startIndex = 2,
+  endIndex = 5,
   onSelectRawStep,
-  isCurrent,
-  isComplete,
-  serviceIcons = [],
-  overlap = false,
-  badgeBorder = '#E2E8F0',
 }) {
-  const activeSubStepIndex = safeRawActive - step.startIndex
+  const activeSubStepIndex = rawActiveStep - startIndex
 
   return (
-    <div className="flex flex-col flex-1 min-w-0 justify-center">
-      {/* Top row: Label + arrow beside process + optional overlap service icons */}
-      <div
-        onClick={(e) => {
-          e.stopPropagation()
-          onToggleProcessExpanded?.()
-        }}
-        className="flex items-center justify-between gap-1.5 cursor-pointer select-none"
-      >
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span
-            className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
-            style={{
-              color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-              fontWeight: isCurrent ? 700 : 400,
-            }}
-          >
-            {step.label}
-          </span>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
-              isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
-            }`}
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-          {isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
-            <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
-              {serviceIcons.map((icon, idx) => (
-                <div
-                  key={idx}
-                  className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
-                  style={{ border: `1px solid ${badgeBorder}` }}
-                >
-                  <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+    <div className="ml-8 mr-1 mb-1 pl-3.5 py-0.5 flex items-center gap-1.5 select-none overflow-x-auto no-scrollbar">
+      {subSteps.map((sub, sIdx) => {
+        const isDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
+        const isActive = rawActiveStep >= startIndex && rawActiveStep <= endIndex && activeSubStepIndex === sIdx
 
-      {/* Horizontal Simple Text Row (No heavy pill backgrounds) */}
-      <div className="flex items-center gap-1.5 mt-0.5 select-none overflow-x-auto no-scrollbar py-0.5">
-        {step.subSteps.map((sub, sIdx) => {
-          const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
-          const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
-
-          return (
-            <Fragment key={sub.label}>
-              {sIdx > 0 && (
-                <span className="text-[9px] text-slate-300 font-normal select-none shrink-0">
-                  ·
-                </span>
-              )}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onSelectRawStep?.(step.startIndex + sIdx)
-                }}
-                className="relative py-0.5 cursor-pointer select-none transition-all group shrink-0 active:scale-95"
+        return (
+          <Fragment key={sub.label}>
+            {sIdx > 0 && (
+              <span className="text-[9px] text-slate-300 font-normal select-none shrink-0">
+                ·
+              </span>
+            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onSelectRawStep?.(startIndex + sIdx)
+              }}
+              className="relative py-0.5 cursor-pointer select-none transition-all group shrink-0 active:scale-95"
+            >
+              <span
+                className={`text-[10.5px] tracking-tight transition-colors ${
+                  isActive
+                    ? 'text-sky-600 font-bold'
+                    : isDone
+                    ? 'text-slate-600 font-medium group-hover:text-slate-900'
+                    : 'text-slate-400 font-normal group-hover:text-slate-500'
+                }`}
               >
-                <span
-                  className={`text-[10.5px] tracking-tight transition-colors ${
-                    isActive
-                      ? 'text-sky-600 font-bold'
-                      : isDone
-                      ? 'text-slate-600 font-medium group-hover:text-slate-900'
-                      : 'text-slate-400 font-normal group-hover:text-slate-500'
-                  }`}
-                >
-                  {isDone ? '✓ ' : ''}{sub.label}
-                </span>
+                {isDone ? '✓ ' : ''}{sub.label}
+              </span>
 
-                {/* Subtle active underline indicator */}
-                {isActive && (
-                  <motion.div
-                    layoutId="process-text-underline"
-                    className="absolute -bottom-0.5 left-0 right-0 h-[1.5px] bg-sky-500 rounded-full"
-                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                  />
-                )}
-              </button>
-            </Fragment>
-          )
-        })}
-      </div>
+              {/* Subtle active underline indicator */}
+              {isActive && (
+                <motion.div
+                  layoutId="process-text-underline"
+                  className="absolute -bottom-0.5 left-0 right-0 h-[1.5px] bg-sky-500 rounded-full"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              )}
+            </button>
+          </Fragment>
+        )
+      })}
     </div>
   )
 }
@@ -1334,35 +1182,60 @@ function StatusList({
   badgeBorder = '#E2E8F0',
 }) {
   const ROW_H = 38
+  const containerRef = useRef(null)
+  const rowRefs = useRef([])
+  const [stepTops, setStepTops] = useState(null)
+
   const processGroup = steps.find(s => s.isProcessGroup)
   const processGroupIndex = steps.findIndex(s => s.isProcessGroup)
   const isCompact = processGroupIndex !== -1
   const subCount = processGroup?.subSteps?.length || 4
 
-  const effectiveDrawerHeight = useMemo(() => {
-    if (processDesign === 'segments') return 28
-    if (processDesign === 'pills') return 0
-    return subCount * 28 + 4
-  }, [processDesign, subCount])
-
-  const stepTops = useMemo(() => {
+  const initialStepTops = useMemo(() => {
     if (!isCompact || !isProcessExpanded || processGroupIndex === -1) {
-      return null
+      return steps.map((_, i) => i * ROW_H)
     }
+    const estimatedExtra = processDesign === 'segments' ? 28 : processDesign === 'pills' ? 24 : (subCount * 28 + 4)
     return steps.map((_, i) => {
       if (i <= processGroupIndex) {
         return i * ROW_H
       }
-      return i * ROW_H + effectiveDrawerHeight
+      return i * ROW_H + estimatedExtra
     })
-  }, [isCompact, isProcessExpanded, processGroupIndex, effectiveDrawerHeight, steps.length, ROW_H])
+  }, [isCompact, isProcessExpanded, processGroupIndex, processDesign, subCount, steps.length, ROW_H])
+
+  useLayoutEffect(() => {
+    rowRefs.current = rowRefs.current.slice(0, steps.length)
+    const measure = () => {
+      if (!containerRef.current) return
+      const tops = rowRefs.current.map(el => (el ? el.offsetTop : 0))
+      if (tops.length === steps.length) {
+        setStepTops(tops)
+      }
+    }
+
+    measure()
+
+    const ro = new ResizeObserver(() => {
+      measure()
+    })
+
+    if (containerRef.current) {
+      ro.observe(containerRef.current)
+    }
+    rowRefs.current.forEach(el => {
+      if (el) ro.observe(el)
+    })
+
+    return () => ro.disconnect()
+  }, [steps, activeStep, isProcessExpanded, processDesign, serviceIcons, lineStyle])
 
   const safeRawActive = rawActiveStep ?? activeStep
 
   return (
     <div className="flex gap-2">
-      <div className="flex-1 relative">
-        <TimelineLine activeStep={activeStep} totalSteps={steps.length} rowHeight={ROW_H} lineStyle={lineStyle} stepTops={stepTops} />
+      <div ref={containerRef} className="flex-1 relative">
+        <TimelineLine activeStep={activeStep} totalSteps={steps.length} rowHeight={ROW_H} lineStyle={lineStyle} stepTops={stepTops || initialStepTops} />
 
         {/* Step rows */}
         {steps.map((step, i) => {
@@ -1372,80 +1245,16 @@ function StatusList({
           if (step.isProcessGroup) {
             const activeSubStepIndex = safeRawActive - step.startIndex
 
-            if (processDesign === 'segments') {
-              return (
-                <div key={step.label} className="relative flex flex-col justify-start">
-                  <div className="relative flex items-center gap-3" style={{ minHeight: ROW_H }}>
-                    <div className="shrink-0 z-10" style={{ width: 20 }} />
-                    <div className="shrink-0 flex items-center justify-center" style={{ width: 26, height: 26 }}>
-                      <img
-                        src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
-                        alt={step.label}
-                        className="w-[22px] h-[22px] object-contain transition-opacity duration-200"
-                        style={{
-                          opacity: isCurrent || isComplete ? 1 : 0.3,
-                          filter: isCurrent
-                            ? 'brightness(0) saturate(100%) invert(9%) sepia(39%) saturate(1800%) hue-rotate(205deg) brightness(95%) contrast(110%)'
-                            : 'none',
-                        }}
-                      />
-                    </div>
-                    <ProcessSegmentsView
-                      step={step}
-                      safeRawActive={safeRawActive}
-                      isProcessExpanded={isProcessExpanded}
-                      onToggleProcessExpanded={onToggleProcessExpanded}
-                      onSelectRawStep={onSelectRawStep}
-                      isCurrent={isCurrent}
-                      isComplete={isComplete}
-                      serviceIcons={serviceIcons}
-                      badgeBorder={badgeBorder}
-                    />
-                  </div>
-                </div>
-              )
-            }
-
-            if (processDesign === 'pills') {
-              return (
-                <div key={step.label} className="relative flex flex-col justify-start">
-                  <div className="relative flex items-center gap-3" style={{ minHeight: ROW_H }}>
-                    <div className="shrink-0 z-10" style={{ width: 20 }} />
-                    <div className="shrink-0 flex items-center justify-center" style={{ width: 26, height: 26 }}>
-                      <img
-                        src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
-                        alt={step.label}
-                        className="w-[22px] h-[22px] object-contain transition-opacity duration-200"
-                        style={{
-                          opacity: isCurrent || isComplete ? 1 : 0.3,
-                          filter: isCurrent
-                            ? 'brightness(0) saturate(100%) invert(9%) sepia(39%) saturate(1800%) hue-rotate(205deg) brightness(95%) contrast(110%)'
-                            : 'none',
-                        }}
-                      />
-                    </div>
-                    <ProcessPillsView
-                      step={step}
-                      safeRawActive={safeRawActive}
-                      isProcessExpanded={isProcessExpanded}
-                      onToggleProcessExpanded={onToggleProcessExpanded}
-                      onSelectRawStep={onSelectRawStep}
-                      isCurrent={isCurrent}
-                      isComplete={isComplete}
-                      serviceIcons={serviceIcons}
-                      badgeBorder={badgeBorder}
-                    />
-                  </div>
-                </div>
-              )
-            }
-
-            // Default compact design: Drawer
             return (
-              <div key={step.label} className="relative flex flex-col justify-start">
+              <div
+                key={step.label}
+                ref={el => (rowRefs.current[i] = el)}
+                className="relative flex flex-col justify-start"
+              >
+                {/* Step Header Row - ALWAYS height ROW_H */}
                 <div
                   onClick={() => onToggleProcessExpanded && onToggleProcessExpanded()}
-                  className="relative flex items-center gap-3 cursor-pointer group"
+                  className="relative flex items-center gap-3 cursor-pointer group select-none"
                   style={{ height: ROW_H }}
                   title={isProcessExpanded ? 'Click to collapse process' : 'Click to expand process'}
                 >
@@ -1466,34 +1275,132 @@ function StatusList({
                     />
                   </div>
 
-                  {/* Label + arrow beside process */}
-                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                    <span
-                      className="text-[13px] transition-colors duration-200 truncate"
-                      style={{
-                        color:      isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                        fontWeight: isCurrent ? 700 : 400,
-                      }}
-                    >
-                      {step.label}
-                    </span>
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
-                        isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
-                      }`}
-                    >
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
-                  </div>
+                  {/* Header content based on processDesign */}
+                  {processDesign === 'segments' ? (
+                    <div className="flex flex-col flex-1 min-w-0 justify-center">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span
+                          className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                          style={{
+                            color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+                            fontWeight: isCurrent ? 700 : 400,
+                          }}
+                        >
+                          {step.label}
+                        </span>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                            isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+                          }`}
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </div>
+                      {/* 4-Segment Progress Bar */}
+                      <div className="flex items-center gap-1 w-full max-w-[190px] mt-1">
+                        {step.subSteps.map((sub, sIdx) => {
+                          const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
+                          const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
+                          return (
+                            <div
+                              key={sub.label}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onSelectRawStep?.(step.startIndex + sIdx)
+                              }}
+                              title={`${sub.label} (${isDone ? 'Completed' : isActive ? 'Active' : 'Queued'})`}
+                              className="h-1.5 flex-1 rounded-full relative overflow-hidden transition-all cursor-pointer hover:opacity-80"
+                              style={{
+                                background: isDone ? '#0EA5E9' : isActive ? '#38BDF8' : '#E2E8F0',
+                              }}
+                            >
+                              {isActive && (
+                                <motion.div
+                                  animate={{ opacity: [0.5, 1, 0.5] }}
+                                  transition={{ repeat: Infinity, duration: 1.4 }}
+                                  className="absolute inset-0 bg-sky-400"
+                                />
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ) : processDesign === 'pills' ? (
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <span
+                        className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                        style={{
+                          color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+                          fontWeight: isCurrent ? 700 : 400,
+                        }}
+                      >
+                        {step.label}
+                      </span>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                          isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+                        }`}
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                      {/* Hide service when collapsed, show when expanded (Request 9) */}
+                      {isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
+                        <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                          {serviceIcons.map((icon, idx) => (
+                            <div
+                              key={idx}
+                              className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                              style={{ border: `1px solid ${badgeBorder}` }}
+                            >
+                              <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* Drawer design header */
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <span
+                        className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                        style={{
+                          color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+                          fontWeight: isCurrent ? 700 : 400,
+                        }}
+                      >
+                        {step.label}
+                      </span>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                          isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+                        }`}
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </div>
+                  )}
                 </div>
 
-                {/* Sub-steps drawer */}
+                {/* Sub-steps expandable drawer below header */}
                 <AnimatePresence>
                   {isProcessExpanded && (
                     <motion.div
@@ -1503,13 +1410,31 @@ function StatusList({
                       transition={{ duration: 0.22 }}
                       className="overflow-hidden"
                     >
-                      <ProcessSubStepsDrawer
-                        subSteps={step.subSteps}
-                        rawActiveStep={safeRawActive}
-                        startIndex={step.startIndex}
-                        endIndex={step.endIndex}
-                        onSelectRawStep={onSelectRawStep}
-                      />
+                      {processDesign === 'segments' ? (
+                        <ProcessSegmentsDrawer
+                          subSteps={step.subSteps}
+                          rawActiveStep={safeRawActive}
+                          startIndex={step.startIndex}
+                          endIndex={step.endIndex}
+                          onSelectRawStep={onSelectRawStep}
+                        />
+                      ) : processDesign === 'pills' ? (
+                        <ProcessPillsDrawer
+                          subSteps={step.subSteps}
+                          rawActiveStep={safeRawActive}
+                          startIndex={step.startIndex}
+                          endIndex={step.endIndex}
+                          onSelectRawStep={onSelectRawStep}
+                        />
+                      ) : (
+                        <ProcessSubStepsDrawer
+                          subSteps={step.subSteps}
+                          rawActiveStep={safeRawActive}
+                          startIndex={step.startIndex}
+                          endIndex={step.endIndex}
+                          onSelectRawStep={onSelectRawStep}
+                        />
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -1520,6 +1445,7 @@ function StatusList({
           return (
             <div
               key={step.label}
+              ref={el => (rowRefs.current[i] = el)}
               className="relative flex items-center gap-3"
               style={{ height: ROW_H }}
             >
@@ -1592,35 +1518,60 @@ function StatusStepper({
   onSelectRawStep,
 }) {
   const ROW_H = 44
+  const containerRef = useRef(null)
+  const rowRefs = useRef([])
+  const [stepTops, setStepTops] = useState(null)
+
   const processGroup = steps.find(s => s.isProcessGroup)
   const processGroupIndex = steps.findIndex(s => s.isProcessGroup)
   const isCompact = processGroupIndex !== -1
   const subCount = processGroup?.subSteps?.length || 4
 
-  const effectiveDrawerHeight = useMemo(() => {
-    if (processDesign === 'segments') return 28
-    if (processDesign === 'pills') return 0
-    return subCount * 28 + 4
-  }, [processDesign, subCount])
-
-  const stepTops = useMemo(() => {
+  const initialStepTops = useMemo(() => {
     if (!isCompact || !isProcessExpanded || processGroupIndex === -1) {
-      return null
+      return steps.map((_, i) => i * ROW_H)
     }
+    const estimatedExtra = processDesign === 'segments' ? 28 : processDesign === 'pills' ? 24 : (subCount * 28 + 4)
     return steps.map((_, i) => {
       if (i <= processGroupIndex) {
         return i * ROW_H
       }
-      return i * ROW_H + effectiveDrawerHeight
+      return i * ROW_H + estimatedExtra
     })
-  }, [isCompact, isProcessExpanded, processGroupIndex, effectiveDrawerHeight, steps.length, ROW_H])
+  }, [isCompact, isProcessExpanded, processGroupIndex, processDesign, subCount, steps.length, ROW_H])
+
+  useLayoutEffect(() => {
+    rowRefs.current = rowRefs.current.slice(0, steps.length)
+    const measure = () => {
+      if (!containerRef.current) return
+      const tops = rowRefs.current.map(el => (el ? el.offsetTop : 0))
+      if (tops.length === steps.length) {
+        setStepTops(tops)
+      }
+    }
+
+    measure()
+
+    const ro = new ResizeObserver(() => {
+      measure()
+    })
+
+    if (containerRef.current) {
+      ro.observe(containerRef.current)
+    }
+    rowRefs.current.forEach(el => {
+      if (el) ro.observe(el)
+    })
+
+    return () => ro.disconnect()
+  }, [steps, activeStep, isProcessExpanded, processDesign, serviceIcons, overlap, lineStyle])
 
   const safeRawActive = rawActiveStep ?? activeStep
 
   return (
     <div className="flex gap-2">
-      <div className="flex-1 relative">
-        <TimelineLine activeStep={activeStep} totalSteps={steps.length} rowHeight={ROW_H} lineStyle={lineStyle} stepTops={stepTops} />
+      <div ref={containerRef} className="flex-1 relative">
+        <TimelineLine activeStep={activeStep} totalSteps={steps.length} rowHeight={ROW_H} lineStyle={lineStyle} stepTops={stepTops || initialStepTops} />
 
         {/* Step rows */}
         {steps.map((step, i) => {
@@ -1630,82 +1581,16 @@ function StatusStepper({
           if (step.isProcessGroup) {
             const activeSubStepIndex = safeRawActive - step.startIndex
 
-            if (processDesign === 'segments') {
-              return (
-                <div key={step.label} className="relative flex flex-col justify-start">
-                  <div className="relative flex items-center gap-2.5" style={{ minHeight: ROW_H }}>
-                    <div className="shrink-0 z-10" style={{ width: 20 }} />
-                    <div className="shrink-0 flex items-center justify-center" style={{ width: 24, height: 24 }}>
-                      <img
-                        src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
-                        alt={step.label}
-                        className="w-[20px] h-[20px] object-contain transition-opacity duration-200"
-                        style={{
-                          opacity: isCurrent || isComplete ? 1 : 0.3,
-                          filter: isCurrent
-                            ? 'brightness(0) saturate(100%) invert(9%) sepia(39%) saturate(1800%) hue-rotate(205deg) brightness(95%) contrast(110%)'
-                            : 'none',
-                        }}
-                      />
-                    </div>
-                    <ProcessSegmentsView
-                      step={step}
-                      safeRawActive={safeRawActive}
-                      isProcessExpanded={isProcessExpanded}
-                      onToggleProcessExpanded={onToggleProcessExpanded}
-                      onSelectRawStep={onSelectRawStep}
-                      isCurrent={isCurrent}
-                      isComplete={isComplete}
-                      serviceIcons={serviceIcons}
-                      overlap={overlap}
-                      badgeBorder={badgeBorder}
-                    />
-                  </div>
-                </div>
-              )
-            }
-
-            if (processDesign === 'pills') {
-              return (
-                <div key={step.label} className="relative flex flex-col justify-start">
-                  <div className="relative flex items-center gap-2.5" style={{ minHeight: ROW_H }}>
-                    <div className="shrink-0 z-10" style={{ width: 20 }} />
-                    <div className="shrink-0 flex items-center justify-center" style={{ width: 24, height: 24 }}>
-                      <img
-                        src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
-                        alt={step.label}
-                        className="w-[20px] h-[20px] object-contain transition-opacity duration-200"
-                        style={{
-                          opacity: isCurrent || isComplete ? 1 : 0.3,
-                          filter: isCurrent
-                            ? 'brightness(0) saturate(100%) invert(9%) sepia(39%) saturate(1800%) hue-rotate(205deg) brightness(95%) contrast(110%)'
-                            : 'none',
-                        }}
-                      />
-                    </div>
-                    <ProcessPillsView
-                      step={step}
-                      safeRawActive={safeRawActive}
-                      isProcessExpanded={isProcessExpanded}
-                      onToggleProcessExpanded={onToggleProcessExpanded}
-                      onSelectRawStep={onSelectRawStep}
-                      isCurrent={isCurrent}
-                      isComplete={isComplete}
-                      serviceIcons={serviceIcons}
-                      overlap={overlap}
-                      badgeBorder={badgeBorder}
-                    />
-                  </div>
-                </div>
-              )
-            }
-
-            // Default compact design: Drawer
             return (
-              <div key={step.label} className="relative flex flex-col justify-start">
+              <div
+                key={step.label}
+                ref={el => (rowRefs.current[i] = el)}
+                className="relative flex flex-col justify-start"
+              >
+                {/* Step Header Row - ALWAYS exactly ROW_H in height so icon & badge never jump */}
                 <div
                   onClick={() => onToggleProcessExpanded && onToggleProcessExpanded()}
-                  className="relative flex items-center gap-2.5 cursor-pointer group"
+                  className="relative flex items-center gap-2.5 cursor-pointer group select-none"
                   style={{ height: ROW_H }}
                   title={isProcessExpanded ? 'Click to collapse process' : 'Click to expand process'}
                 >
@@ -1726,13 +1611,82 @@ function StatusStepper({
                     />
                   </div>
 
-                  {/* Label + toggle badge */}
-                  <div className="flex flex-col items-start flex-1 min-w-0 justify-center">
-                    <div className="flex items-center gap-1.5 min-w-0">
+                  {/* Header content based on processDesign */}
+                  {processDesign === 'segments' ? (
+                    <div className="flex flex-col flex-1 min-w-0 justify-center">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span
+                          className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                          style={{
+                            color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+                            fontWeight: isCurrent ? 700 : 400,
+                          }}
+                        >
+                          {step.label}
+                        </span>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                            isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+                          }`}
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                        {isCurrent && overlap && serviceIcons.length > 0 && (
+                          <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                            {serviceIcons.map((icon, idx) => (
+                              <div
+                                key={idx}
+                                className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                                style={{ border: `1px solid ${badgeBorder}` }}
+                              >
+                                <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {/* 4-Segment Progress Bar */}
+                      <div className="flex items-center gap-1 w-full max-w-[190px] mt-1">
+                        {step.subSteps.map((sub, sIdx) => {
+                          const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
+                          const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
+                          return (
+                            <div
+                              key={sub.label}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onSelectRawStep?.(step.startIndex + sIdx)
+                              }}
+                              title={`${sub.label} (${isDone ? 'Completed' : isActive ? 'Active' : 'Queued'})`}
+                              className="h-1.5 flex-1 rounded-full relative overflow-hidden transition-all cursor-pointer hover:opacity-80"
+                              style={{
+                                background: isDone ? '#0EA5E9' : isActive ? '#38BDF8' : '#E2E8F0',
+                              }}
+                            >
+                              {isActive && (
+                                <motion.div
+                                  animate={{ opacity: [0.5, 1, 0.5] }}
+                                  transition={{ repeat: Infinity, duration: 1.4 }}
+                                  className="absolute inset-0 bg-sky-400"
+                                />
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ) : processDesign === 'pills' ? (
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
                       <span
                         className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
                         style={{
-                          color:      isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+                          color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
                           fontWeight: isCurrent ? 700 : 400,
                         }}
                       >
@@ -1751,90 +1705,132 @@ function StatusStepper({
                       >
                         <path d="M6 9l6 6 6-6" />
                       </svg>
+                      {/* In pills: hide service when collapsed, show when expanded (Request 9) */}
+                      {isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
+                        <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                          {serviceIcons.map((icon, idx) => (
+                            <div
+                              key={idx}
+                              className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                              style={{ border: `1px solid ${badgeBorder}` }}
+                            >
+                              <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-
-                    {/* Service from /service/ folder ONLY on active step */}
-                    {isCurrent && (
-                      showServiceText ? (
-                        <motion.div
-                          initial={{ opacity: 0, y: -3, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          transition={{ duration: 0.2 }}
-                          className="mt-1 flex items-center gap-1.5 px-2 py-0.5 rounded-full"
+                  ) : (
+                    /* Drawer design header */
+                    <div className="flex flex-col items-start flex-1 min-w-0 justify-center">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span
+                          className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
                           style={{
-                            background: badgeColor,
-                            border: `1px solid ${badgeBorder}`,
+                            color:      isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+                            fontWeight: isCurrent ? 700 : 400,
                           }}
                         >
-                          <div className="flex items-center -space-x-1">
-                            {serviceIcons.map((icon, idx) => (
-                              <img
-                                key={idx}
-                                src={icon}
-                                alt=""
-                                className="w-3.5 h-3.5 object-contain rounded-full bg-white ring-1 ring-white"
-                              />
-                            ))}
-                          </div>
-                          <span
-                            className="text-[9px] font-semibold truncate"
-                            style={{ color: badgeText }}
+                          {step.label}
+                        </span>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                            isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+                          }`}
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </div>
+
+                      {/* Service from /service/ folder ONLY on active step */}
+                      {isCurrent && (
+                        showServiceText ? (
+                          <motion.div
+                            initial={{ opacity: 0, y: -3, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.2 }}
+                            className="mt-1 flex items-center gap-1.5 px-2 py-0.5 rounded-full"
+                            style={{
+                              background: badgeColor,
+                              border: `1px solid ${badgeBorder}`,
+                            }}
                           >
-                            {serviceName}
-                          </span>
-                        </motion.div>
-                      ) : overlap ? (
-                        <motion.div
-                          initial={{ opacity: 0, y: -3, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          transition={{ duration: 0.2 }}
-                          className="mt-1 flex items-center -space-x-2 py-0.5"
-                        >
-                          {serviceIcons.map((icon, idx) => (
-                            <div
-                              key={idx}
-                              className="relative w-[22px] h-[22px] rounded-full flex items-center justify-center p-0.5 ring-2 ring-white shadow-xs bg-white transition-transform hover:scale-115 hover:z-30 cursor-pointer"
-                              style={{
-                                border: `1px solid ${badgeBorder || '#E2E8F0'}`,
-                                zIndex: serviceIcons.length - idx,
-                              }}
-                              title={`Service ${idx + 1}`}
-                            >
-                              <img
-                                src={icon}
-                                alt=""
-                                className="w-full h-full object-contain rounded-full"
-                              />
+                            <div className="flex items-center -space-x-1">
+                              {serviceIcons.map((icon, idx) => (
+                                <img
+                                  key={idx}
+                                  src={icon}
+                                  alt=""
+                                  className="w-3.5 h-3.5 object-contain rounded-full bg-white ring-1 ring-white"
+                                />
+                              ))}
                             </div>
-                          ))}
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          initial={{ opacity: 0, y: -3, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          transition={{ duration: 0.2 }}
-                          className="mt-1 flex items-center gap-1"
-                        >
-                          {serviceIcons.map((icon, idx) => (
-                            <div
-                              key={idx}
-                              className="w-5 h-5 rounded-full flex items-center justify-center p-0.5"
-                              style={{
-                                background: badgeColor,
-                                border: `1px solid ${badgeBorder}`,
-                              }}
+                            <span
+                              className="text-[9px] font-semibold truncate"
+                              style={{ color: badgeText }}
                             >
-                              <img
-                                src={icon}
-                                alt=""
-                                className="w-full h-full object-contain rounded-full"
-                              />
-                            </div>
-                          ))}
-                        </motion.div>
-                      )
-                    )}
-                  </div>
+                              {serviceName}
+                            </span>
+                          </motion.div>
+                        ) : overlap ? (
+                          <motion.div
+                            initial={{ opacity: 0, y: -3, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.2 }}
+                            className="mt-1 flex items-center -space-x-2 py-0.5"
+                          >
+                            {serviceIcons.map((icon, idx) => (
+                              <div
+                                key={idx}
+                                className="relative w-[22px] h-[22px] rounded-full flex items-center justify-center p-0.5 ring-2 ring-white shadow-xs bg-white transition-transform hover:scale-115 hover:z-30 cursor-pointer"
+                                style={{
+                                  border: `1px solid ${badgeBorder || '#E2E8F0'}`,
+                                  zIndex: serviceIcons.length - idx,
+                                }}
+                                title={`Service ${idx + 1}`}
+                              >
+                                <img
+                                  src={icon}
+                                  alt=""
+                                  className="w-full h-full object-contain rounded-full"
+                                />
+                              </div>
+                            ))}
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            initial={{ opacity: 0, y: -3, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.2 }}
+                            className="mt-1 flex items-center gap-1"
+                          >
+                            {serviceIcons.map((icon, idx) => (
+                              <div
+                                key={idx}
+                                className="w-5 h-5 rounded-full flex items-center justify-center p-0.5"
+                                style={{
+                                  background: badgeColor,
+                                  border: `1px solid ${badgeBorder}`,
+                                }}
+                              >
+                                <img
+                                  src={icon}
+                                  alt=""
+                                  className="w-full h-full object-contain rounded-full"
+                                />
+                              </div>
+                            ))}
+                          </motion.div>
+                        )
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Sub-steps drawer */}
@@ -1847,13 +1843,31 @@ function StatusStepper({
                       transition={{ duration: 0.22 }}
                       className="overflow-hidden"
                     >
-                      <ProcessSubStepsDrawer
-                        subSteps={step.subSteps}
-                        rawActiveStep={safeRawActive}
-                        startIndex={step.startIndex}
-                        endIndex={step.endIndex}
-                        onSelectRawStep={onSelectRawStep}
-                      />
+                      {processDesign === 'segments' ? (
+                        <ProcessSegmentsDrawer
+                          subSteps={step.subSteps}
+                          rawActiveStep={safeRawActive}
+                          startIndex={step.startIndex}
+                          endIndex={step.endIndex}
+                          onSelectRawStep={onSelectRawStep}
+                        />
+                      ) : processDesign === 'pills' ? (
+                        <ProcessPillsDrawer
+                          subSteps={step.subSteps}
+                          rawActiveStep={safeRawActive}
+                          startIndex={step.startIndex}
+                          endIndex={step.endIndex}
+                          onSelectRawStep={onSelectRawStep}
+                        />
+                      ) : (
+                        <ProcessSubStepsDrawer
+                          subSteps={step.subSteps}
+                          rawActiveStep={safeRawActive}
+                          startIndex={step.startIndex}
+                          endIndex={step.endIndex}
+                          onSelectRawStep={onSelectRawStep}
+                        />
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -1864,6 +1878,7 @@ function StatusStepper({
           return (
             <div
               key={step.label}
+              ref={el => (rowRefs.current[i] = el)}
               className="relative flex items-center gap-2.5"
               style={{ height: ROW_H }}
             >
