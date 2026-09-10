@@ -1090,12 +1090,314 @@ function ProcessSubStepsDrawer({
   )
 }
 
+// ─── Process Design 2: Segments (Minimal 4-segment progress bar with micro-legend) ─
+function ProcessSegmentsView({
+  step,
+  safeRawActive,
+  isProcessExpanded,
+  onToggleProcessExpanded,
+  onSelectRawStep,
+  isCurrent,
+  isComplete,
+  serviceIcons = [],
+  overlap = false,
+  badgeBorder = '#E2E8F0',
+}) {
+  const activeSubStepIndex = safeRawActive - step.startIndex
+  const currentSub = step.subSteps[Math.max(0, Math.min(activeSubStepIndex, step.subSteps.length - 1))]
+
+  return (
+    <div className="flex flex-col flex-1 min-w-0 justify-center">
+      {/* Top row: Label + optional overlap service icons + active pill badge */}
+      <div
+        onClick={(e) => {
+          e.stopPropagation()
+          onToggleProcessExpanded?.()
+        }}
+        className="flex items-center justify-between gap-1.5 cursor-pointer select-none"
+      >
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span
+            className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+            style={{
+              color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+              fontWeight: isCurrent ? 700 : 400,
+            }}
+          >
+            {step.label}
+          </span>
+          {isCurrent && overlap && serviceIcons.length > 0 && (
+            <div className="flex items-center -space-x-1.5 shrink-0">
+              {serviceIcons.map((icon, idx) => (
+                <div
+                  key={idx}
+                  className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                  style={{ border: `1px solid ${badgeBorder}` }}
+                >
+                  <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <span
+          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold transition-all shrink-0 shadow-2xs"
+          style={{
+            background: isCurrent ? '#E0F2FE' : '#F1F5F9',
+            color: isCurrent ? '#0284C7' : '#64748B',
+            border: `1px solid ${isCurrent ? '#BAE6FD' : '#E2E8F0'}`,
+          }}
+        >
+          <span>
+            {isCurrent && activeSubStepIndex >= 0 && currentSub
+              ? `${currentSub.label} (${activeSubStepIndex + 1}/${step.subSteps.length})`
+              : `${step.subSteps.length} steps`}
+          </span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`w-2.5 h-2.5 transition-transform duration-200 ${isProcessExpanded ? 'rotate-180' : ''}`}
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </span>
+      </div>
+
+      {/* 4-Segment Progress Bar */}
+      <div className="flex items-center gap-1 w-full max-w-[200px] mt-1.5">
+        {step.subSteps.map((sub, sIdx) => {
+          const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
+          const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
+
+          return (
+            <button
+              key={sub.label}
+              onClick={(e) => {
+                e.stopPropagation()
+                onSelectRawStep?.(step.startIndex + sIdx)
+              }}
+              title={`${sub.label} (${isDone ? 'Completed' : isActive ? 'Active' : 'Queued'})`}
+              className="h-1.5 flex-1 rounded-full relative overflow-hidden transition-all cursor-pointer hover:opacity-80"
+              style={{
+                background: isDone ? '#0EA5E9' : isActive ? '#38BDF8' : '#E2E8F0',
+              }}
+            >
+              {isActive && (
+                <motion.div
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ repeat: Infinity, duration: 1.4 }}
+                  className="absolute inset-0 bg-sky-400"
+                />
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Expanded sub-steps mini-legend */}
+      <AnimatePresence>
+        {isProcessExpanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="pt-2 flex items-center justify-between w-full max-w-[200px]">
+              {step.subSteps.map((sub, sIdx) => {
+                const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
+                const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
+
+                return (
+                  <button
+                    key={sub.label}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onSelectRawStep?.(step.startIndex + sIdx)
+                    }}
+                    className={`flex flex-col items-center gap-0.5 cursor-pointer transition-transform hover:scale-105 select-none ${
+                      isActive ? 'text-sky-600 font-bold' : isDone ? 'text-slate-700 font-medium' : 'text-slate-400'
+                    }`}
+                  >
+                    <span className="text-[9.5px] leading-tight">{sub.label}</span>
+                    <span className="text-[8px] font-mono leading-none">
+                      {isDone ? '✓' : isActive ? '●' : '○'}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ─── Process Design 3: Pills (Interactive horizontal chips with live status) ─────
+function ProcessPillsView({
+  step,
+  safeRawActive,
+  isProcessExpanded,
+  onToggleProcessExpanded,
+  onSelectRawStep,
+  isCurrent,
+  isComplete,
+  serviceIcons = [],
+  overlap = false,
+  badgeBorder = '#E2E8F0',
+}) {
+  const activeSubStepIndex = safeRawActive - step.startIndex
+  const currentSub = step.subSteps[Math.max(0, Math.min(activeSubStepIndex, step.subSteps.length - 1))]
+
+  const subNotes = [
+    'Sorting fabrics & colors',
+    'Eco wash cycle at 30°C',
+    'Gentle low-heat drying',
+    'Hand steam-pressed & hung',
+  ]
+
+  return (
+    <div className="flex flex-col flex-1 min-w-0 justify-center">
+      {/* Top row: Title + count badge */}
+      <div
+        onClick={(e) => {
+          e.stopPropagation()
+          onToggleProcessExpanded?.()
+        }}
+        className="flex items-center justify-between gap-1.5 cursor-pointer select-none"
+      >
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span
+            className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+            style={{
+              color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+              fontWeight: isCurrent ? 700 : 400,
+            }}
+          >
+            {step.label}
+          </span>
+          {isCurrent && overlap && serviceIcons.length > 0 && (
+            <div className="flex items-center -space-x-1.5 shrink-0">
+              {serviceIcons.map((icon, idx) => (
+                <div
+                  key={idx}
+                  className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                  style={{ border: `1px solid ${badgeBorder}` }}
+                >
+                  <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <span
+          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold transition-all shrink-0 shadow-2xs"
+          style={{
+            background: isCurrent ? '#E0F2FE' : '#F1F5F9',
+            color: isCurrent ? '#0284C7' : '#64748B',
+            border: `1px solid ${isCurrent ? '#BAE6FD' : '#E2E8F0'}`,
+          }}
+        >
+          <span>
+            {isCurrent && activeSubStepIndex >= 0
+              ? `${activeSubStepIndex + 1}/${step.subSteps.length}`
+              : `${step.subSteps.length} steps`}
+          </span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`w-2.5 h-2.5 transition-transform duration-200 ${isProcessExpanded ? 'rotate-180' : ''}`}
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </span>
+      </div>
+
+      {/* Horizontal Pills Row */}
+      <div className="flex items-center gap-1 mt-1 overflow-x-auto no-scrollbar py-0.5 max-w-full">
+        {step.subSteps.map((sub, sIdx) => {
+          const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
+          const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
+
+          return (
+            <button
+              key={sub.label}
+              onClick={(e) => {
+                e.stopPropagation()
+                onSelectRawStep?.(step.startIndex + sIdx)
+              }}
+              className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8.5px] font-semibold transition-all cursor-pointer select-none shrink-0 ${
+                isActive
+                  ? 'bg-sky-500 text-white shadow-xs ring-1 ring-sky-200'
+                  : isDone
+                  ? 'bg-slate-100 text-slate-600 border border-slate-200/80 hover:bg-slate-200/70'
+                  : 'bg-white text-slate-400 border border-slate-200/60 hover:border-slate-300'
+              }`}
+            >
+              {isDone && (
+                <svg viewBox="0 0 12 12" className="w-2 h-2 fill-none stroke-current stroke-2">
+                  <path d="M2.5 6.5l2.5 2.5 4.5-5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+              {isActive && (
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
+              )}
+              <span>{sub.label}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Expanded contextual live detail card */}
+      <AnimatePresence>
+        {isProcessExpanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-1.5 px-2 py-1 rounded-lg bg-sky-50/80 border border-sky-100/90 flex items-center justify-between text-[9.5px]">
+              <div className="flex items-center gap-1.5 truncate">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping shrink-0" />
+                <span className="font-bold text-sky-950 shrink-0">
+                  {currentSub ? currentSub.label : 'Status'}:
+                </span>
+                <span className="text-slate-600 truncate">
+                  {subNotes[Math.max(0, Math.min(activeSubStepIndex, subNotes.length - 1))]}
+                </span>
+              </div>
+              <span className="text-[9px] font-mono font-bold text-sky-600 shrink-0 ml-1.5">
+                {activeSubStepIndex >= 0 ? `${activeSubStepIndex + 1}/${step.subSteps.length}` : 'Done'}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 // ─── Status Design 1: Vertical list ──────────────────────────────────────────
 function StatusList({
   steps = NINE_STEPS,
   activeStep,
   lineStyle = 'solid',
   rawActiveStep,
+  processDesign = 'drawer',
   isProcessExpanded = false,
   onToggleProcessExpanded,
   onSelectRawStep,
@@ -1105,7 +1407,12 @@ function StatusList({
   const processGroupIndex = steps.findIndex(s => s.isProcessGroup)
   const isCompact = processGroupIndex !== -1
   const subCount = processGroup?.subSteps?.length || 4
-  const drawerHeight = subCount * 26 + 38
+
+  const effectiveDrawerHeight = useMemo(() => {
+    if (processDesign === 'segments') return 28
+    if (processDesign === 'pills') return 34
+    return subCount * 26 + 38
+  }, [processDesign, subCount])
 
   const stepTops = useMemo(() => {
     if (!isCompact || !isProcessExpanded || processGroupIndex === -1) {
@@ -1115,9 +1422,9 @@ function StatusList({
       if (i <= processGroupIndex) {
         return i * ROW_H
       }
-      return i * ROW_H + drawerHeight
+      return i * ROW_H + effectiveDrawerHeight
     })
-  }, [isCompact, isProcessExpanded, processGroupIndex, drawerHeight, steps.length, ROW_H])
+  }, [isCompact, isProcessExpanded, processGroupIndex, effectiveDrawerHeight, steps.length, ROW_H])
 
   const safeRawActive = rawActiveStep ?? activeStep
 
@@ -1134,6 +1441,71 @@ function StatusList({
           if (step.isProcessGroup) {
             const activeSubStepIndex = safeRawActive - step.startIndex
 
+            if (processDesign === 'segments') {
+              return (
+                <div key={step.label} className="relative flex flex-col justify-start">
+                  <div className="relative flex items-center gap-3" style={{ minHeight: ROW_H }}>
+                    <div className="shrink-0 z-10" style={{ width: 20 }} />
+                    <div className="shrink-0 flex items-center justify-center" style={{ width: 26, height: 26 }}>
+                      <img
+                        src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
+                        alt={step.label}
+                        className="w-[22px] h-[22px] object-contain transition-opacity duration-200"
+                        style={{
+                          opacity: isCurrent || isComplete ? 1 : 0.3,
+                          filter: isCurrent
+                            ? 'brightness(0) saturate(100%) invert(9%) sepia(39%) saturate(1800%) hue-rotate(205deg) brightness(95%) contrast(110%)'
+                            : 'none',
+                        }}
+                      />
+                    </div>
+                    <ProcessSegmentsView
+                      step={step}
+                      safeRawActive={safeRawActive}
+                      isProcessExpanded={isProcessExpanded}
+                      onToggleProcessExpanded={onToggleProcessExpanded}
+                      onSelectRawStep={onSelectRawStep}
+                      isCurrent={isCurrent}
+                      isComplete={isComplete}
+                    />
+                  </div>
+                </div>
+              )
+            }
+
+            if (processDesign === 'pills') {
+              return (
+                <div key={step.label} className="relative flex flex-col justify-start">
+                  <div className="relative flex items-center gap-3" style={{ minHeight: ROW_H }}>
+                    <div className="shrink-0 z-10" style={{ width: 20 }} />
+                    <div className="shrink-0 flex items-center justify-center" style={{ width: 26, height: 26 }}>
+                      <img
+                        src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
+                        alt={step.label}
+                        className="w-[22px] h-[22px] object-contain transition-opacity duration-200"
+                        style={{
+                          opacity: isCurrent || isComplete ? 1 : 0.3,
+                          filter: isCurrent
+                            ? 'brightness(0) saturate(100%) invert(9%) sepia(39%) saturate(1800%) hue-rotate(205deg) brightness(95%) contrast(110%)'
+                            : 'none',
+                        }}
+                      />
+                    </div>
+                    <ProcessPillsView
+                      step={step}
+                      safeRawActive={safeRawActive}
+                      isProcessExpanded={isProcessExpanded}
+                      onToggleProcessExpanded={onToggleProcessExpanded}
+                      onSelectRawStep={onSelectRawStep}
+                      isCurrent={isCurrent}
+                      isComplete={isComplete}
+                    />
+                  </div>
+                </div>
+              )
+            }
+
+            // Default compact design: Drawer
             return (
               <div key={step.label} className="relative flex flex-col justify-start">
                 <div
@@ -1291,6 +1663,7 @@ function StatusStepper({
   showServiceText = true,
   overlap = false,
   rawActiveStep,
+  processDesign = 'drawer',
   isProcessExpanded = false,
   onToggleProcessExpanded,
   onSelectRawStep,
@@ -1300,7 +1673,12 @@ function StatusStepper({
   const processGroupIndex = steps.findIndex(s => s.isProcessGroup)
   const isCompact = processGroupIndex !== -1
   const subCount = processGroup?.subSteps?.length || 4
-  const drawerHeight = subCount * 26 + 38
+
+  const effectiveDrawerHeight = useMemo(() => {
+    if (processDesign === 'segments') return 28
+    if (processDesign === 'pills') return 34
+    return subCount * 26 + 38
+  }, [processDesign, subCount])
 
   const stepTops = useMemo(() => {
     if (!isCompact || !isProcessExpanded || processGroupIndex === -1) {
@@ -1310,9 +1688,9 @@ function StatusStepper({
       if (i <= processGroupIndex) {
         return i * ROW_H
       }
-      return i * ROW_H + drawerHeight
+      return i * ROW_H + effectiveDrawerHeight
     })
-  }, [isCompact, isProcessExpanded, processGroupIndex, drawerHeight, steps.length, ROW_H])
+  }, [isCompact, isProcessExpanded, processGroupIndex, effectiveDrawerHeight, steps.length, ROW_H])
 
   const safeRawActive = rawActiveStep ?? activeStep
 
@@ -1329,6 +1707,77 @@ function StatusStepper({
           if (step.isProcessGroup) {
             const activeSubStepIndex = safeRawActive - step.startIndex
 
+            if (processDesign === 'segments') {
+              return (
+                <div key={step.label} className="relative flex flex-col justify-start">
+                  <div className="relative flex items-center gap-2.5" style={{ minHeight: ROW_H }}>
+                    <div className="shrink-0 z-10" style={{ width: 20 }} />
+                    <div className="shrink-0 flex items-center justify-center" style={{ width: 24, height: 24 }}>
+                      <img
+                        src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
+                        alt={step.label}
+                        className="w-[20px] h-[20px] object-contain transition-opacity duration-200"
+                        style={{
+                          opacity: isCurrent || isComplete ? 1 : 0.3,
+                          filter: isCurrent
+                            ? 'brightness(0) saturate(100%) invert(9%) sepia(39%) saturate(1800%) hue-rotate(205deg) brightness(95%) contrast(110%)'
+                            : 'none',
+                        }}
+                      />
+                    </div>
+                    <ProcessSegmentsView
+                      step={step}
+                      safeRawActive={safeRawActive}
+                      isProcessExpanded={isProcessExpanded}
+                      onToggleProcessExpanded={onToggleProcessExpanded}
+                      onSelectRawStep={onSelectRawStep}
+                      isCurrent={isCurrent}
+                      isComplete={isComplete}
+                      serviceIcons={serviceIcons}
+                      overlap={overlap}
+                      badgeBorder={badgeBorder}
+                    />
+                  </div>
+                </div>
+              )
+            }
+
+            if (processDesign === 'pills') {
+              return (
+                <div key={step.label} className="relative flex flex-col justify-start">
+                  <div className="relative flex items-center gap-2.5" style={{ minHeight: ROW_H }}>
+                    <div className="shrink-0 z-10" style={{ width: 20 }} />
+                    <div className="shrink-0 flex items-center justify-center" style={{ width: 24, height: 24 }}>
+                      <img
+                        src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
+                        alt={step.label}
+                        className="w-[20px] h-[20px] object-contain transition-opacity duration-200"
+                        style={{
+                          opacity: isCurrent || isComplete ? 1 : 0.3,
+                          filter: isCurrent
+                            ? 'brightness(0) saturate(100%) invert(9%) sepia(39%) saturate(1800%) hue-rotate(205deg) brightness(95%) contrast(110%)'
+                            : 'none',
+                        }}
+                      />
+                    </div>
+                    <ProcessPillsView
+                      step={step}
+                      safeRawActive={safeRawActive}
+                      isProcessExpanded={isProcessExpanded}
+                      onToggleProcessExpanded={onToggleProcessExpanded}
+                      onSelectRawStep={onSelectRawStep}
+                      isCurrent={isCurrent}
+                      isComplete={isComplete}
+                      serviceIcons={serviceIcons}
+                      overlap={overlap}
+                      badgeBorder={badgeBorder}
+                    />
+                  </div>
+                </div>
+              )
+            }
+
+            // Default compact design: Drawer
             return (
               <div key={step.label} className="relative flex flex-col justify-start">
                 <div
@@ -1926,7 +2375,8 @@ function OrderDetailsScreen({
   const currentStep = stepsList[safeActiveStep] || stepsList[0]
 
   // Process compaction grouping
-  const isCompact = processMode === 'compact'
+  const isCompact = processMode !== 'default'
+  const processDesign = processMode === 'compact' ? 'drawer' : processMode
   const { displaySteps, processGroupIndex, startIndex, endIndex } = useMemo(() => {
     return buildProcessSteps(stepsList, isCompact)
   }, [stepsList, isCompact])
@@ -2102,6 +2552,7 @@ function OrderDetailsScreen({
                   activeStep={displayActiveStep}
                   rawActiveStep={safeActiveStep}
                   lineStyle={lineStyle}
+                  processDesign={processDesign}
                   isProcessExpanded={isProcessExpanded}
                   onToggleProcessExpanded={onToggleProcessExpanded}
                   onSelectRawStep={onSelectRawStep}
@@ -2119,6 +2570,7 @@ function OrderDetailsScreen({
                   badgeText={activeDisplayService.badgeText}
                   lineStyle={lineStyle}
                   showServiceText={true}
+                  processDesign={processDesign}
                   isProcessExpanded={isProcessExpanded}
                   onToggleProcessExpanded={onToggleProcessExpanded}
                   onSelectRawStep={onSelectRawStep}
@@ -2136,6 +2588,7 @@ function OrderDetailsScreen({
                   badgeText={activeDisplayService.badgeText}
                   lineStyle={lineStyle}
                   showServiceText={false}
+                  processDesign={processDesign}
                   isProcessExpanded={isProcessExpanded}
                   onToggleProcessExpanded={onToggleProcessExpanded}
                   onSelectRawStep={onSelectRawStep}
@@ -2154,6 +2607,7 @@ function OrderDetailsScreen({
                   lineStyle={lineStyle}
                   showServiceText={false}
                   overlap={true}
+                  processDesign={processDesign}
                   isProcessExpanded={isProcessExpanded}
                   onToggleProcessExpanded={onToggleProcessExpanded}
                   onSelectRawStep={onSelectRawStep}
@@ -2172,6 +2626,7 @@ function OrderDetailsScreen({
                   lineStyle={lineStyle}
                   showServiceText={false}
                   overlap={true}
+                  processDesign={processDesign}
                   isProcessExpanded={isProcessExpanded}
                   onToggleProcessExpanded={onToggleProcessExpanded}
                   onSelectRawStep={onSelectRawStep}
@@ -2576,32 +3031,33 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Process compaction switcher (Default vs Compact) */}
+                {/* Process compaction switcher (Default, Drawer, Segments, Pills) */}
                 <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm w-full">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Process</span>
                   <div className="grid grid-cols-2 gap-1 w-full">
-                    <button
-                      onClick={() => setProcessMode('default')}
-                      className="py-1 px-1 rounded-lg text-[9px] font-bold transition-all text-center cursor-pointer"
-                      style={{
-                        background: processMode === 'default' ? '#141C3C' : '#F1F5F9',
-                        color: processMode === 'default' ? '#fff' : '#64748B',
-                      }}
-                    >
-                      Default
-                    </button>
-                    <button
-                      onClick={() => setProcessMode('compact')}
-                      className="py-1 px-1 rounded-lg text-[9px] font-bold transition-all text-center cursor-pointer"
-                      style={{
-                        background: processMode === 'compact' ? '#141C3C' : '#F1F5F9',
-                        color: processMode === 'compact' ? '#fff' : '#64748B',
-                      }}
-                    >
-                      Compact
-                    </button>
+                    {[
+                      { id: 'default',  label: 'Default' },
+                      { id: 'drawer',   label: 'Drawer' },
+                      { id: 'segments', label: 'Segments' },
+                      { id: 'pills',    label: 'Pills' },
+                    ].map(opt => {
+                      const isActive = processMode === opt.id || (processMode === 'compact' && opt.id === 'drawer')
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => setProcessMode(opt.id)}
+                          className="py-1 px-1 rounded-lg text-[9px] font-bold transition-all text-center cursor-pointer"
+                          style={{
+                            background: isActive ? '#141C3C' : '#F1F5F9',
+                            color: isActive ? '#fff' : '#64748B',
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      )
+                    })}
                   </div>
-                  {processMode === 'compact' && (
+                  {processMode !== 'default' && (
                     <button
                       onClick={() => setIsProcessExpanded(prev => !prev)}
                       className="w-full text-[9px] font-bold text-sky-600 hover:text-sky-700 py-0.5 text-center cursor-pointer transition-colors"
@@ -2692,7 +3148,7 @@ export default function App() {
                       className="text-center"
                     >
                       <div className="text-[10.5px] font-bold leading-tight" style={{ color: '#0EA5E9' }}>
-                        {processMode === 'compact' && isProcessStep(currentSteps[safeActiveStep])
+                        {processMode !== 'default' && isProcessStep(currentSteps[safeActiveStep])
                           ? `Process · ${currentSteps[safeActiveStep]?.label}`
                           : (currentSteps[safeActiveStep]?.label || '')}
                       </div>
