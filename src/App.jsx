@@ -3766,7 +3766,7 @@ export default function App() {
         className="flex flex-col md:flex-row rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl sm:shadow-2xl my-auto w-full max-w-full md:max-w-none md:w-auto"
         style={{
           background: '#fff',
-          minHeight: isSmallDevice ? 'auto' : Math.round(920 * phoneScale),
+          minHeight: isSmallDevice ? 'auto' : Math.round(945 * phoneScale),
         }}
       >
 
@@ -3890,7 +3890,7 @@ export default function App() {
           }}
         >
           {/* Label above phone */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5 mb-2.5 sm:mb-5">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center overflow-hidden" style={{ background: active.color }}>
               {active.icon
                 ? <img src={active.icon} alt="" className="w-7 h-7 object-contain" />
