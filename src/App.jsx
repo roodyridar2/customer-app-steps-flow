@@ -2825,7 +2825,6 @@ export default function App() {
     }
     return '2-service'
   })
-  const [simulateScope,    setSimulateScope]    = useState('all') // 'all' | 'active'
   const [serviceSteps,     setServiceSteps]     = useState(() => {
     const urlStep = (() => {
       if (typeof window !== 'undefined') {
@@ -2967,7 +2966,7 @@ export default function App() {
       return
     }
 
-    if (isMultiService && simulateScope === 'all') {
+    if (isMultiService) {
       const subIds = activeService?.subServiceIds || []
       const currentMap = { ...(serviceSteps[activeTab] || {}) }
       const maxStep = (activeService?.steps?.length || 9) - 1
@@ -2978,7 +2977,7 @@ export default function App() {
         return (currentMap[id] ?? 0) >= total
       })
 
-      // When simulating "All", all services move together for step and process
+      // All services move together for step and process
       let nextStep = allFinished ? 0 : Math.min(...subIds.map(id => currentMap[id] ?? 0))
       if (allFinished) {
         subIds.forEach(id => {
@@ -3024,18 +3023,15 @@ export default function App() {
       }, 1200)
 
     } else {
-      // Single service OR simulate active tab only
-      const targetSubId = isMultiService ? effectiveSubId : null
-      const targetService = targetSubId ? servicesData[targetSubId] : activeService
+      // Single service
+      const targetService = activeService
       const stepsCount = targetService?.steps?.length || 9
 
-      const currentVal = isMultiService
-        ? (serviceSteps[activeTab]?.[targetSubId] ?? 0)
-        : (serviceSteps[activeTab] ?? 0)
+      const currentVal = serviceSteps[activeTab] ?? 0
 
       let nextStep = currentVal >= stepsCount - 1 ? 0 : currentVal
       if (currentVal >= stepsCount - 1) {
-        handleSetStep(0, targetSubId)
+        handleSetStep(0)
       }
 
       setSimulating(true)
@@ -3050,7 +3046,7 @@ export default function App() {
           // Finished: Keep at final step! DO NOT reset!
           return
         }
-        handleSetStep(nextStep, targetSubId)
+        handleSetStep(nextStep)
       }, 1200)
     }
   }
@@ -3368,40 +3364,7 @@ export default function App() {
 
                 {/* Simulate & Reset controls */}
                 <div className="flex flex-col items-center gap-1.5 p-1.5 rounded-xl bg-white border border-gray-100 shadow-sm w-full">
-                  <div className="flex items-center justify-between w-full px-0.5">
-                    <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">Simulate</span>
-                    {isMultiService && (
-                      <span className="text-[8.5px] font-semibold text-slate-400">
-                        {simulateScope === 'all' ? 'All' : 'Active'}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Multi-service simulate scope switcher */}
-                  {isMultiService && (
-                    <div className="grid grid-cols-2 gap-1 w-full">
-                      <button
-                        onClick={() => setSimulateScope('all')}
-                        className="py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer"
-                        style={{
-                          background: simulateScope === 'all' ? '#141C3C' : '#F1F5F9',
-                          color: simulateScope === 'all' ? '#fff' : '#64748B',
-                        }}
-                      >
-                        All
-                      </button>
-                      <button
-                        onClick={() => setSimulateScope('active')}
-                        className="py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer"
-                        style={{
-                          background: simulateScope === 'active' ? '#141C3C' : '#F1F5F9',
-                          color: simulateScope === 'active' ? '#fff' : '#64748B',
-                        }}
-                      >
-                        Active
-                      </button>
-                    </div>
-                  )}
+                  <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">Simulate</span>
 
                   <div className="grid grid-cols-2 gap-1.5 w-full">
                     {/* Simulate / Stop button */}
