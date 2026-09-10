@@ -1493,6 +1493,7 @@ function StatusList({
   serviceSteps,
   isMultiService = false,
   isTabsMode = false,
+  multiServiceMode = 'minimal',
   showQRCode = true,
   rightSideStyle = 'pattern',
   themeColor = '#3B82F6',
@@ -1714,7 +1715,7 @@ function StatusList({
                         <path d="M6 9l6 6 6-6" />
                       </svg>
                       {/* Service icon on top header ONLY when collapsed (moves beside sub-steps when expanded) */}
-                      {!isProcessExpanded && isCurrent && serviceIcons && serviceIcons.length > 0 && (
+                      {!isProcessExpanded && isCurrent && serviceIcons && serviceIcons.length > 0 && !(isMultiService && multiServiceMode === 'minimal') && (
                         <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
                           {serviceIcons.map((icon, idx) => (
                             <div
@@ -1886,6 +1887,7 @@ function StatusStepper({
   serviceSteps,
   isMultiService = false,
   isTabsMode = false,
+  multiServiceMode = 'minimal',
   showQRCode = true,
   rightSideStyle = 'pattern',
   themeColor = '#3B82F6',
@@ -2119,7 +2121,7 @@ function StatusStepper({
                         <path d="M6 9l6 6 6-6" />
                       </svg>
                       {/* Service icon on top header ONLY when collapsed (moves beside sub-steps when expanded) */}
-                      {!isProcessExpanded && isCurrent && serviceIcons && serviceIcons.length > 0 && (
+                      {!isProcessExpanded && isCurrent && serviceIcons && serviceIcons.length > 0 && !(isMultiService && multiServiceMode === 'minimal') && (
                         <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
                           {serviceIcons.map((icon, idx) => (
                             <div
@@ -2825,6 +2827,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  multiServiceMode={multiServiceMode}
                   showQRCode={showQRCode}
                   rightSideStyle={rightSideStyle}
                 />
@@ -2850,6 +2853,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  multiServiceMode={multiServiceMode}
                   showQRCode={showQRCode}
                   rightSideStyle={rightSideStyle}
                 />
@@ -2875,6 +2879,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  multiServiceMode={multiServiceMode}
                   showQRCode={showQRCode}
                   rightSideStyle={rightSideStyle}
                 />
@@ -2901,6 +2906,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  multiServiceMode={multiServiceMode}
                   showQRCode={showQRCode}
                   rightSideStyle={rightSideStyle}
                 />
@@ -2927,6 +2933,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  multiServiceMode={multiServiceMode}
                   showQRCode={showQRCode}
                   rightSideStyle={rightSideStyle}
                 />
