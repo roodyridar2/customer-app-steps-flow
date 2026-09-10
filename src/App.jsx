@@ -129,13 +129,14 @@ const BAGS_SHOES_STEPS = [
 ]
 
 // 6. Otee Markat (Premium Care) Steps
-// process -> VIP Assessment & Quote Confirmation, Eco Solvent & Hand Cleaning, Hand-Finishing & Restoration, Premium Packaging
+// process -> VIP Assessment, Quote Confirmation, Eco Solvent & Hand Cleaning, Hand-Finishing & Restoration, Premium Packaging
 const PREMIUM_CARE_STEPS = [
   STEP_ORDER_PLACED,
   STEP_DRIVER_EN_ROUTE,
   STEP_COLLECTED_TRANSIT,
   STEP_ARRIVED_FACILITY,
-  { id: 'vip-assessment', label: 'VIP Assessment & Quote Confirmation', icon: '/status/vip-assessment.png', isProcess: true },
+  { id: 'vip-assessment', label: 'VIP Assessment', icon: '/status/vip-assessment.png', isProcess: true },
+  { id: 'quote-confirmation', label: 'Quote Confirmation', icon: '/status/confirm.png', isProcess: true },
   { id: 'eco-cleaning', label: 'Eco Solvent & Hand Cleaning', icon: '/status/eco-cleaning.png', isProcess: true },
   { id: 'hand-restoration', label: 'Hand-Finishing & Restoration', icon: '/status/hand-restoration.png', isProcess: true },
   { id: 'premium-packaging', label: 'Premium Packaging', icon: '/status/packed.png', isProcess: true },
@@ -1596,12 +1597,13 @@ function PremiumCarePattern({ themeColor, badgeColor, height = 350, isExpanded =
       {/* Step 3: Arrived at Facility (y ≈ 160) - Mid sparkle */}
       <circle cx="34" cy="155" r="2.5" fill={themeColor} fillOpacity="0.25" />
 
-      {/* Step 4: Processing (y ≈ 184..230) - Expanded royal ribbon & sparkle elements */}
+      {/* Step 4: Processing (y ≈ 184..260) - Expanded royal ribbon & sparkle elements */}
       {isExpanded && (
         <g className="transition-opacity duration-300">
           <path d="M34 190 L35.5 196 L41 197.5 L35.5 199 L34 205 L32.5 199 L27 197.5 L32.5 196 Z" fill={themeColor} fillOpacity="0.36" />
           <path d="M14 224 C 26 214, 42 234, 54 224" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" fill="none" strokeDasharray="2 2" />
           <circle cx="34" cy="240" r="3" fill={badgeColor} stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" />
+          <path d="M34 256 L35.2 260.8 L40 262 L35.2 263.2 L34 268 L32.8 263.2 L28 262 L32.8 260.8 Z" fill={themeColor} fillOpacity="0.32" />
         </g>
       )}
 
