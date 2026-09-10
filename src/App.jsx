@@ -1053,16 +1053,6 @@ function ProcessSubStepsDrawer({
                 {sub.label}
               </span>
             </div>
-
-            {/* Right status text */}
-            <span
-              className="text-[10px] font-medium transition-colors"
-              style={{
-                color: isSubCurrent ? '#0284C7' : isSubDone ? '#64748B' : '#CBD5E1',
-              }}
-            >
-              {isSubCurrent ? 'Active' : isSubDone ? 'Done' : ''}
-            </span>
           </div>
         )
       })}
@@ -1396,6 +1386,20 @@ function StatusList({
                       >
                         <path d="M6 9l6 6 6-6" />
                       </svg>
+                      {/* Service icon on the top for drawer */}
+                      {isCurrent && serviceIcons && serviceIcons.length > 0 && (
+                        <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                          {serviceIcons.map((icon, idx) => (
+                            <div
+                              key={idx}
+                              className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                              style={{ border: `1px solid ${badgeBorder || '#E2E8F0'}` }}
+                            >
+                              <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1727,112 +1731,42 @@ function StatusStepper({
                     </div>
                   ) : (
                     /* Drawer design header */
-                    <div className="flex flex-col items-start flex-1 min-w-0 justify-center">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <span
-                          className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
-                          style={{
-                            color:      isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                            fontWeight: isCurrent ? 700 : 400,
-                          }}
-                        >
-                          {step.label}
-                        </span>
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
-                            isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
-                          }`}
-                        >
-                          <path d="M6 9l6 6 6-6" />
-                        </svg>
-                      </div>
-
-                      {/* Service from /service/ folder ONLY on active step */}
-                      {isCurrent && (
-                        showServiceText ? (
-                          <motion.div
-                            initial={{ opacity: 0, y: -3, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            transition={{ duration: 0.2 }}
-                            className="mt-1 flex items-center gap-1.5 px-2 py-0.5 rounded-full"
-                            style={{
-                              background: badgeColor,
-                              border: `1px solid ${badgeBorder}`,
-                            }}
-                          >
-                            <div className="flex items-center -space-x-1">
-                              {serviceIcons.map((icon, idx) => (
-                                <img
-                                  key={idx}
-                                  src={icon}
-                                  alt=""
-                                  className="w-3.5 h-3.5 object-contain rounded-full bg-white ring-1 ring-white"
-                                />
-                              ))}
-                            </div>
-                            <span
-                              className="text-[9px] font-semibold truncate"
-                              style={{ color: badgeText }}
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <span
+                        className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                        style={{
+                          color:      isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+                          fontWeight: isCurrent ? 700 : 400,
+                        }}
+                      >
+                        {step.label}
+                      </span>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                          isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
+                        }`}
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                      {/* Service icon on the top for drawer */}
+                      {isCurrent && serviceIcons && serviceIcons.length > 0 && (
+                        <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                          {serviceIcons.map((icon, idx) => (
+                            <div
+                              key={idx}
+                              className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                              style={{ border: `1px solid ${badgeBorder || '#E2E8F0'}` }}
                             >
-                              {serviceName}
-                            </span>
-                          </motion.div>
-                        ) : overlap ? (
-                          <motion.div
-                            initial={{ opacity: 0, y: -3, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            transition={{ duration: 0.2 }}
-                            className="mt-1 flex items-center -space-x-2 py-0.5"
-                          >
-                            {serviceIcons.map((icon, idx) => (
-                              <div
-                                key={idx}
-                                className="relative w-[22px] h-[22px] rounded-full flex items-center justify-center p-0.5 ring-2 ring-white shadow-xs bg-white transition-transform hover:scale-115 hover:z-30 cursor-pointer"
-                                style={{
-                                  border: `1px solid ${badgeBorder || '#E2E8F0'}`,
-                                  zIndex: serviceIcons.length - idx,
-                                }}
-                                title={`Service ${idx + 1}`}
-                              >
-                                <img
-                                  src={icon}
-                                  alt=""
-                                  className="w-full h-full object-contain rounded-full"
-                                />
-                              </div>
-                            ))}
-                          </motion.div>
-                        ) : (
-                          <motion.div
-                            initial={{ opacity: 0, y: -3, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            transition={{ duration: 0.2 }}
-                            className="mt-1 flex items-center gap-1"
-                          >
-                            {serviceIcons.map((icon, idx) => (
-                              <div
-                                key={idx}
-                                className="w-5 h-5 rounded-full flex items-center justify-center p-0.5"
-                                style={{
-                                  background: badgeColor,
-                                  border: `1px solid ${badgeBorder}`,
-                                }}
-                              >
-                                <img
-                                  src={icon}
-                                  alt=""
-                                  className="w-full h-full object-contain rounded-full"
-                                />
-                              </div>
-                            ))}
-                          </motion.div>
-                        )
+                              <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
                   )}
