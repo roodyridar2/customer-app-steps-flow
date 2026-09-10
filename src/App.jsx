@@ -1166,19 +1166,58 @@ function ProcessPillsDrawer({
   startIndex = 2,
   endIndex = 5,
   onSelectRawStep,
+  serviceIcons = [],
+  serviceName = '',
+  badgeBorder = '#E2E8F0',
+  subServices = [],
+  serviceSteps,
+  isMultiService = false,
+  isTabsMode = false,
 }) {
   const activeSubStepIndex = rawActiveStep - startIndex
 
   return (
-    <div className="ml-8 mr-1 mb-1 pl-3.5 py-0.5 flex items-center gap-1.5 select-none overflow-x-auto no-scrollbar">
+    <div className="ml-7 mb-1 pl-0.5 py-0.5 flex items-start gap-1 select-none overflow-x-auto no-scrollbar">
       {subSteps.map((sub, sIdx) => {
+        const rawStep = startIndex + sIdx
         const isDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
         const isActive = rawActiveStep >= startIndex && rawActiveStep <= endIndex && activeSubStepIndex === sIdx
+
+        // Determine which service icon(s) belong below this sub-step
+        let servicesAtStep = []
+        if (isMultiService && !isTabsMode && subServices && subServices.length > 0 && serviceSteps && typeof serviceSteps === 'object') {
+          subServices.forEach(subSrv => {
+            const srvStep = typeof serviceSteps[subSrv.id] === 'number' ? serviceSteps[subSrv.id] : rawActiveStep
+            if (srvStep === rawStep) {
+              const icon = subSrv.serviceIcons?.[0] || subSrv.icon || (servicesData[subSrv.id]?.serviceIcons?.[0])
+              if (icon) {
+                servicesAtStep.push({
+                  id: subSrv.id,
+                  name: subSrv.serviceName || subSrv.name,
+                  icon,
+                  border: subSrv.badgeBorder || badgeBorder,
+                })
+              }
+            }
+          })
+        } else {
+          // Single service or active tab view
+          if (isActive && serviceIcons && serviceIcons.length > 0) {
+            serviceIcons.forEach((icon, idx) => {
+              servicesAtStep.push({
+                id: idx,
+                name: serviceName,
+                icon,
+                border: badgeBorder,
+              })
+            })
+          }
+        }
 
         return (
           <Fragment key={sub.label}>
             {sIdx > 0 && (
-              <span className="text-[9px] text-slate-300 font-normal select-none shrink-0">
+              <span className="text-[8.5px] text-slate-300 font-normal select-none shrink-0 pt-0.5">
                 ·
               </span>
             )}
@@ -1187,11 +1226,11 @@ function ProcessPillsDrawer({
                 e.stopPropagation()
                 onSelectRawStep?.(startIndex + sIdx)
               }}
-              className="relative py-0.5 cursor-pointer select-none transition-all group shrink-0 active:scale-95"
+              className="relative flex flex-col items-center py-0.5 cursor-pointer select-none transition-all group shrink-0 active:scale-95"
             >
               <span
-                className={`text-[10.5px] tracking-tight transition-colors ${
-                  isActive
+                className={`text-[10px] tracking-tight transition-colors ${
+                  isActive || servicesAtStep.length > 0
                     ? 'text-sky-600 font-bold'
                     : isDone
                     ? 'text-slate-600 font-medium group-hover:text-slate-900'
@@ -1201,8 +1240,33 @@ function ProcessPillsDrawer({
                 {isDone ? '✓ ' : ''}{sub.label}
               </span>
 
-              {/* Subtle active underline indicator */}
-              {isActive && (
+              {/* Service icon below the service step */}
+              {servicesAtStep.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: -2 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.18 }}
+                  className="mt-0.5 flex items-center -space-x-1"
+                >
+                  {servicesAtStep.map((srv, srvIdx) => (
+                    <div
+                      key={srvIdx}
+                      className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                      style={{ border: `1px solid ${srv.border || badgeBorder || '#E2E8F0'}` }}
+                      title={srv.name}
+                    >
+                      <img
+                        src={srv.icon}
+                        alt=""
+                        className="w-full h-full object-contain rounded-full"
+                      />
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+
+              {/* Subtle active underline indicator when no icon below */}
+              {isActive && servicesAtStep.length === 0 && (
                 <motion.div
                   layoutId="process-text-underline"
                   className="absolute -bottom-0.5 left-0 right-0 h-[1.5px] bg-sky-500 rounded-full"
@@ -1234,6 +1298,7 @@ function StatusList({
   serviceSteps,
   isMultiService = false,
   isTabsMode = false,
+  showQRCode = true,
 }) {
   const ROW_H = 38
   const containerRef = useRef(null)
@@ -1249,7 +1314,7 @@ function StatusList({
     if (!isCompact || !isProcessExpanded || processGroupIndex === -1) {
       return steps.map((_, i) => i * ROW_H)
     }
-    const estimatedExtra = processDesign === 'segments' ? 28 : processDesign === 'pills' ? 24 : (subCount * 28 + 4)
+    const estimatedExtra = processDesign === 'segments' ? 28 : processDesign === 'pills' ? 36 : (subCount * 28 + 4)
     return steps.map((_, i) => {
       if (i <= processGroupIndex) {
         return i * ROW_H
@@ -1287,8 +1352,11 @@ function StatusList({
   const safeRawActive = rawActiveStep ?? activeStep
 
   return (
-    <div className="flex gap-2">
-      <div ref={containerRef} className="flex-1 relative">
+    <div className="relative w-full">
+      <div
+        ref={containerRef}
+        className={`relative w-full transition-[padding] duration-150 ${showQRCode ? 'pr-[76px]' : ''}`}
+      >
         <TimelineLine activeStep={activeStep} totalSteps={steps.length} rowHeight={ROW_H} lineStyle={lineStyle} stepTops={stepTops || initialStepTops} />
 
         {/* Step rows */}
@@ -1410,8 +1478,8 @@ function StatusList({
                       >
                         <path d="M6 9l6 6 6-6" />
                       </svg>
-                      {/* Hide service when collapsed, show when expanded (Request 9) */}
-                      {isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
+                      {/* Show service when collapsed, hide on top header when expanded (moves below sub-step in pills) */}
+                      {!isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
                         <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
                           {serviceIcons.map((icon, idx) => (
                             <div
@@ -1493,6 +1561,13 @@ function StatusList({
                           startIndex={step.startIndex}
                           endIndex={step.endIndex}
                           onSelectRawStep={onSelectRawStep}
+                          serviceIcons={serviceIcons}
+                          serviceName={serviceName}
+                          badgeBorder={badgeBorder}
+                          subServices={subServices}
+                          serviceSteps={serviceSteps}
+                          isMultiService={isMultiService}
+                          isTabsMode={isTabsMode}
                         />
                       ) : (
                         <ProcessSubStepsDrawer
@@ -1566,15 +1641,20 @@ function StatusList({
         })}
       </div>
 
-      {/* QR Code on the right */}
-      <div className="shrink-0 flex flex-col items-center gap-1.5" style={{ paddingTop: 2 }}>
-        <div className="overflow-hidden border border-gray-200 rounded-xl bg-white p-1.5 shadow-xs flex items-center justify-center" style={{ width: 66, height: 66 }}>
-          <QRCodeSVG />
+      {/* QR Code on the right - absolutely positioned so it never gets shifted by timeline elements */}
+      {showQRCode && (
+        <div
+          className="absolute top-0 right-0 z-20 shrink-0 flex flex-col items-center gap-1.5 pointer-events-auto select-none"
+          style={{ paddingTop: 2, width: 66 }}
+        >
+          <div className="overflow-hidden border border-gray-200 rounded-xl bg-white p-1.5 shadow-xs flex items-center justify-center" style={{ width: 66, height: 66 }}>
+            <QRCodeSVG />
+          </div>
+          <span className="text-center text-gray-400 font-medium leading-tight" style={{ fontSize: 9 }}>
+            Click for<br />details
+          </span>
         </div>
-        <span className="text-center text-gray-400 font-medium leading-tight" style={{ fontSize: 9 }}>
-          Click for<br />details
-        </span>
-      </div>
+      )}
     </div>
   )
 }
@@ -1600,6 +1680,7 @@ function StatusStepper({
   serviceSteps,
   isMultiService = false,
   isTabsMode = false,
+  showQRCode = true,
 }) {
   const ROW_H = 44
   const containerRef = useRef(null)
@@ -1615,7 +1696,7 @@ function StatusStepper({
     if (!isCompact || !isProcessExpanded || processGroupIndex === -1) {
       return steps.map((_, i) => i * ROW_H)
     }
-    const estimatedExtra = processDesign === 'segments' ? 28 : processDesign === 'pills' ? 24 : (subCount * 28 + 4)
+    const estimatedExtra = processDesign === 'segments' ? 28 : processDesign === 'pills' ? 36 : (subCount * 28 + 4)
     return steps.map((_, i) => {
       if (i <= processGroupIndex) {
         return i * ROW_H
@@ -1653,8 +1734,11 @@ function StatusStepper({
   const safeRawActive = rawActiveStep ?? activeStep
 
   return (
-    <div className="flex gap-2">
-      <div ref={containerRef} className="flex-1 relative">
+    <div className="relative w-full">
+      <div
+        ref={containerRef}
+        className={`relative w-full transition-[padding] duration-150 ${showQRCode ? 'pr-[76px]' : ''}`}
+      >
         <TimelineLine activeStep={activeStep} totalSteps={steps.length} rowHeight={ROW_H} lineStyle={lineStyle} stepTops={stepTops || initialStepTops} />
 
         {/* Step rows */}
@@ -1789,8 +1873,8 @@ function StatusStepper({
                       >
                         <path d="M6 9l6 6 6-6" />
                       </svg>
-                      {/* In pills: hide service when collapsed, show when expanded (Request 9) */}
-                      {isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
+                      {/* Show service when collapsed, hide on top header when expanded (moves below sub-step in pills) */}
+                      {!isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
                         <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
                           {serviceIcons.map((icon, idx) => (
                             <div
@@ -1872,6 +1956,13 @@ function StatusStepper({
                           startIndex={step.startIndex}
                           endIndex={step.endIndex}
                           onSelectRawStep={onSelectRawStep}
+                          serviceIcons={serviceIcons}
+                          serviceName={serviceName}
+                          badgeBorder={badgeBorder}
+                          subServices={subServices}
+                          serviceSteps={serviceSteps}
+                          isMultiService={isMultiService}
+                          isTabsMode={isTabsMode}
                         />
                       ) : (
                         <ProcessSubStepsDrawer
@@ -2031,15 +2122,20 @@ function StatusStepper({
         })}
       </div>
 
-      {/* QR Code on the right */}
-      <div className="shrink-0 flex flex-col items-center gap-1.5" style={{ paddingTop: 2 }}>
-        <div className="overflow-hidden border border-gray-200 rounded-xl bg-white p-1.5 shadow-xs flex items-center justify-center" style={{ width: 66, height: 66 }}>
-          <QRCodeSVG />
+      {/* QR Code on the right - absolutely positioned so it never gets shifted by timeline elements */}
+      {showQRCode && (
+        <div
+          className="absolute top-0 right-0 z-20 shrink-0 flex flex-col items-center gap-1.5 pointer-events-auto select-none"
+          style={{ paddingTop: 2, width: 66 }}
+        >
+          <div className="overflow-hidden border border-gray-200 rounded-xl bg-white p-1.5 shadow-xs flex items-center justify-center" style={{ width: 66, height: 66 }}>
+            <QRCodeSVG />
+          </div>
+          <span className="text-center text-gray-400 font-medium leading-tight" style={{ fontSize: 9 }}>
+            Click for<br />details
+          </span>
         </div>
-        <span className="text-center text-gray-400 font-medium leading-tight" style={{ fontSize: 9 }}>
-          Click for<br />details
-        </span>
-      </div>
+      )}
     </div>
   )
 }
@@ -2293,6 +2389,7 @@ function OrderDetailsScreen({
   isProcessExpanded = false,
   onToggleProcessExpanded,
   onSelectRawStep,
+  showQRCode = true,
 }) {
   const [internalStatusStyle, setInternalStatusStyle] = useState('stepper')
   const currentStyle = propStatusStyle ?? internalStatusStyle
@@ -2520,6 +2617,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  showQRCode={showQRCode}
                 />
               )}
               {currentStyle === 'stepper' && (
@@ -2542,6 +2640,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  showQRCode={showQRCode}
                 />
               )}
               {(currentStyle === 'service-icon' || currentStyle === 'cards') && (
@@ -2564,6 +2663,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  showQRCode={showQRCode}
                 />
               )}
               {currentStyle === 'overlap' && (
@@ -2587,6 +2687,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  showQRCode={showQRCode}
                 />
               )}
               {!['list', 'track', 'stepper', 'service-icon', 'overlap', 'cards'].includes(currentStyle) && (
@@ -2610,6 +2711,7 @@ function OrderDetailsScreen({
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
+                  showQRCode={showQRCode}
                 />
               )}
             </motion.div>
@@ -2782,6 +2884,13 @@ export default function App() {
     }
     return false
   })
+  const [showQRCode, setShowQRCode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search)
+      return p.get('qr') !== 'false'
+    }
+    return true
+  })
   const [simulating,       setSimulating]       = useState(false)
   const [selectedSubId,    setSelectedSubId]    = useState(null)
   const intervalRef = useRef(null)
@@ -2867,6 +2976,7 @@ export default function App() {
     if (isMultiService && simulateScope === 'all') {
       const subIds = activeService?.subServiceIds || []
       const currentMap = { ...(serviceSteps[activeTab] || {}) }
+      const maxStep = (activeService?.steps?.length || 9) - 1
 
       // If all finished, restart them from 0
       const allFinished = subIds.every(id => {
@@ -2874,9 +2984,20 @@ export default function App() {
         return (currentMap[id] ?? 0) >= total
       })
 
+      // When simulating "All", all services move together for step and process
+      let nextStep = allFinished ? 0 : Math.min(...subIds.map(id => currentMap[id] ?? 0))
       if (allFinished) {
         subIds.forEach(id => {
           currentMap[id] = 0
+        })
+        setServiceSteps(prev => ({
+          ...prev,
+          [activeTab]: { ...currentMap },
+        }))
+      } else {
+        // Sync them to advance together
+        subIds.forEach(id => {
+          currentMap[id] = nextStep
         })
         setServiceSteps(prev => ({
           ...prev,
@@ -2886,52 +3007,27 @@ export default function App() {
 
       setSimulating(true)
 
-      // Distinct speed & stagger for each subservice so each service moves separately
-      const speedConfig = [
-        { interval: 3, offset: 0 }, // sub 0 (Wash & Fold): every 3 ticks (1.2s)
-        { interval: 4, offset: 1 }, // sub 1 (Clean & Press): every 4 ticks (1.6s)
-        { interval: 3, offset: 2 }, // sub 2 (Press Only): every 3 ticks (1.2s)
-        { interval: 5, offset: 2 }, // sub 3 (Bags & Shoes): every 5 ticks (2.0s)
-        { interval: 4, offset: 3 }, // sub 4 (Premium Care): every 4 ticks (1.6s)
-      ]
-
-      let tick = 0
-      const stepsState = { ...currentMap }
-
       intervalRef.current = setInterval(() => {
-        tick += 1
-        let hasAnyUpdate = false
-        let allNowFinished = true
-
-        subIds.forEach((id, index) => {
-          const total = (servicesData[id]?.steps?.length || 9) - 1
-          const cur = stepsState[id] ?? 0
-          if (cur < total) {
-            allNowFinished = false
-            const cfg = speedConfig[index % speedConfig.length]
-            if ((tick + cfg.offset) % cfg.interval === 0) {
-              stepsState[id] = cur + 1
-              hasAnyUpdate = true
-            }
-          }
-        })
-
-        if (hasAnyUpdate) {
-          setServiceSteps(prev => ({
-            ...prev,
-            [activeTab]: { ...stepsState },
-          }))
-        }
-
-        if (allNowFinished) {
+        nextStep += 1
+        if (nextStep > maxStep) {
           if (intervalRef.current) {
             clearInterval(intervalRef.current)
             intervalRef.current = null
           }
           setSimulating(false)
-          // Finished: Keep at final step! DO NOT reset!
+          // Keep at final step! DO NOT reset!
+          return
         }
-      }, 400)
+
+        const stepsState = {}
+        subIds.forEach(id => {
+          stepsState[id] = nextStep
+        })
+        setServiceSteps(prev => ({
+          ...prev,
+          [activeTab]: { ...stepsState },
+        }))
+      }, 1200)
 
     } else {
       // Single service OR simulate active tab only
@@ -2961,7 +3057,7 @@ export default function App() {
           return
         }
         handleSetStep(nextStep, targetSubId)
-      }, 1400)
+      }, 1200)
     }
   }
 
@@ -3121,6 +3217,7 @@ export default function App() {
                         isProcessExpanded={isProcessExpanded}
                         onToggleProcessExpanded={() => setIsProcessExpanded(prev => !prev)}
                         onSelectRawStep={handleSelectRawStep}
+                        showQRCode={showQRCode}
                       />
                     ) : (
                       <PlaceholderScreen
@@ -3245,6 +3342,33 @@ export default function App() {
                         {opt.label}
                       </button>
                     ))}
+                  </div>
+                </div>
+
+                {/* QR Code toggle card */}
+                <div className="flex flex-col items-center gap-1 p-1.5 rounded-xl bg-white border border-gray-100 shadow-sm w-full">
+                  <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">QR Code</span>
+                  <div className="grid grid-cols-2 gap-1 w-full">
+                    <button
+                      onClick={() => setShowQRCode(true)}
+                      className="py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer"
+                      style={{
+                        background: showQRCode ? '#141C3C' : '#F1F5F9',
+                        color: showQRCode ? '#fff' : '#64748B',
+                      }}
+                    >
+                      Show
+                    </button>
+                    <button
+                      onClick={() => setShowQRCode(false)}
+                      className="py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer"
+                      style={{
+                        background: !showQRCode ? '#141C3C' : '#F1F5F9',
+                        color: !showQRCode ? '#fff' : '#64748B',
+                      }}
+                    >
+                      Hide
+                    </button>
                   </div>
                 </div>
 
