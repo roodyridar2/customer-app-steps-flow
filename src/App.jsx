@@ -2477,7 +2477,7 @@ function OrderDetailsScreen({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
         onMouseLeave={handleMouseUpOrLeave}
-        className="flex-1 min-h-0 px-4 space-y-3 overflow-y-auto ios-scrollbar cursor-grab active:cursor-grabbing"
+        className="flex-1 min-h-0 px-4 space-y-3 overflow-y-auto no-scrollbar cursor-grab active:cursor-grabbing"
         style={{
           WebkitOverflowScrolling: 'touch',
           overscrollBehavior: 'contain',
