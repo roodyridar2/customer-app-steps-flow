@@ -1177,7 +1177,7 @@ function ProcessPillsDrawer({
   const activeSubStepIndex = rawActiveStep - startIndex
 
   return (
-    <div className="ml-7 mb-1 pl-0.5 py-0.5 flex items-start gap-1 select-none overflow-x-auto no-scrollbar">
+    <div className="ml-8 mr-1 mb-1 pl-3 py-0.5 flex items-start gap-1.5 select-none overflow-x-auto no-scrollbar">
       {subSteps.map((sub, sIdx) => {
         const rawStep = startIndex + sIdx
         const isDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
@@ -1217,7 +1217,7 @@ function ProcessPillsDrawer({
         return (
           <Fragment key={sub.label}>
             {sIdx > 0 && (
-              <span className="text-[8.5px] text-slate-300 font-normal select-none shrink-0 pt-0.5">
+              <span className="text-[9px] text-slate-300 font-normal select-none shrink-0 pt-0.5">
                 ·
               </span>
             )}
@@ -1229,7 +1229,7 @@ function ProcessPillsDrawer({
               className="relative flex flex-col items-center py-0.5 cursor-pointer select-none transition-all group shrink-0 active:scale-95"
             >
               <span
-                className={`text-[10px] tracking-tight transition-colors ${
+                className={`text-[10.5px] tracking-tight transition-colors ${
                   isActive || servicesAtStep.length > 0
                     ? 'text-sky-600 font-bold'
                     : isDone
@@ -1353,10 +1353,7 @@ function StatusList({
 
   return (
     <div className="relative w-full">
-      <div
-        ref={containerRef}
-        className={`relative w-full transition-[padding] duration-150 ${showQRCode ? 'pr-[76px]' : ''}`}
-      >
+      <div ref={containerRef} className="relative w-full">
         <TimelineLine activeStep={activeStep} totalSteps={steps.length} rowHeight={ROW_H} lineStyle={lineStyle} stepTops={stepTops || initialStepTops} />
 
         {/* Step rows */}
@@ -1735,10 +1732,7 @@ function StatusStepper({
 
   return (
     <div className="relative w-full">
-      <div
-        ref={containerRef}
-        className={`relative w-full transition-[padding] duration-150 ${showQRCode ? 'pr-[76px]' : ''}`}
-      >
+      <div ref={containerRef} className="relative w-full">
         <TimelineLine activeStep={activeStep} totalSteps={steps.length} rowHeight={ROW_H} lineStyle={lineStyle} stepTops={stepTops || initialStepTops} />
 
         {/* Step rows */}
