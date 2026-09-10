@@ -407,7 +407,7 @@ function DriedSVG({ dim }) {
       strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="w-[20px] h-[20px]"
+      className="w-[24px] h-[24px]"
     >
       <path d="M3 6h18" strokeWidth="1.2" strokeDasharray="2 1.5" />
       <path d="M8 4v2.5M16 4v2.5" strokeWidth="1.8" />
@@ -426,7 +426,7 @@ function QualityCheckSVG({ dim }) {
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="w-[20px] h-[20px]"
+      className="w-[24px] h-[24px]"
     >
       <rect x="5" y="4" width="14" height="17" rx="2.5" />
       <path d="M9 4.5a1.5 1.5 0 0 1 3-1 1.5 1.5 0 0 1 3 1" />
@@ -498,10 +498,10 @@ const lineStyles = [
 ]
 
 // ─── Modular Timeline Line Component (swappable across all styles) ────────────
-function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, lineStyle = 'nodes', stepTops = null }) {
+function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 44, lineStyle = 'nodes', stepTops = null }) {
   const getTop = (i) => (stepTops && stepTops[i] !== undefined ? stepTops[i] : i * rowHeight)
   const totalLineH = stepTops && stepTops.length > 1 ? (stepTops[totalSteps - 1] - stepTops[0]) : (totalSteps - 1) * rowHeight
-  const circleTop = getTop(activeStep) + (rowHeight - 18) / 2
+  const circleTop = getTop(activeStep) + (rowHeight - 20) / 2
   const activeLineH = stepTops && stepTops.length > 1 ? (stepTops[activeStep] - stepTops[0]) : activeStep * rowHeight
 
   // ── Number Style 1: Num Circle (Clean circular badges) ──
@@ -518,9 +518,9 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
               className="absolute z-10 flex items-center justify-center"
               style={{
                 left: 0,
-                top: getTop(i) + (rowHeight - 20) / 2,
-                width: 20,
-                height: 20,
+                top: getTop(i) + (rowHeight - 22) / 2,
+                width: 22,
+                height: 22,
               }}
             >
               {isCurrent ? (
@@ -529,14 +529,14 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
                   initial={{ scale: 0.75 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-                  className="w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[11px] text-white shadow-sm"
+                  className="w-[22px] h-[22px] rounded-full flex items-center justify-center font-mono font-bold text-[12px] text-white shadow-sm"
                   style={{ background: '#0EA5E9' }}
                 >
                   {i + 1}
                 </motion.div>
               ) : isComplete ? (
                 <div
-                  className="w-[19px] h-[19px] rounded-full flex items-center justify-center font-mono font-bold text-[10px]"
+                  className="w-[20px] h-[20px] rounded-full flex items-center justify-center font-mono font-bold text-[11px]"
                   style={{
                     background: '#E0F2FE',
                     color: '#0284C7',
@@ -547,7 +547,7 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
                 </div>
               ) : (
                 <div
-                  className="w-[18px] h-[18px] rounded-full flex items-center justify-center font-mono font-medium text-[10px]"
+                  className="w-[20px] h-[20px] rounded-full flex items-center justify-center font-mono font-medium text-[11px]"
                   style={{
                     background: '#F8FAFC',
                     color: '#94A3B8',
@@ -578,9 +578,9 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
               className="absolute z-10 flex items-center justify-center"
               style={{
                 left: -2,
-                top: getTop(i) + (rowHeight - 20) / 2,
-                width: 24,
-                height: 20,
+                top: getTop(i) + (rowHeight - 22) / 2,
+                width: 26,
+                height: 22,
               }}
             >
               {isCurrent ? (
@@ -589,14 +589,14 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-                  className="px-1 py-0.5 rounded text-[9.5px] font-mono font-bold shadow-sm"
+                  className="px-1.5 py-0.5 rounded text-[10.5px] font-mono font-bold shadow-sm"
                   style={{ background: '#0F172A', color: '#fff' }}
                 >
                   0{i + 1}
                 </motion.div>
               ) : (
                 <span
-                  className="text-[11px] font-mono font-semibold transition-colors duration-200"
+                  className="text-[12px] font-mono font-semibold transition-colors duration-200"
                   style={{ color: isComplete ? '#475569' : '#CBD5E1' }}
                 >
                   0{i + 1}
@@ -617,8 +617,8 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
         <div
           className="absolute z-0"
           style={{
-            left: 9,
-            top: (rowHeight - 18) / 2 + 9,
+            left: 10,
+            top: (rowHeight - 20) / 2 + 10,
             width: 2,
             height: totalLineH,
             background: '#E2E8F0',
@@ -629,8 +629,8 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
         <motion.div
           className="absolute z-0 origin-top"
           style={{
-            left: 9,
-            top: (rowHeight - 18) / 2 + 9,
+            left: 10,
+            top: (rowHeight - 20) / 2 + 10,
             width: 2,
             background: '#38BDF8',
           }}
@@ -649,9 +649,9 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
               className="absolute z-10 flex items-center justify-center"
               style={{
                 left: isCurrent ? -1 : 1,
-                top: getTop(i) + (rowHeight - (isCurrent ? 22 : 18)) / 2,
-                width: isCurrent ? 22 : 18,
-                height: isCurrent ? 22 : 18,
+                top: getTop(i) + (rowHeight - (isCurrent ? 24 : 20)) / 2,
+                width: isCurrent ? 24 : 20,
+                height: isCurrent ? 24 : 20,
               }}
             >
               {isCurrent ? (
@@ -660,21 +660,21 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
                   initial={{ scale: 0.7 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-                  className="w-[22px] h-[22px] rounded-full flex items-center justify-center font-mono font-bold text-[11px] text-white shadow-sm ring-3 ring-sky-100"
+                  className="w-[24px] h-[24px] rounded-full flex items-center justify-center font-mono font-bold text-[12px] text-white shadow-sm ring-3 ring-sky-100"
                   style={{ background: '#0EA5E9' }}
                 >
                   {i + 1}
                 </motion.div>
               ) : isComplete ? (
                 <div
-                  className="w-[18px] h-[18px] rounded-full flex items-center justify-center font-mono font-bold text-[10px] text-white shadow-xs"
+                  className="w-[20px] h-[20px] rounded-full flex items-center justify-center font-mono font-bold text-[11px] text-white shadow-xs"
                   style={{ background: '#38BDF8' }}
                 >
                   {i + 1}
                 </div>
               ) : (
                 <div
-                  className="w-[18px] h-[18px] rounded-full flex items-center justify-center font-mono font-medium text-[9.5px] bg-white border border-gray-200 text-gray-400"
+                  className="w-[20px] h-[20px] rounded-full flex items-center justify-center font-mono font-medium text-[10.5px] bg-white border border-gray-200 text-gray-400"
                 >
                   {i + 1}
                 </div>
@@ -700,9 +700,9 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
               className="absolute z-10 flex items-center justify-center"
               style={{
                 left: 0,
-                top: getTop(i) + (rowHeight - 20) / 2,
-                width: 20,
-                height: 20,
+                top: getTop(i) + (rowHeight - 22) / 2,
+                width: 22,
+                height: 22,
               }}
             >
               {isCurrent ? (
@@ -711,14 +711,14 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
                   initial={{ scale: 0.75 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-                  className="w-5 h-5 rounded-lg flex items-center justify-center font-mono font-bold text-[10.5px] text-white shadow-sm ring-2 ring-sky-200/80"
+                  className="w-[22px] h-[22px] rounded-lg flex items-center justify-center font-mono font-bold text-[11.5px] text-white shadow-sm ring-2 ring-sky-200/80"
                   style={{ background: '#0EA5E9' }}
                 >
                   {i + 1}
                 </motion.div>
               ) : isComplete ? (
                 <div
-                  className="w-[19px] h-[19px] rounded-lg flex items-center justify-center font-mono font-bold text-[10px]"
+                  className="w-[20px] h-[20px] rounded-lg flex items-center justify-center font-mono font-bold text-[11px]"
                   style={{
                     background: '#E0F2FE',
                     color: '#0284C7',
@@ -729,7 +729,7 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
                 </div>
               ) : (
                 <div
-                  className="w-[18px] h-[18px] rounded-lg flex items-center justify-center font-mono font-medium text-[10px]"
+                  className="w-[20px] h-[20px] rounded-lg flex items-center justify-center font-mono font-medium text-[10.5px]"
                   style={{
                     background: '#F8FAFC',
                     color: '#94A3B8',
@@ -752,8 +752,8 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
         {/* Step connectors */}
         {Array.from({ length: totalSteps - 1 }).map((_, i) => {
           const isDone = i < activeStep
-          const connTop = getTop(i) + (rowHeight + 18) / 2 - 3
-          const nextNodeTop = getTop(i + 1) + (rowHeight - 18) / 2
+          const connTop = getTop(i) + (rowHeight + 20) / 2 - 2
+          const nextNodeTop = getTop(i + 1) + (rowHeight - 20) / 2
           const connH = Math.max(2, nextNodeTop - connTop)
 
           return (
@@ -761,7 +761,7 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
               key={`conn-${i}`}
               className="absolute z-0"
               style={{
-                left: 9,
+                left: 10,
                 top: connTop,
                 width: 2,
                 height: connH,
@@ -783,14 +783,14 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
               className="absolute z-10 flex items-center justify-center"
               style={{
                 left: 1,
-                top: getTop(i) + (rowHeight - 18) / 2,
-                width: 18,
-                height: 18,
+                top: getTop(i) + (rowHeight - 20) / 2,
+                width: 20,
+                height: 20,
               }}
             >
               {isComplete ? (
-                <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center bg-sky-400">
-                  <svg viewBox="0 0 12 12" className="w-2.5 h-2.5">
+                <div className="w-[20px] h-[20px] rounded-full flex items-center justify-center bg-sky-400 shadow-2xs">
+                  <svg viewBox="0 0 12 12" className="w-3 h-3">
                     <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                   </svg>
                 </div>
@@ -800,12 +800,12 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  className="w-[18px] h-[18px] rounded-full flex items-center justify-center bg-sky-400"
+                  className="w-[20px] h-[20px] rounded-full flex items-center justify-center bg-sky-400 shadow-xs"
                 >
-                  <div className="w-2 h-2 rounded-full bg-white" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-white" />
                 </motion.div>
               ) : (
-                <div className="w-[14px] h-[14px] rounded-full border-2 border-gray-200 bg-white" />
+                <div className="w-[16px] h-[16px] rounded-full border-2 border-gray-200 bg-white" />
               )}
             </div>
           )
@@ -821,8 +821,8 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
         <div
           className="absolute z-0"
           style={{
-            left: 9,
-            top: (rowHeight - 18) / 2 + 9,
+            left: 10,
+            top: (rowHeight - 20) / 2 + 10,
             width: 2,
             height: totalLineH,
             borderLeft: '2px dashed #CBD5E1',
@@ -833,8 +833,8 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
         <motion.div
           className="absolute z-0 origin-top overflow-hidden"
           style={{
-            left: 9,
-            top: (rowHeight - 18) / 2 + 9,
+            left: 10,
+            top: (rowHeight - 20) / 2 + 10,
             width: 2,
             borderLeft: '2px dashed #38BDF8',
           }}
@@ -847,14 +847,14 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
           className="absolute z-20 flex items-center justify-center rounded-full shadow-sm"
           style={{
             left: 1,
-            width: 18,
-            height: 18,
+            width: 20,
+            height: 20,
             background: '#38BDF8',
           }}
           animate={{ top: circleTop }}
           transition={{ type: 'spring', stiffness: 350, damping: 26 }}
         >
-          <div className="w-2 h-2 rounded-full bg-white" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white" />
         </motion.div>
       </>
     )
@@ -868,7 +868,7 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
           className="absolute z-0"
           style={{
             left: 6,
-            top: (rowHeight - 18) / 2 + 9,
+            top: (rowHeight - 20) / 2 + 10,
             width: 8,
             height: totalLineH,
             border: '1.5px solid #E2E8F0',
@@ -883,7 +883,7 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
             className="absolute z-0"
             style={{
               left: 6,
-              top: getTop(i) + (rowHeight - 18) / 2 + 8.5,
+              top: getTop(i) + (rowHeight - 20) / 2 + 9.5,
               width: 8,
               height: 1.5,
               background: i <= activeStep ? '#38BDF8' : '#E2E8F0',
@@ -897,7 +897,7 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
           className="absolute z-0 origin-top"
           style={{
             left: 6,
-            top: (rowHeight - 18) / 2 + 9,
+            top: (rowHeight - 20) / 2 + 10,
             width: 8,
             borderLeft: '1.5px solid #38BDF8',
             borderRight: '1.5px solid #38BDF8',
@@ -917,22 +917,22 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
         <motion.div
           className="absolute z-20 flex items-center justify-center rounded-full shadow-sm"
           style={{
-            left: 1,
-            width: 18,
-            height: 18,
+            left: 0,
+            width: 20,
+            height: 20,
             background: '#38BDF8',
           }}
           animate={{ top: circleTop }}
           transition={{ type: 'spring', stiffness: 350, damping: 26 }}
         >
-          <div className="w-2 h-2 rounded-full bg-white" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white" />
         </motion.div>
       </>
     )
   }
 
   if (lineStyle === 'dotted') {
-    const startY = (rowHeight - 18) / 2 + 9
+    const startY = (rowHeight - 20) / 2 + 10
     return (
       <>
         {/* Base inactive dotted line */}
@@ -941,14 +941,14 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
           style={{
             left: 0,
             top: 0,
-            width: 20,
+            width: 22,
             height: totalLineH + startY + 10,
           }}
         >
           <line
-            x1="10"
+            x1="11"
             y1={startY}
-            x2="10"
+            x2="11"
             y2={startY + totalLineH}
             stroke="#CBD5E1"
             strokeWidth="3.5"
@@ -963,7 +963,7 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
           style={{
             left: 0,
             top: startY,
-            width: 20,
+            width: 22,
           }}
           animate={{ height: activeLineH }}
           transition={{ type: 'spring', stiffness: 350, damping: 28 }}
@@ -971,14 +971,14 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
           <svg
             className="pointer-events-none"
             style={{
-              width: 20,
+              width: 22,
               height: totalLineH + 10,
             }}
           >
             <line
-              x1="10"
+              x1="11"
               y1={0}
-              x2="10"
+              x2="11"
               y2={totalLineH}
               stroke="#38BDF8"
               strokeWidth="3.5"
@@ -993,21 +993,21 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
           className="absolute z-20 flex items-center justify-center rounded-full shadow-sm"
           style={{
             left: 1,
-            width: 18,
-            height: 18,
+            width: 20,
+            height: 20,
             background: '#38BDF8',
           }}
           animate={{ top: circleTop }}
           transition={{ type: 'spring', stiffness: 350, damping: 26 }}
         >
-          <div className="w-2 h-2 rounded-full bg-white" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white" />
         </motion.div>
       </>
     )
   }
 
   if (lineStyle === 'segments' || lineStyle === 'chevron') {
-    const startY = (rowHeight - 18) / 2 + 9
+    const startY = (rowHeight - 20) / 2 + 10
     return (
       <>
         {/* Step pill segments */}
@@ -1053,14 +1053,14 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
           className="absolute z-20 flex items-center justify-center rounded-full shadow-sm"
           style={{
             left: 1,
-            width: 18,
-            height: 18,
+            width: 20,
+            height: 20,
             background: '#38BDF8',
           }}
           animate={{ top: circleTop }}
           transition={{ type: 'spring', stiffness: 350, damping: 26 }}
         >
-          <div className="w-2 h-2 rounded-full bg-white" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white" />
         </motion.div>
       </>
     )
@@ -1070,8 +1070,8 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
       <div
         className="absolute z-0"
         style={{
-          left: 9,
-          top: (rowHeight - 18) / 2 + 9,
+          left: 10,
+          top: (rowHeight - 20) / 2 + 10,
           width: 2,
           height: totalLineH,
           background: '#E5E7EB',
@@ -1081,8 +1081,8 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
       <motion.div
         className="absolute z-0 origin-top"
         style={{
-          left: 9,
-          top: (rowHeight - 18) / 2 + 9,
+          left: 10,
+          top: (rowHeight - 20) / 2 + 10,
           width: 2,
           background: '#38BDF8',
           borderRadius: 1,
@@ -1094,14 +1094,14 @@ function TimelineLine({ activeStep, totalSteps = steps.length, rowHeight = 38, l
         className="absolute z-20 flex items-center justify-center rounded-full shadow-sm"
         style={{
           left: 1,
-          width: 18,
-          height: 18,
+          width: 20,
+          height: 20,
           background: '#38BDF8',
         }}
         animate={{ top: circleTop }}
         transition={{ type: 'spring', stiffness: 350, damping: 26 }}
       >
-        <div className="w-2 h-2 rounded-full bg-white" />
+        <div className="w-2.5 h-2.5 rounded-full bg-white" />
       </motion.div>
     </>
   )
@@ -1125,7 +1125,7 @@ function ProcessSubStepsDrawer({
   const activeSubStepIndex = rawActiveStep - startIndex
 
   return (
-    <div className="ml-8 mr-1 my-1 pl-3 select-none border-l-1.5 border-slate-200/80 space-y-1">
+    <div className="ml-9 mr-1 my-1.5 pl-3.5 select-none border-l-1.5 border-slate-200/80 space-y-1.5">
       {subSteps.map((sub, sIdx) => {
         const rawStep = startIndex + sIdx
         const isSubDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
@@ -1169,31 +1169,31 @@ function ProcessSubStepsDrawer({
               e.stopPropagation()
               if (onSelectRawStep) onSelectRawStep(startIndex + sIdx)
             }}
-            className="flex items-center justify-between py-1 px-1.5 rounded-lg transition-colors cursor-pointer hover:bg-slate-50/80 group"
-            style={{ height: 24 }}
+            className="flex items-center justify-between py-1.5 px-2 rounded-lg transition-colors cursor-pointer hover:bg-slate-50/80 group"
+            style={{ height: 30 }}
           >
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0">
               {/* Status indicator */}
-              <div className="w-3 h-3 flex items-center justify-center shrink-0">
+              <div className="w-3.5 h-3.5 flex items-center justify-center shrink-0">
                 {isSubDone ? (
-                  <div className="w-2 h-2 rounded-full bg-sky-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-sky-500" />
                 ) : isSubCurrent ? (
-                  <div className="relative w-2.5 h-2.5 flex items-center justify-center">
-                    <span className="absolute w-2.5 h-2.5 rounded-full bg-sky-400 opacity-40 animate-ping" />
-                    <span className="w-2 h-2 rounded-full bg-sky-500" />
+                  <div className="relative w-3 h-3 flex items-center justify-center">
+                    <span className="absolute w-3 h-3 rounded-full bg-sky-400 opacity-40 animate-ping" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
                   </div>
                 ) : (
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors" />
+                  <div className="w-2 h-2 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors" />
                 )}
               </div>
 
               {/* Sub-step icon */}
-              <div className="w-4 h-4 flex items-center justify-center shrink-0">
+              <div className="w-5 h-5 flex items-center justify-center shrink-0">
                 {sub.icon ? (
                   <img
                     src={sub.icon}
                     alt=""
-                    className="w-3.5 h-3.5 object-contain transition-opacity"
+                    className="w-[18px] h-[18px] object-contain transition-opacity"
                     style={{ opacity: isSubCurrent || isSubDone ? 1 : 0.35 }}
                   />
                 ) : (
@@ -1203,7 +1203,7 @@ function ProcessSubStepsDrawer({
 
               {/* Sub-step label */}
               <span
-                className="text-[12px] truncate transition-colors"
+                className="text-[13.5px] truncate transition-colors"
                 style={{
                   color: isSubCurrent ? '#0F172A' : isSubDone ? '#475569' : '#94A3B8',
                   fontWeight: isSubCurrent ? 600 : 400,
@@ -1214,11 +1214,11 @@ function ProcessSubStepsDrawer({
 
               {/* Service icon beside each step */}
               {servicesAtStep.length > 0 && (
-                <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                <div className="flex items-center -space-x-1.5 shrink-0 ml-1">
                   {servicesAtStep.map((srv, srvIdx) => (
                     <div
                       key={srvIdx}
-                      className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                      className="w-5 h-5 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
                       style={{ border: `1px solid ${srv.border || badgeBorder || '#E2E8F0'}` }}
                       title={srv.name}
                     >
@@ -1250,8 +1250,8 @@ function ProcessSegmentsDrawer({
   const activeSubStepIndex = rawActiveStep - startIndex
 
   return (
-    <div className="ml-8 mr-1 mb-1.5 pl-3.5 select-none">
-      <div className="pt-1.5 pb-1 flex items-center justify-between w-full max-w-[200px]">
+    <div className="ml-9 mr-1 mb-2 pl-3.5 select-none">
+      <div className="pt-1.5 pb-1 flex items-center justify-between w-full max-w-[250px]">
         {subSteps.map((sub, sIdx) => {
           const isDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
           const isActive = rawActiveStep >= startIndex && rawActiveStep <= endIndex && activeSubStepIndex === sIdx
@@ -1267,8 +1267,8 @@ function ProcessSegmentsDrawer({
                 isActive ? 'text-sky-600 font-bold' : isDone ? 'text-slate-700 font-medium' : 'text-slate-400'
               }`}
             >
-              <span className="text-[9.5px] leading-tight">{sub.label}</span>
-              <span className="text-[8px] font-mono leading-none">
+              <span className="text-[11.5px] leading-tight">{sub.label}</span>
+              <span className="text-[9.5px] font-mono leading-none">
                 {isDone ? '✓' : isActive ? '●' : '○'}
               </span>
             </button>
@@ -1297,7 +1297,7 @@ function ProcessPillsDrawer({
   const activeSubStepIndex = rawActiveStep - startIndex
 
   return (
-    <div className="ml-8 mr-1 mb-1 pl-3 py-0.5 flex items-start gap-1.5 select-none overflow-x-auto no-scrollbar">
+    <div className="ml-9 mr-1 mb-1.5 pl-3.5 py-1 flex items-start gap-2 select-none overflow-x-auto no-scrollbar">
       {subSteps.map((sub, sIdx) => {
         const rawStep = startIndex + sIdx
         const isDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
@@ -1337,7 +1337,7 @@ function ProcessPillsDrawer({
         return (
           <Fragment key={sub.label}>
             {sIdx > 0 && (
-              <span className="text-[9px] text-slate-300 font-normal select-none shrink-0 pt-0.5">
+              <span className="text-[11px] text-slate-300 font-normal select-none shrink-0 pt-0.5">
                 ·
               </span>
             )}
@@ -1349,7 +1349,7 @@ function ProcessPillsDrawer({
               className="relative flex flex-col items-center py-0.5 cursor-pointer select-none transition-all group shrink-0 active:scale-95"
             >
               <span
-                className={`text-[10.5px] tracking-tight transition-colors ${
+                className={`text-[12px] tracking-tight transition-colors ${
                   isActive || servicesAtStep.length > 0
                     ? 'text-sky-600 font-bold'
                     : isDone
@@ -1371,7 +1371,7 @@ function ProcessPillsDrawer({
                   {servicesAtStep.map((srv, srvIdx) => (
                     <div
                       key={srvIdx}
-                      className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                      className="w-5 h-5 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
                       style={{ border: `1px solid ${srv.border || badgeBorder || '#E2E8F0'}` }}
                       title={srv.name}
                     >
@@ -1389,7 +1389,7 @@ function ProcessPillsDrawer({
               {isActive && servicesAtStep.length === 0 && (
                 <motion.div
                   layoutId="process-text-underline"
-                  className="absolute -bottom-0.5 left-0 right-0 h-[1.5px] bg-sky-500 rounded-full"
+                  className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-sky-500 rounded-full"
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}
@@ -1815,7 +1815,7 @@ function StatusList({
   themeColor = '#3B82F6',
   badgeColor = '#EFF6FF',
 }) {
-  const ROW_H = 38
+  const ROW_H = 46
   const containerRef = useRef(null)
   const rowRefs = useRef([])
   const [stepTops, setStepTops] = useState(null)
@@ -1829,7 +1829,7 @@ function StatusList({
     if (!isCompact || !isProcessExpanded || processGroupIndex === -1) {
       return steps.map((_, i) => i * ROW_H)
     }
-    const estimatedExtra = processDesign === 'segments' ? 28 : processDesign === 'pills' ? 36 : (subCount * 28 + 4)
+    const estimatedExtra = processDesign === 'segments' ? 32 : processDesign === 'pills' ? 40 : (subCount * 30 + 6)
     return steps.map((_, i) => {
       if (i <= processGroupIndex) {
         return i * ROW_H
@@ -1892,14 +1892,14 @@ function StatusList({
                   style={{ height: ROW_H }}
                   title={isProcessExpanded ? 'Click to collapse process' : 'Click to expand process'}
                 >
-                  <div className="shrink-0 z-10" style={{ width: 20 }} />
+                  <div className="shrink-0 z-10" style={{ width: 22 }} />
 
                   {/* Icon */}
-                  <div className="shrink-0 flex items-center justify-center" style={{ width: 26, height: 26 }}>
+                  <div className="shrink-0 flex items-center justify-center" style={{ width: 28, height: 28 }}>
                     <img
                       src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
                       alt={step.label}
-                      className="w-[22px] h-[22px] object-contain transition-opacity duration-200"
+                      className="w-[24px] h-[24px] object-contain transition-opacity duration-200"
                       style={{
                         opacity: isCurrent || isComplete ? 1 : 0.3,
                         filter: isCurrent
@@ -1914,10 +1914,10 @@ function StatusList({
                     <div className="flex flex-col flex-1 min-w-0 justify-center">
                       <div className="flex items-center gap-1.5 min-w-0">
                         <span
-                          className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                          className="text-[14.5px] leading-tight transition-colors duration-200 shrink-0"
                           style={{
                             color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                            fontWeight: isCurrent ? 700 : 400,
+                            fontWeight: isCurrent ? 700 : 500,
                           }}
                         >
                           {step.label}
@@ -1929,7 +1929,7 @@ function StatusList({
                           strokeWidth="2.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                          className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${
                             isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
                           }`}
                         >
@@ -1937,7 +1937,7 @@ function StatusList({
                         </svg>
                       </div>
                       {/* 4-Segment Progress Bar */}
-                      <div className="flex items-center gap-1 w-full max-w-[190px] mt-1">
+                      <div className="flex items-center gap-1 w-full max-w-[210px] mt-1">
                         {step.subSteps.map((sub, sIdx) => {
                           const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
                           const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
@@ -1969,10 +1969,10 @@ function StatusList({
                   ) : processDesign === 'pills' ? (
                     <div className="flex items-center gap-1.5 flex-1 min-w-0">
                       <span
-                        className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                        className="text-[14.5px] leading-tight transition-colors duration-200 shrink-0"
                         style={{
                           color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                          fontWeight: isCurrent ? 700 : 400,
+                          fontWeight: isCurrent ? 700 : 500,
                         }}
                       >
                         {step.label}
@@ -1984,7 +1984,7 @@ function StatusList({
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                        className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${
                           isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
                         }`}
                       >
@@ -1992,11 +1992,11 @@ function StatusList({
                       </svg>
                       {/* Show service when collapsed, hide on top header when expanded (moves below sub-step in pills) */}
                       {!isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
-                        <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                        <div className="flex items-center -space-x-1.5 shrink-0 ml-1">
                           {serviceIcons.map((icon, idx) => (
                             <div
                               key={idx}
-                              className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                              className="w-5 h-5 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
                               style={{ border: `1px solid ${badgeBorder}` }}
                             >
                               <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
@@ -2009,10 +2009,10 @@ function StatusList({
                     /* Drawer design header */
                     <div className="flex items-center gap-1.5 flex-1 min-w-0">
                       <span
-                        className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                        className="text-[14.5px] leading-tight transition-colors duration-200 shrink-0"
                         style={{
                           color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                          fontWeight: isCurrent ? 700 : 400,
+                          fontWeight: isCurrent ? 700 : 500,
                         }}
                       >
                         {step.label}
@@ -2024,7 +2024,7 @@ function StatusList({
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                        className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${
                           isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
                         }`}
                       >
@@ -2032,11 +2032,11 @@ function StatusList({
                       </svg>
                       {/* Service icon on top header ONLY when collapsed (moves beside sub-steps when expanded) */}
                       {!isProcessExpanded && isCurrent && serviceIcons && serviceIcons.length > 0 && !(isMultiService && multiServiceMode === 'minimal') && (
-                        <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                        <div className="flex items-center -space-x-1.5 shrink-0 ml-1">
                           {serviceIcons.map((icon, idx) => (
                             <div
                               key={idx}
-                              className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                              className="w-5 h-5 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
                               style={{ border: `1px solid ${badgeBorder || '#E2E8F0'}` }}
                             >
                               <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
@@ -2117,15 +2117,15 @@ function StatusList({
               style={{ height: ROW_H }}
             >
               {/* Spacer column where the line runs */}
-              <div className="shrink-0 z-10" style={{ width: 20 }} />
+              <div className="shrink-0 z-10" style={{ width: 22 }} />
 
               {/* Icon */}
-              <div className="shrink-0 flex items-center justify-center" style={{ width: 26, height: 26 }}>
+              <div className="shrink-0 flex items-center justify-center" style={{ width: 28, height: 28 }}>
                 {step.icon ? (
                   <img
                     src={step.icon}
                     alt={step.label}
-                    className="w-[22px] h-[22px] object-contain transition-opacity duration-200"
+                    className="w-[24px] h-[24px] object-contain transition-opacity duration-200"
                     style={{
                       opacity: isCurrent || isComplete ? 1 : 0.3,
                       filter: isCurrent
@@ -2142,10 +2142,10 @@ function StatusList({
 
               {/* Label */}
               <span
-                className="text-[13px] transition-colors duration-200"
+                className="text-[14.5px] transition-colors duration-200"
                 style={{
                   color:      isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                  fontWeight: isCurrent ? 700 : 400,
+                  fontWeight: isCurrent ? 700 : 500,
                 }}
               >
                 {step.label}
@@ -2212,7 +2212,7 @@ function StatusStepper({
   rightSideStyle = 'none',
   themeColor = '#3B82F6',
 }) {
-  const ROW_H = 44
+  const ROW_H = 48
   const containerRef = useRef(null)
   const rowRefs = useRef([])
   const [stepTops, setStepTops] = useState(null)
@@ -2226,7 +2226,7 @@ function StatusStepper({
     if (!isCompact || !isProcessExpanded || processGroupIndex === -1) {
       return steps.map((_, i) => i * ROW_H)
     }
-    const estimatedExtra = processDesign === 'segments' ? 28 : processDesign === 'pills' ? 36 : (subCount * 28 + 4)
+    const estimatedExtra = processDesign === 'segments' ? 32 : processDesign === 'pills' ? 40 : (subCount * 30 + 6)
     return steps.map((_, i) => {
       if (i <= processGroupIndex) {
         return i * ROW_H
@@ -2289,14 +2289,14 @@ function StatusStepper({
                   style={{ height: ROW_H }}
                   title={isProcessExpanded ? 'Click to collapse process' : 'Click to expand process'}
                 >
-                  <div className="shrink-0 z-10" style={{ width: 20 }} />
+                  <div className="shrink-0 z-10" style={{ width: 22 }} />
 
                   {/* Icon */}
-                  <div className="shrink-0 flex items-center justify-center" style={{ width: 24, height: 24 }}>
+                  <div className="shrink-0 flex items-center justify-center" style={{ width: 28, height: 28 }}>
                     <img
                       src={isCurrent && activeSubStepIndex >= 0 && step.subSteps[activeSubStepIndex]?.icon ? step.subSteps[activeSubStepIndex].icon : step.icon}
                       alt={step.label}
-                      className="w-[20px] h-[20px] object-contain transition-opacity duration-200"
+                      className="w-[24px] h-[24px] object-contain transition-opacity duration-200"
                       style={{
                         opacity: isCurrent || isComplete ? 1 : 0.3,
                         filter: isCurrent
@@ -2311,10 +2311,10 @@ function StatusStepper({
                     <div className="flex flex-col flex-1 min-w-0 justify-center">
                       <div className="flex items-center gap-1.5 min-w-0">
                         <span
-                          className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                          className="text-[14.5px] leading-tight transition-colors duration-200 shrink-0"
                           style={{
                             color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                            fontWeight: isCurrent ? 700 : 400,
+                            fontWeight: isCurrent ? 700 : 500,
                           }}
                         >
                           {step.label}
@@ -2326,18 +2326,18 @@ function StatusStepper({
                           strokeWidth="2.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                          className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${
                             isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
                           }`}
                         >
                           <path d="M6 9l6 6 6-6" />
                         </svg>
                         {isCurrent && overlap && serviceIcons.length > 0 && (
-                          <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                          <div className="flex items-center -space-x-1.5 shrink-0 ml-1">
                             {serviceIcons.map((icon, idx) => (
                               <div
                                 key={idx}
-                                className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                                className="w-5 h-5 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
                                 style={{ border: `1px solid ${badgeBorder}` }}
                               >
                                 <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
@@ -2347,7 +2347,7 @@ function StatusStepper({
                         )}
                       </div>
                       {/* 4-Segment Progress Bar */}
-                      <div className="flex items-center gap-1 w-full max-w-[190px] mt-1">
+                      <div className="flex items-center gap-1 w-full max-w-[210px] mt-1">
                         {step.subSteps.map((sub, sIdx) => {
                           const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
                           const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
@@ -2379,10 +2379,10 @@ function StatusStepper({
                   ) : processDesign === 'pills' ? (
                     <div className="flex items-center gap-1.5 flex-1 min-w-0">
                       <span
-                        className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                        className="text-[14.5px] leading-tight transition-colors duration-200 shrink-0"
                         style={{
-                          color: isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                          fontWeight: isCurrent ? 700 : 400,
+                          color:      isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
+                          fontWeight: isCurrent ? 700 : 500,
                         }}
                       >
                         {step.label}
@@ -2394,7 +2394,7 @@ function StatusStepper({
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                        className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${
                           isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
                         }`}
                       >
@@ -2402,11 +2402,11 @@ function StatusStepper({
                       </svg>
                       {/* Show service when collapsed, hide on top header when expanded (moves below sub-step in pills) */}
                       {!isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
-                        <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                        <div className="flex items-center -space-x-1.5 shrink-0 ml-1">
                           {serviceIcons.map((icon, idx) => (
                             <div
                               key={idx}
-                              className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                              className="w-5 h-5 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
                               style={{ border: `1px solid ${badgeBorder}` }}
                             >
                               <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
@@ -2419,10 +2419,10 @@ function StatusStepper({
                     /* Drawer design header */
                     <div className="flex items-center gap-1.5 flex-1 min-w-0">
                       <span
-                        className="text-[13px] leading-tight transition-colors duration-200 shrink-0"
+                        className="text-[14.5px] leading-tight transition-colors duration-200 shrink-0"
                         style={{
                           color:      isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                          fontWeight: isCurrent ? 700 : 400,
+                          fontWeight: isCurrent ? 700 : 500,
                         }}
                       >
                         {step.label}
@@ -2434,7 +2434,7 @@ function StatusStepper({
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className={`w-3 h-3 transition-transform duration-200 shrink-0 ${
+                        className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${
                           isProcessExpanded ? 'rotate-180 text-sky-600' : isCurrent ? 'text-slate-500' : 'text-slate-300'
                         }`}
                       >
@@ -2442,11 +2442,11 @@ function StatusStepper({
                       </svg>
                       {/* Service icon on top header ONLY when collapsed (moves beside sub-steps when expanded) */}
                       {!isProcessExpanded && isCurrent && serviceIcons && serviceIcons.length > 0 && !(isMultiService && multiServiceMode === 'minimal') && (
-                        <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
+                        <div className="flex items-center -space-x-1.5 shrink-0 ml-1">
                           {serviceIcons.map((icon, idx) => (
                             <div
                               key={idx}
-                              className="w-4 h-4 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
+                              className="w-5 h-5 rounded-full flex items-center justify-center bg-white ring-1 ring-white p-0.5 shadow-2xs"
                               style={{ border: `1px solid ${badgeBorder || '#E2E8F0'}` }}
                             >
                               <img src={icon} alt="" className="w-full h-full object-contain rounded-full" />
@@ -2527,15 +2527,15 @@ function StatusStepper({
               style={{ height: ROW_H }}
             >
               {/* Spacer column where the straight line runs */}
-              <div className="shrink-0 z-10" style={{ width: 20 }} />
+              <div className="shrink-0 z-10" style={{ width: 22 }} />
 
               {/* Status icon from /status/ folder */}
-              <div className="shrink-0 flex items-center justify-center" style={{ width: 24, height: 24 }}>
+              <div className="shrink-0 flex items-center justify-center" style={{ width: 28, height: 28 }}>
                 {step.icon ? (
                   <img
                     src={step.icon}
                     alt={step.label}
-                    className="w-[20px] h-[20px] object-contain transition-opacity duration-200"
+                    className="w-[24px] h-[24px] object-contain transition-opacity duration-200"
                     style={{
                       opacity: isCurrent || isComplete ? 1 : 0.3,
                       filter: isCurrent
@@ -2553,10 +2553,10 @@ function StatusStepper({
               {/* Step info: Label, and ONLY ON ACTIVE: service below */}
               <div className="flex flex-col items-start flex-1 min-w-0 justify-center">
                 <span
-                  className="text-[13px] leading-tight transition-colors duration-200"
+                  className="text-[14.5px] leading-tight transition-colors duration-200"
                   style={{
                     color:      isCurrent ? '#141C3C' : isComplete ? '#6B7280' : '#D1D5DB',
-                    fontWeight: isCurrent ? 700 : 400,
+                    fontWeight: isCurrent ? 700 : 500,
                   }}
                 >
                   {step.label}
@@ -2569,7 +2569,7 @@ function StatusStepper({
                       initial={{ opacity: 0, y: -3, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.2 }}
-                      className="mt-1 flex items-center gap-1.5 px-2 py-0.5 rounded-full"
+                      className="mt-1 flex items-center gap-1.5 px-2.5 py-1 rounded-full"
                       style={{
                         background: badgeColor,
                         border: `1px solid ${badgeBorder}`,
@@ -2581,12 +2581,12 @@ function StatusStepper({
                             key={idx}
                             src={icon}
                             alt=""
-                            className="w-3.5 h-3.5 object-contain rounded-full bg-white ring-1 ring-white"
+                            className="w-4 h-4 object-contain rounded-full bg-white ring-1 ring-white"
                           />
                         ))}
                       </div>
                       <span
-                        className="text-[9px] font-semibold truncate"
+                        className="text-[11px] font-semibold truncate"
                         style={{ color: badgeText }}
                       >
                         {serviceName}
@@ -2603,7 +2603,7 @@ function StatusStepper({
                       {serviceIcons.map((icon, idx) => (
                         <div
                           key={idx}
-                          className="relative w-[22px] h-[22px] rounded-full flex items-center justify-center p-0.5 ring-2 ring-white shadow-xs bg-white transition-transform hover:scale-115 hover:z-30 cursor-pointer"
+                          className="relative w-[24px] h-[24px] rounded-full flex items-center justify-center p-0.5 ring-2 ring-white shadow-xs bg-white transition-transform hover:scale-115 hover:z-30 cursor-pointer"
                           style={{
                             border: `1px solid ${badgeBorder || '#E2E8F0'}`,
                             zIndex: serviceIcons.length - idx,
@@ -2629,7 +2629,7 @@ function StatusStepper({
                       {serviceIcons.map((icon, idx) => (
                         <div
                           key={idx}
-                          className="w-5 h-5 rounded-full flex items-center justify-center p-0.5"
+                          className="w-6 h-6 rounded-full flex items-center justify-center p-0.5"
                           style={{
                             background: badgeColor,
                             border: `1px solid ${badgeBorder}`,
@@ -2688,9 +2688,9 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
 
   return (
     <div
-      className={`p-1 rounded-2xl bg-slate-100/90 grid ${
+      className={`p-1.5 rounded-2xl bg-slate-100/90 grid ${
         isPair ? 'grid-cols-2' : 'grid-cols-5'
-      } gap-1 mb-3 select-none`}
+      } gap-1.5 mb-3.5 select-none`}
     >
       {subServices.map((sub) => {
         const isSelected = sub.id === activeSubId
@@ -2698,7 +2698,7 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
           <button
             key={sub.id}
             onClick={() => onSelect(sub.id)}
-            className="relative flex items-center justify-center py-2 px-2 rounded-xl transition-all select-none cursor-pointer active:scale-95"
+            className="relative flex items-center justify-center py-2 px-2.5 rounded-xl transition-all select-none cursor-pointer active:scale-95"
             title={sub.serviceName}
           >
             {isSelected && (
@@ -2709,7 +2709,7 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
               />
             )}
             <div
-              className="relative z-10 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all"
+              className="relative z-10 w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all"
               style={{
                 background: isSelected ? sub.badgeColor : 'transparent',
               }}
@@ -2717,10 +2717,18 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
               <img
                 src={sub.serviceIcons[0]}
                 alt={sub.serviceName}
-                className="w-5 h-5 object-contain transition-opacity"
+                className="w-6 h-6 object-contain transition-opacity"
                 style={{ opacity: isSelected ? 1 : 0.55 }}
               />
             </div>
+            {isPair && (
+              <span
+                className="relative z-10 text-[13px] ml-2 font-semibold truncate transition-colors"
+                style={{ color: isSelected ? '#0F172A' : '#64748B' }}
+              >
+                {sub.serviceName}
+              </span>
+            )}
           </button>
         )
       })}
@@ -2733,7 +2741,7 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
   return (
-    <div className="relative border-b border-slate-100/90 mb-3 select-none">
+    <div className="relative border-b border-slate-100/90 mb-3.5 select-none">
       <div className={`grid ${isPair ? 'grid-cols-2' : 'grid-cols-5'} gap-0`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
@@ -2741,12 +2749,12 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
             <button
               key={sub.id}
               onClick={() => onSelect(sub.id)}
-              className="relative flex flex-col items-center justify-center pt-1.5 pb-2.5 transition-all select-none cursor-pointer group active:scale-95"
+              className="relative flex flex-col items-center justify-center pt-2 pb-3 transition-all select-none cursor-pointer group active:scale-95"
               title={sub.serviceName}
             >
               {/* Icon */}
               <div
-                className="w-7 h-7 flex items-center justify-center transition-all duration-200"
+                className="w-10 h-10 flex items-center justify-center transition-all duration-200"
                 style={{
                   transform: isSelected ? 'scale(1.1)' : 'scale(0.95)',
                 }}
@@ -2754,15 +2762,15 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
                 <img
                   src={sub.serviceIcons[0]}
                   alt={sub.serviceName}
-                  className="w-5 h-5 object-contain transition-opacity duration-200"
-                  style={{ opacity: isSelected ? 1 : 0.35 }}
+                  className="w-7 h-7 object-contain transition-opacity duration-200"
+                  style={{ opacity: isSelected ? 1 : 0.4 }}
                 />
               </div>
 
               {/* Label only for 2 services pair */}
               {isPair && (
                 <span
-                  className="text-[11px] mt-1 truncate max-w-full px-1 leading-none transition-colors"
+                  className="text-[13px] mt-1.5 truncate max-w-full px-1 leading-none transition-colors"
                   style={{
                     color: isSelected ? '#0F172A' : '#94A3B8',
                     fontWeight: isSelected ? 600 : 500,
@@ -2776,10 +2784,10 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
               {isSelected && (
                 <motion.div
                   layoutId="service-minimal-indicator"
-                  className="absolute bottom-0 h-[2.5px] rounded-full"
+                  className="absolute bottom-0 h-[3px] rounded-full"
                   style={{
                     background: sub.themeColor,
-                    width: isPair ? 36 : 22,
+                    width: isPair ? 48 : 32,
                   }}
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
@@ -2797,20 +2805,20 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
   return (
-    <div className="mb-3 select-none">
-      <div className={`grid ${isPair ? 'grid-cols-2 gap-3' : 'grid-cols-5 gap-1.5'}`}>
+    <div className="mb-3.5 select-none">
+      <div className={`grid ${isPair ? 'grid-cols-2 gap-4' : 'grid-cols-5 gap-2'}`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
           return (
             <button
               key={sub.id}
               onClick={() => onSelect(sub.id)}
-              className="relative flex flex-col items-center justify-center py-1.5 rounded-xl transition-all cursor-pointer group active:scale-95"
+              className="relative flex flex-col items-center justify-center py-2 rounded-xl transition-all cursor-pointer group active:scale-95"
               title={sub.serviceName}
             >
               {/* Ring token */}
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+                className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 ${
                   isSelected
                     ? 'ring-2 ring-offset-2'
                     : 'border border-slate-200/80 bg-slate-50/60 group-hover:border-slate-300'
@@ -2818,13 +2826,13 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
                 style={{
                   '--tw-ring-color': sub.themeColor,
                   background: isSelected ? sub.badgeColor : undefined,
-                  transform: isSelected ? 'scale(1.05)' : 'scale(0.95)',
+                  transform: isSelected ? 'scale(1.06)' : 'scale(0.95)',
                 }}
               >
                 <img
                   src={sub.serviceIcons[0]}
                   alt={sub.serviceName}
-                  className="w-4 h-4 object-contain transition-opacity duration-200"
+                  className="w-6 h-6 object-contain transition-opacity duration-200"
                   style={{ opacity: isSelected ? 1 : 0.4 }}
                 />
               </div>
@@ -2832,7 +2840,7 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
               {/* Label for 2-service pair */}
               {isPair && (
                 <span
-                  className="text-[11px] mt-2.5 truncate max-w-full px-1 leading-none transition-colors"
+                  className="text-[13px] mt-2 truncate max-w-full px-1 leading-none transition-colors"
                   style={{
                     color: isSelected ? '#0F172A' : '#94A3B8',
                     fontWeight: isSelected ? 600 : 500,
@@ -2854,8 +2862,8 @@ function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
   return (
-    <div className="mb-3 select-none">
-      <div className={`grid ${isPair ? 'grid-cols-2 gap-2' : 'grid-cols-5 gap-1.5'}`}>
+    <div className="mb-3.5 select-none">
+      <div className={`grid ${isPair ? 'grid-cols-2 gap-3' : 'grid-cols-5 gap-2'}`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
           return (
@@ -2867,7 +2875,7 @@ function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
             >
               <div
                 className={`relative flex items-center justify-center transition-all duration-200 ${
-                  isPair ? 'py-1.5 px-2.5 gap-1.5 rounded-full' : 'h-8 rounded-full'
+                  isPair ? 'py-2 px-3 gap-2 rounded-full' : 'h-10 rounded-full'
                 }`}
                 style={{
                   borderWidth: '1.5px',
@@ -2880,12 +2888,12 @@ function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
                 <img
                   src={sub.serviceIcons[0]}
                   alt={sub.serviceName}
-                  className="w-4 h-4 object-contain transition-opacity duration-200"
+                  className="w-5 h-5 object-contain transition-opacity duration-200"
                   style={{ opacity: isSelected ? 1 : 0.4 }}
                 />
                 {isPair && (
                   <span
-                    className="text-[11px] truncate leading-none transition-colors"
+                    className="text-[13px] truncate leading-none transition-colors"
                     style={{
                       color: isSelected ? '#0F172A' : '#94A3B8',
                       fontWeight: isSelected ? 600 : 500,
@@ -3009,13 +3017,13 @@ function OrderDetailsScreen({
     <div className="flex flex-col h-full min-h-0 bg-white relative">
 
       {/* Back + Title */}
-      <div className="relative flex items-center justify-center px-4 pb-2.5 shrink-0" style={{ paddingTop: 6 }}>
-        <button className="absolute left-4 w-8 h-8 rounded-xl border border-gray-200 flex items-center justify-center shadow-xs bg-white hover:bg-gray-50 transition-colors">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round" className="w-4 h-4">
+      <div className="relative flex items-center justify-center px-5 pb-3 shrink-0" style={{ paddingTop: 6 }}>
+        <button className="absolute left-5 w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center shadow-xs bg-white hover:bg-gray-50 transition-colors">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round" className="w-[18px] h-[18px]">
             <path d="M15 18l-6-6 6-6"/>
           </svg>
         </button>
-        <span className="text-[15px] font-semibold text-gray-800">Order details</span>
+        <span className="text-[17px] font-semibold text-gray-900">Order details</span>
       </div>
 
       {/* Scrollable content */}
@@ -3025,7 +3033,7 @@ function OrderDetailsScreen({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
         onMouseLeave={handleMouseUpOrLeave}
-        className="flex-1 min-h-0 px-4 space-y-3 overflow-y-auto no-scrollbar cursor-grab active:cursor-grabbing"
+        className="flex-1 min-h-0 px-5 space-y-3.5 overflow-y-auto no-scrollbar cursor-grab active:cursor-grabbing"
         style={{
           WebkitOverflowScrolling: 'touch',
           overscrollBehavior: 'contain',
@@ -3034,43 +3042,43 @@ function OrderDetailsScreen({
         {/* Order title + price */}
         <div className="flex items-start justify-between pt-1">
           <div>
-            <h2 className="text-[18px] font-bold text-gray-900 tracking-tight">{service.title}</h2>
+            <h2 className="text-[21px] font-bold text-gray-900 tracking-tight">{service.title}</h2>
             <motion.span
               key={currentStep.label}
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1,    opacity: 1 }}
-              className="inline-block mt-1 px-2.5 py-0.5 text-[11.5px] font-semibold text-white shadow-xs"
+              className="inline-block mt-1 px-3 py-1 text-[12.5px] font-semibold text-white shadow-xs"
               style={{ background: '#0099FF', borderRadius: 12 }}
             >
               {currentStep.label}
             </motion.span>
           </div>
           <div className="text-right">
-            <div className="text-[17px] font-bold text-gray-900 leading-tight">
-              <span className="text-[11px] font-medium text-gray-500 mr-0.5 align-top">{service.currency}</span>
+            <div className="text-[20px] font-bold text-gray-900 leading-tight">
+              <span className="text-[12.5px] font-medium text-gray-500 mr-0.5 align-top">{service.currency}</span>
               {service.price}
             </div>
-            <div className="text-[12px] text-gray-400 mt-0.5">{service.status || 'Pending'}</div>
+            <div className="text-[13px] text-gray-400 mt-0.5">{service.status || 'Pending'}</div>
           </div>
         </div>
 
         {/* Chat / Call */}
         <div className="grid grid-cols-2 gap-3 pt-1">
           <button
-            className="flex items-center justify-center gap-2 py-2.5 text-white text-[13.5px] font-semibold active:scale-[0.98] transition-transform shadow-xs"
+            className="flex items-center justify-center gap-2 py-3 text-white text-[14.5px] font-semibold active:scale-[0.98] transition-transform shadow-xs"
             style={{ background: '#0A1C6A', borderRadius: 12 }}
           >
             <span>Chat</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px]">
               <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" strokeLinejoin="round"/>
             </svg>
           </button>
           <button
-            className="flex items-center justify-center gap-2 py-2.5 text-slate-900 text-[13.5px] font-semibold active:scale-[0.98] transition-transform shadow-xs"
+            className="flex items-center justify-center gap-2 py-3 text-slate-900 text-[14.5px] font-semibold active:scale-[0.98] transition-transform shadow-xs"
             style={{ background: '#00E5BE', borderRadius: 12 }}
           >
             <span>Call</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px]">
               <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.42 1.18 2 2 0 012.41 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.34a16 16 0 006.75 6.75l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" strokeLinejoin="round"/>
             </svg>
           </button>
@@ -3080,9 +3088,9 @@ function OrderDetailsScreen({
         <div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-baseline gap-1.5 min-w-0">
-              <h3 className="text-[15px] font-bold text-gray-900 shrink-0">Status</h3>
+              <h3 className="text-[17px] font-bold text-gray-900 shrink-0">Status</h3>
               {isTabsMode && activeDisplayService && (
-                <span className="text-[12px] font-medium text-slate-400 truncate">
+                <span className="text-[13.5px] font-medium text-slate-500 truncate">
                   · {activeDisplayService.serviceName}
                 </span>
               )}
@@ -3271,24 +3279,24 @@ function OrderDetailsScreen({
         </div>
 
         {/* ETA banner */}
-        <div className="flex items-center gap-3 px-4 py-3" style={{ background: '#EDF2FE', borderRadius: 16 }}>
-          <div className="w-5 h-5 rounded-full border-1.5 border-slate-800 flex items-center justify-center shrink-0">
-            <svg viewBox="0 0 12 12" className="w-3 h-3">
+        <div className="flex items-center gap-3 px-4 py-3.5" style={{ background: '#EDF2FE', borderRadius: 16 }}>
+          <div className="w-6 h-6 rounded-full border-1.5 border-slate-800 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 12 12" className="w-3.5 h-3.5">
               <path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="#1E293B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="text-[13px] font-bold text-gray-800 leading-tight">Estimated time arrival</span>
+            <span className="text-[14px] font-bold text-gray-800 leading-tight">Estimated time arrival</span>
             {(activeDisplayService.id === 'press-only' || activeDisplayService.id === 'bags-shoes') && (
-              <span className="text-[11px] text-gray-500 font-medium mt-0.5">09 Sep 2026 (11:00 - 14:00)</span>
+              <span className="text-[12px] text-gray-500 font-medium mt-0.5">09 Sep 2026 (11:00 - 14:00)</span>
             )}
           </div>
         </div>
 
         {/* Drop-off banner for press-only and bags-shoes matching screenshot */}
         {(activeDisplayService.id === 'press-only' || activeDisplayService.id === 'bags-shoes') && (
-          <div className="flex items-center gap-3 px-4 py-3" style={{ background: '#EDF2FE', borderRadius: 16 }}>
-            <div className="w-5 h-5 flex items-center justify-center shrink-0 text-slate-800">
+          <div className="flex items-center gap-3 px-4 py-3.5" style={{ background: '#EDF2FE', borderRadius: 16 }}>
+            <div className="w-6 h-6 flex items-center justify-center shrink-0 text-slate-800">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
                 <rect x="8" y="2" width="9" height="14" rx="1.5" />
                 <path d="M11 13h3" />
@@ -3297,8 +3305,8 @@ function OrderDetailsScreen({
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="text-[13px] font-bold text-gray-800 leading-tight">Drop-off</span>
-              <span className="text-[11px] text-gray-500 font-medium mt-0.5">In Person</span>
+              <span className="text-[14px] font-bold text-gray-800 leading-tight">Drop-off</span>
+              <span className="text-[12px] text-gray-500 font-medium mt-0.5">In Person</span>
             </div>
           </div>
         )}
