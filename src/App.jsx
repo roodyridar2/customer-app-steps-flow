@@ -1280,6 +1280,202 @@ function ProcessPillsDrawer({
   )
 }
 
+// ─── Right Side Graphic (Empty / Pattern / Image / Watermark) ─────────────────
+function RightSideGraphic({
+  style = 'pattern',
+  themeColor = '#3B82F6',
+  badgeColor = '#EFF6FF',
+  serviceIcons = [],
+  serviceName = '',
+}) {
+  const icon = serviceIcons[0] || '/service/Wash and fold.png'
+
+  if (style === 'none') return null
+
+  if (style === 'pattern') {
+    return (
+      <div
+        className="absolute top-0 right-0 z-10 pointer-events-none select-none flex flex-col items-center"
+        style={{ width: 70, paddingTop: 2 }}
+      >
+        {/* Decorative badge tag */}
+        <div
+          className="px-2 py-0.5 rounded-full text-[8px] font-bold tracking-wider uppercase mb-1.5 flex items-center gap-1 shadow-2xs"
+          style={{
+            background: badgeColor,
+            color: themeColor,
+            border: `1px solid ${themeColor}33`,
+          }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: themeColor }} />
+          <span>Care</span>
+        </div>
+
+        {/* Delicate SVG line pattern with geometric sparkles, bubbles and waves */}
+        <svg width="68" height="230" viewBox="0 0 68 230" fill="none" className="overflow-visible">
+          {/* Subtle vertical dashed rail */}
+          <line
+            x1="34"
+            y1="0"
+            x2="34"
+            y2="230"
+            stroke={themeColor}
+            strokeWidth="1"
+            strokeDasharray="2 3"
+            strokeOpacity="0.25"
+          />
+
+          {/* Sparkle 1 */}
+          <g transform="translate(16, 12)">
+            <path
+              d="M8 0L9.5 5.5L15 7L9.5 8.5L8 14L6.5 8.5L1 7L6.5 5.5Z"
+              fill={themeColor}
+              fillOpacity="0.32"
+            />
+          </g>
+
+          {/* Soft bubble ring 1 */}
+          <circle cx="46" cy="38" r="13" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.25" fill={badgeColor} fillOpacity="0.4" />
+          <circle cx="49" cy="35" r="3.5" fill={themeColor} fillOpacity="0.25" />
+
+          {/* Decorative wave arc */}
+          <path
+            d="M8 68 C 24 60, 44 76, 60 68"
+            stroke={themeColor}
+            strokeWidth="1.5"
+            strokeOpacity="0.3"
+            strokeLinecap="round"
+          />
+          <path
+            d="M12 74 C 26 66, 42 82, 56 74"
+            stroke={themeColor}
+            strokeWidth="1"
+            strokeOpacity="0.2"
+            strokeDasharray="1.5 2"
+          />
+
+          {/* Geometric diamond cluster */}
+          <g transform="translate(34, 102)">
+            <rect x="-7.5" y="-7.5" width="15" height="15" rx="3.5" transform="rotate(45)" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.28" fill={badgeColor} fillOpacity="0.3" />
+            <circle cx="0" cy="0" r="2.5" fill={themeColor} fillOpacity="0.4" />
+          </g>
+
+          {/* Sparkle 2 */}
+          <g transform="translate(44, 134)">
+            <path
+              d="M6 0L7.2 4.2L11.4 5.4L7.2 6.6L6 10.8L4.8 6.6L0.6 5.4L4.8 4.2Z"
+              fill={themeColor}
+              fillOpacity="0.35"
+            />
+          </g>
+
+          {/* Soft bubble ring 2 */}
+          <circle cx="22" cy="160" r="14" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.22" fill={badgeColor} fillOpacity="0.3" />
+          <circle cx="20" cy="158" r="6" stroke={themeColor} strokeWidth="0.8" strokeOpacity="0.18" />
+
+          {/* Decorative bottom wave */}
+          <path
+            d="M10 198 C 25 191, 43 205, 58 198"
+            stroke={themeColor}
+            strokeWidth="1.5"
+            strokeOpacity="0.3"
+            strokeLinecap="round"
+          />
+          <circle cx="34" cy="216" r="2" fill={themeColor} fillOpacity="0.35" />
+        </svg>
+      </div>
+    )
+  }
+
+  if (style === 'image') {
+    return (
+      <div
+        className="absolute top-0 right-0 z-20 shrink-0 flex flex-col items-center pointer-events-auto select-none"
+        style={{ width: 68, paddingTop: 2 }}
+      >
+        {/* Artwork Card */}
+        <div
+          className="rounded-2xl p-2 bg-gradient-to-b from-white via-white to-slate-50/95 border border-slate-200/90 shadow-xs flex flex-col items-center gap-1.5 w-full text-center transition-all hover:shadow-sm"
+        >
+          {/* Main illustration container */}
+          <div
+            className="relative w-11 h-11 rounded-xl flex items-center justify-center overflow-hidden"
+            style={{
+              background: `radial-gradient(circle at 30% 30%, #ffffff 0%, ${badgeColor} 100%)`,
+              border: `1px solid ${themeColor}30`,
+              boxShadow: `0 4px 10px -2px ${themeColor}25`,
+            }}
+          >
+            <img
+              src={icon}
+              alt={serviceName}
+              className="w-7 h-7 object-contain drop-shadow-xs"
+            />
+            {/* Sparkle accent */}
+            <span className="absolute top-0.5 right-1 text-[7.5px] opacity-80">✨</span>
+          </div>
+
+          {/* Labels */}
+          <div className="flex flex-col items-center gap-0.5 w-full">
+            <span
+              className="text-[9.5px] font-bold truncate max-w-full leading-tight text-slate-800"
+            >
+              Pure Care
+            </span>
+            <span className="text-[7.5px] font-semibold text-slate-400 tracking-tight leading-none">
+              100% Eco
+            </span>
+          </div>
+
+          {/* Micro pill badge */}
+          <div
+            className="px-1.5 py-0.5 rounded-full text-[7px] font-bold tracking-wide leading-none"
+            style={{
+              background: badgeColor,
+              color: themeColor,
+            }}
+          >
+            Verified
+          </div>
+        </div>
+
+        {/* Small sub-caption */}
+        <span className="text-center text-slate-400 font-medium leading-tight mt-1" style={{ fontSize: 8 }}>
+          Fresh & Safe
+        </span>
+      </div>
+    )
+  }
+
+  if (style === 'watermark') {
+    return (
+      <div
+        className="absolute top-2 right-0 z-10 pointer-events-none select-none flex flex-col items-center opacity-40 transition-opacity"
+        style={{ width: 68 }}
+      >
+        <div
+          className="w-15 h-15 rounded-full border-2 border-dashed flex flex-col items-center justify-center p-1 relative"
+          style={{ borderColor: themeColor }}
+        >
+          <img
+            src={icon}
+            alt={serviceName}
+            className="w-6 h-6 object-contain grayscale-30"
+          />
+          <span
+            className="text-[6px] font-black uppercase tracking-wider mt-0.5"
+            style={{ color: themeColor }}
+          >
+            Guaranteed
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  return null
+}
+
 // ─── Status Design 1: Vertical list ──────────────────────────────────────────
 function StatusList({
   steps = NINE_STEPS,
@@ -1298,6 +1494,9 @@ function StatusList({
   isMultiService = false,
   isTabsMode = false,
   showQRCode = true,
+  rightSideStyle = 'pattern',
+  themeColor = '#3B82F6',
+  badgeColor = '#EFF6FF',
 }) {
   const ROW_H = 38
   const containerRef = useRef(null)
@@ -1651,6 +1850,17 @@ function StatusList({
           </span>
         </div>
       )}
+
+      {/* Right side graphic when QR is hidden */}
+      {!showQRCode && (
+        <RightSideGraphic
+          style={rightSideStyle}
+          themeColor={themeColor}
+          badgeColor={badgeColor}
+          serviceIcons={serviceIcons}
+          serviceName={serviceName}
+        />
+      )}
     </div>
   )
 }
@@ -1677,6 +1887,8 @@ function StatusStepper({
   isMultiService = false,
   isTabsMode = false,
   showQRCode = true,
+  rightSideStyle = 'pattern',
+  themeColor = '#3B82F6',
 }) {
   const ROW_H = 44
   const containerRef = useRef(null)
@@ -2129,6 +2341,17 @@ function StatusStepper({
           </span>
         </div>
       )}
+
+      {/* Right side graphic when QR is hidden */}
+      {!showQRCode && (
+        <RightSideGraphic
+          style={rightSideStyle}
+          themeColor={themeColor}
+          badgeColor={badgeColor}
+          serviceIcons={serviceIcons}
+          serviceName={serviceName}
+        />
+      )}
     </div>
   )
 }
@@ -2383,6 +2606,7 @@ function OrderDetailsScreen({
   onToggleProcessExpanded,
   onSelectRawStep,
   showQRCode = true,
+  rightSideStyle = 'pattern',
 }) {
   const [internalStatusStyle, setInternalStatusStyle] = useState('stepper')
   const currentStyle = propStatusStyle ?? internalStatusStyle
@@ -2595,11 +2819,14 @@ function OrderDetailsScreen({
                   serviceIcons={activeDisplayService.serviceIcons}
                   serviceName={activeDisplayService.serviceName}
                   badgeBorder={activeDisplayService.badgeBorder}
+                  badgeColor={activeDisplayService.badgeColor}
+                  themeColor={activeDisplayService.themeColor}
                   subServices={subServices}
                   serviceSteps={serviceSteps}
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
                   showQRCode={showQRCode}
+                  rightSideStyle={rightSideStyle}
                 />
               )}
               {currentStyle === 'stepper' && (
@@ -2612,6 +2839,7 @@ function OrderDetailsScreen({
                   badgeColor={activeDisplayService.badgeColor}
                   badgeBorder={activeDisplayService.badgeBorder}
                   badgeText={activeDisplayService.badgeText}
+                  themeColor={activeDisplayService.themeColor}
                   lineStyle={lineStyle}
                   showServiceText={true}
                   processDesign={processDesign}
@@ -2623,6 +2851,7 @@ function OrderDetailsScreen({
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
                   showQRCode={showQRCode}
+                  rightSideStyle={rightSideStyle}
                 />
               )}
               {(currentStyle === 'service-icon' || currentStyle === 'cards') && (
@@ -2635,6 +2864,7 @@ function OrderDetailsScreen({
                   badgeColor={activeDisplayService.badgeColor}
                   badgeBorder={activeDisplayService.badgeBorder}
                   badgeText={activeDisplayService.badgeText}
+                  themeColor={activeDisplayService.themeColor}
                   lineStyle={lineStyle}
                   showServiceText={false}
                   processDesign={processDesign}
@@ -2646,6 +2876,7 @@ function OrderDetailsScreen({
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
                   showQRCode={showQRCode}
+                  rightSideStyle={rightSideStyle}
                 />
               )}
               {currentStyle === 'overlap' && (
@@ -2658,6 +2889,7 @@ function OrderDetailsScreen({
                   badgeColor={activeDisplayService.badgeColor}
                   badgeBorder={activeDisplayService.badgeBorder}
                   badgeText={activeDisplayService.badgeText}
+                  themeColor={activeDisplayService.themeColor}
                   lineStyle={lineStyle}
                   showServiceText={false}
                   overlap={true}
@@ -2670,6 +2902,7 @@ function OrderDetailsScreen({
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
                   showQRCode={showQRCode}
+                  rightSideStyle={rightSideStyle}
                 />
               )}
               {!['list', 'track', 'stepper', 'service-icon', 'overlap', 'cards'].includes(currentStyle) && (
@@ -2682,6 +2915,7 @@ function OrderDetailsScreen({
                   badgeColor={activeDisplayService.badgeColor}
                   badgeBorder={activeDisplayService.badgeBorder}
                   badgeText={activeDisplayService.badgeText}
+                  themeColor={activeDisplayService.themeColor}
                   lineStyle={lineStyle}
                   showServiceText={false}
                   overlap={true}
@@ -2694,6 +2928,7 @@ function OrderDetailsScreen({
                   isMultiService={isMultiService}
                   isTabsMode={isTabsMode}
                   showQRCode={showQRCode}
+                  rightSideStyle={rightSideStyle}
                 />
               )}
             </motion.div>
@@ -2871,6 +3106,13 @@ export default function App() {
       return p.get('qr') !== 'false'
     }
     return true
+  })
+  const [rightSideStyle,   setRightSideStyle]   = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search)
+      return p.get('rightSide') || 'pattern'
+    }
+    return 'pattern'
   })
   const [simulating,       setSimulating]       = useState(false)
   const [selectedSubId,    setSelectedSubId]    = useState(null)
@@ -3196,6 +3438,7 @@ export default function App() {
                         onToggleProcessExpanded={() => setIsProcessExpanded(prev => !prev)}
                         onSelectRawStep={handleSelectRawStep}
                         showQRCode={showQRCode}
+                        rightSideStyle={rightSideStyle}
                       />
                     ) : (
                       <PlaceholderScreen
@@ -3347,6 +3590,37 @@ export default function App() {
                     >
                       Hide
                     </button>
+                  </div>
+                </div>
+
+                {/* Right Side style switcher (Empty, Pattern, Image, Watermark) */}
+                <div className="flex flex-col items-center gap-1 p-1.5 rounded-xl bg-white border border-gray-100 shadow-sm w-full">
+                  <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">Right Side</span>
+                  <div className="grid grid-cols-2 gap-1 w-full">
+                    {[
+                      { id: 'none',      label: 'Empty' },
+                      { id: 'pattern',   label: 'Pattern' },
+                      { id: 'image',     label: 'Image' },
+                      { id: 'watermark', label: 'Watermark' },
+                    ].map(opt => {
+                      const isSelected = (!showQRCode && rightSideStyle === opt.id) || (showQRCode && opt.id === 'none' && rightSideStyle === 'none')
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => {
+                            setRightSideStyle(opt.id)
+                            setShowQRCode(false)
+                          }}
+                          className="py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer"
+                          style={{
+                            background: isSelected ? '#141C3C' : '#F1F5F9',
+                            color: isSelected ? '#fff' : '#64748B',
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
 
