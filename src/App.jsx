@@ -2715,9 +2715,9 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
 
   return (
     <div
-      className={`p-1.5 rounded-2xl bg-slate-100/90 grid ${
-        isPair ? 'grid-cols-2' : 'grid-cols-5'
-      } gap-1.5 mb-4 select-none`}
+      className={`rounded-2xl bg-slate-100/90 grid ${
+        isPair ? 'grid-cols-2 p-1.5 gap-1.5 mb-4' : 'grid-cols-5 p-1 gap-1 mb-3'
+      } select-none`}
     >
       {subServices.map((sub) => {
         const isSelected = sub.id === activeSubId
@@ -2725,7 +2725,9 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
           <button
             key={sub.id}
             onClick={() => onSelect(sub.id)}
-            className="relative flex items-center justify-center py-2.5 px-3 rounded-xl transition-all select-none cursor-pointer active:scale-95"
+            className={`relative flex items-center justify-center rounded-xl transition-all select-none cursor-pointer active:scale-95 ${
+              isPair ? 'py-2.5 px-3' : 'py-2 px-1'
+            }`}
             title={sub.serviceName}
           >
             {isSelected && (
@@ -2736,7 +2738,9 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
               />
             )}
             <div
-              className="relative z-10 w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all"
+              className={`relative z-10 rounded-xl flex items-center justify-center shrink-0 transition-all ${
+                isPair ? 'w-11 h-11' : 'w-[43px] h-[43px]'
+              }`}
               style={{
                 background: isSelected ? sub.badgeColor : 'transparent',
               }}
@@ -2744,7 +2748,9 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
               <img
                 src={sub.serviceIcons[0]}
                 alt={sub.serviceName}
-                className="w-7.5 h-7.5 object-contain transition-opacity"
+                className={`object-contain transition-opacity ${
+                  isPair ? 'w-7.5 h-7.5' : 'w-[29px] h-[29px]'
+                }`}
                 style={{ opacity: isSelected ? 1 : 0.6 }}
               />
             </div>
@@ -2768,7 +2774,7 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
   return (
-    <div className="relative border-b border-slate-100/90 mb-4 select-none">
+    <div className={`relative border-b border-slate-100/90 select-none ${isPair ? 'mb-4' : 'mb-3'}`}>
       <div className={`grid ${isPair ? 'grid-cols-2' : 'grid-cols-5'} gap-0`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
@@ -2776,12 +2782,16 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
             <button
               key={sub.id}
               onClick={() => onSelect(sub.id)}
-              className="relative flex flex-col items-center justify-center pt-2.5 pb-3.5 transition-all select-none cursor-pointer group active:scale-95"
+              className={`relative flex flex-col items-center justify-center transition-all select-none cursor-pointer group active:scale-95 ${
+                isPair ? 'pt-2.5 pb-3.5' : 'pt-2 pb-2.5'
+              }`}
               title={sub.serviceName}
             >
               {/* Icon */}
               <div
-                className="w-12 h-12 flex items-center justify-center transition-all duration-200"
+                className={`flex items-center justify-center transition-all duration-200 ${
+                  isPair ? 'w-12 h-12' : 'w-[43px] h-[43px]'
+                }`}
                 style={{
                   transform: isSelected ? 'scale(1.12)' : 'scale(0.96)',
                 }}
@@ -2789,7 +2799,9 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
                 <img
                   src={sub.serviceIcons[0]}
                   alt={sub.serviceName}
-                  className="w-8.5 h-8.5 object-contain transition-opacity duration-200"
+                  className={`object-contain transition-opacity duration-200 ${
+                    isPair ? 'w-8.5 h-8.5' : 'w-[30.5px] h-[30.5px]'
+                  }`}
                   style={{ opacity: isSelected ? 1 : 0.55 }}
                 />
               </div>
@@ -2811,10 +2823,10 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
               {isSelected && (
                 <motion.div
                   layoutId="service-minimal-indicator"
-                  className="absolute bottom-0 h-[3.5px] rounded-full"
+                  className={`absolute bottom-0 rounded-full ${isPair ? 'h-[3px]' : 'h-[3px]'}`}
                   style={{
                     background: sub.themeColor,
-                    width: isPair ? 56 : 40,
+                    width: isPair ? 56 : 30,
                   }}
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
@@ -2832,22 +2844,26 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
   return (
-    <div className="mb-4 select-none">
-      <div className={`grid ${isPair ? 'grid-cols-2 gap-4' : 'grid-cols-5 gap-2.5'}`}>
+    <div className={`select-none ${isPair ? 'mb-4' : 'mb-3'}`}>
+      <div className={`grid ${isPair ? 'grid-cols-2 gap-4' : 'grid-cols-5 gap-2'}`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
           return (
             <button
               key={sub.id}
               onClick={() => onSelect(sub.id)}
-              className="relative flex flex-col items-center justify-center py-2.5 rounded-xl transition-all cursor-pointer group active:scale-95"
+              className={`relative flex flex-col items-center justify-center rounded-xl transition-all cursor-pointer group active:scale-95 ${
+                isPair ? 'py-2.5' : 'py-1'
+              }`}
               title={sub.serviceName}
             >
               {/* Ring token */}
               <div
-                className={`w-13 h-13 rounded-full flex items-center justify-center transition-all duration-200 ${
+                className={`rounded-full flex items-center justify-center transition-all duration-200 ${
+                  isPair ? 'w-13 h-13' : 'w-[44px] h-[44px]'
+                } ${
                   isSelected
-                    ? 'ring-2 ring-offset-2'
+                    ? (isPair ? 'ring-2 ring-offset-2' : 'ring-2 ring-offset-1')
                     : 'border border-slate-200/80 bg-slate-50/60 group-hover:border-slate-300'
                 }`}
                 style={{
@@ -2859,7 +2875,9 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
                 <img
                   src={sub.serviceIcons[0]}
                   alt={sub.serviceName}
-                  className="w-7.5 h-7.5 object-contain transition-opacity duration-200"
+                  className={`object-contain transition-opacity duration-200 ${
+                    isPair ? 'w-7.5 h-7.5' : 'w-[27px] h-[27px]'
+                  }`}
                   style={{ opacity: isSelected ? 1 : 0.55 }}
                 />
               </div>
@@ -2889,8 +2907,8 @@ function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
   return (
-    <div className="mb-4 select-none">
-      <div className={`grid ${isPair ? 'grid-cols-2 gap-3' : 'grid-cols-5 gap-2.5'}`}>
+    <div className={`select-none ${isPair ? 'mb-4' : 'mb-3'}`}>
+      <div className={`grid ${isPair ? 'grid-cols-2 gap-3' : 'grid-cols-5 gap-2'}`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
           return (
@@ -2902,10 +2920,10 @@ function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
             >
               <div
                 className={`relative flex items-center justify-center transition-all duration-200 ${
-                  isPair ? 'py-2.5 px-3.5 gap-2 rounded-full' : 'h-12 rounded-full'
+                  isPair ? 'py-2.5 px-3.5 gap-2 rounded-full' : 'h-[40px] rounded-full'
                 }`}
                 style={{
-                  borderWidth: '1.5px',
+                  borderWidth: isPair ? '1.5px' : '1px',
                   borderStyle: 'solid',
                   borderColor: isSelected ? sub.themeColor : 'rgba(226, 232, 240, 0.9)',
                   background: isSelected ? sub.badgeColor : '#FAFAFA',
@@ -2915,7 +2933,9 @@ function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
                 <img
                   src={sub.serviceIcons[0]}
                   alt={sub.serviceName}
-                  className="w-6.5 h-6.5 object-contain transition-opacity duration-200"
+                  className={`object-contain transition-opacity duration-200 ${
+                    isPair ? 'w-6.5 h-6.5' : 'w-[24px] h-[24px]'
+                  }`}
                   style={{ opacity: isSelected ? 1 : 0.55 }}
                 />
                 {isPair && (
@@ -3305,21 +3325,6 @@ function OrderDetailsScreen({
           </AnimatePresence>
         </div>
 
-        {/* ETA banner */}
-        <div className="flex items-center gap-3 px-4 py-3.5" style={{ background: '#EDF2FE', borderRadius: 16 }}>
-          <div className="w-6 h-6 rounded-full border-1.5 border-slate-800 flex items-center justify-center shrink-0">
-            <svg viewBox="0 0 12 12" className="w-3.5 h-3.5">
-              <path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="#1E293B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            </svg>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[14px] font-bold text-gray-800 leading-tight">Estimated time arrival</span>
-            {(activeDisplayService.id === 'press-only' || activeDisplayService.id === 'bags-shoes') && (
-              <span className="text-[12px] text-gray-500 font-medium mt-0.5">09 Sep 2026 (11:00 - 14:00)</span>
-            )}
-          </div>
-        </div>
-
         {/* Drop-off banner for press-only and bags-shoes matching screenshot */}
         {(activeDisplayService.id === 'press-only' || activeDisplayService.id === 'bags-shoes') && (
           <div className="flex items-center gap-3 px-4 py-3.5" style={{ background: '#EDF2FE', borderRadius: 16 }}>
@@ -3509,6 +3514,40 @@ export default function App() {
   const intervalRef = useRef(null)
   const active = tabs.find(t => t.id === activeTab)
   const activeService = servicesData[activeTab]
+
+  // Track window dimensions for responsive small-device scaling
+  const [windowDimensions, setWindowDimensions] = useState(() => ({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 900,
+  }))
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      })
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const isSmallDevice = windowDimensions.width < 768
+
+  // Calculate dynamic scale factor so it fits small devices perfectly
+  const phoneScale = useMemo(() => {
+    if (isSmallDevice) {
+      // Available width for the phone inside the card (accounting for margins/padding)
+      const availableWidth = Math.max(280, windowDimensions.width - 24)
+      return Math.min(1, Math.max(0.45, availableWidth / 413))
+    }
+    // On tablet / small laptop screens, scale down if height or width is constrained
+    const availableHeight = windowDimensions.height - 180
+    const scaleH = availableHeight < 820 ? availableHeight / 820 : 1
+    const availableWidth = windowDimensions.width - 240
+    const scaleW = availableWidth < 540 ? availableWidth / 540 : 1
+    return Math.min(1, Math.max(0.7, Math.min(scaleH, scaleW)))
+  }, [isSmallDevice, windowDimensions.width, windowDimensions.height])
 
   // Keyboard shortcut 'c' to toggle developer controls
   useEffect(() => {
@@ -3714,35 +3753,90 @@ export default function App() {
   }, [activeTab])
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-start py-8 px-4 sm:px-6 overflow-y-auto" style={{ background: '#F0F4F8' }}>
+    <div className="min-h-screen w-full flex flex-col items-center justify-start py-4 sm:py-8 px-2 sm:px-6 overflow-x-hidden overflow-y-auto" style={{ background: '#F0F4F8' }}>
 
       {/* Page title */}
-      <div className="mb-6 text-center shrink-0">
-        <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Order Flow</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Select a service to preview</p>
+      <div className="mb-3 sm:mb-6 text-center shrink-0">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 tracking-tight">Order Flow</h1>
+        <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Select a service to preview</p>
       </div>
 
       {/* Main card */}
-      <div className="flex rounded-3xl overflow-hidden shadow-2xl my-auto" style={{ background: '#fff', minHeight: 920 }}>
+      <div
+        className="flex flex-col md:flex-row rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl sm:shadow-2xl my-auto w-full max-w-full md:max-w-none md:w-auto"
+        style={{
+          background: '#fff',
+          minHeight: isSmallDevice ? 'auto' : Math.round(920 * phoneScale),
+        }}
+      >
 
-        {/* ── Left sidebar ── */}
+        {/* ── Services selector: Top bar on small devices, Left sidebar on desktop ── */}
         <div
-          className="flex flex-col gap-1 p-3 shrink-0"
-          style={{ width: 165, background: '#F8FAFC', borderRight: '1px solid #E9EEF4' }}
+          className={
+            isSmallDevice
+              ? "flex flex-row items-center gap-1.5 p-2 overflow-x-auto no-scrollbar w-full shrink-0"
+              : "flex flex-col gap-1 p-3 shrink-0"
+          }
+          style={{
+            width: isSmallDevice ? '100%' : 165,
+            background: '#F8FAFC',
+            borderRight: isSmallDevice ? 'none' : '1px solid #E9EEF4',
+            borderBottom: isSmallDevice ? '1px solid #E9EEF4' : 'none',
+          }}
         >
           {/* Header */}
-          <div className="flex items-center gap-2 px-2 py-3 mb-2">
-            <div className="w-7.5 h-7.5 rounded-lg flex items-center justify-center" style={{ background: '#1B2F6E' }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-4 h-4">
-                <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round"/>
-              </svg>
+          {!isSmallDevice && (
+            <div className="flex items-center gap-2 px-2 py-3 mb-2">
+              <div className="w-7.5 h-7.5 rounded-lg flex items-center justify-center" style={{ background: '#1B2F6E' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-4 h-4">
+                  <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <span className="text-[13.5px] font-bold text-gray-700">Services</span>
             </div>
-            <span className="text-[13.5px] font-bold text-gray-700">Services</span>
-          </div>
+          )}
 
           {/* Tab items */}
           {tabs.map(tab => {
             const isActive = activeTab === tab.id
+            if (isSmallDevice) {
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="relative flex items-center gap-2 py-1.5 px-3 rounded-xl transition-all duration-200 cursor-pointer shrink-0"
+                  style={{ background: isActive ? tab.color : 'transparent' }}
+                >
+                  <div
+                    className="w-7 h-7 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
+                    style={{
+                      background: isActive ? '#fff' : '#F1F5F9',
+                      boxShadow: isActive ? `0 2px 6px ${tab.dot}25` : 'none',
+                    }}
+                  >
+                    {tab.icon
+                      ? <img src={tab.icon} alt={tab.label} className="w-5.5 h-5.5 object-contain" />
+                      : <span className="text-xs font-bold" style={{ color: tab.dot }}>{tab.short}</span>
+                    }
+                  </div>
+                  <span
+                    className="text-[11.5px] font-semibold whitespace-nowrap"
+                    style={{ color: isActive ? '#1e293b' : '#64748B' }}
+                  >
+                    {tab.label}
+                  </span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="mobile-sidebar-dot"
+                      className="w-1.5 h-1.5 rounded-full shrink-0"
+                      style={{ background: tab.dot }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                </button>
+              )
+            }
+
             return (
               <button
                 key={tab.id}
@@ -3789,10 +3883,10 @@ export default function App() {
 
         {/* ── Right: phone + simulate ── */}
         <div
-          className="flex-1 flex flex-col items-center justify-center px-8 py-5 gap-4 h-full transition-all duration-300"
+          className="flex-1 flex flex-col items-center justify-center px-3 sm:px-8 py-3 sm:py-5 gap-3 sm:gap-4 h-full transition-all duration-300 w-full min-w-0"
           style={{
             background: `linear-gradient(135deg, ${active.color}80 0%, #fff 60%)`,
-            minWidth: showControls ? 'auto' : 540,
+            minWidth: (!isSmallDevice && !showControls) ? 540 : 'auto',
           }}
         >
           {/* Label above phone */}
@@ -3804,63 +3898,90 @@ export default function App() {
               }
             </div>
             <div>
-              <div className="text-base font-bold text-gray-800">{active.label}</div>
-              <div className="text-xs text-gray-400">Order details preview</div>
+              <div className="text-sm sm:text-base font-bold text-gray-800">{active.label}</div>
+              <div className="text-[11px] sm:text-xs text-gray-400">Order details preview</div>
             </div>
           </div>
 
           {/* Phone + Simulate side by side */}
-          <div className="flex items-center justify-center gap-6 shrink-0" style={{ height: 820 }}>
+          <div
+            className="flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-6 shrink-0"
+            style={{
+              height: isSmallDevice ? 'auto' : Math.round(820 * phoneScale),
+            }}
+          >
 
-            {/* Phone */}
-            <div className="shrink-0" style={{ width: 413, height: 820 }}>
-              <IPhoneShell>
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={activeTab}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.15, ease: 'easeInOut' }}
-                    className="flex-1 min-h-0 flex flex-col h-full"
-                  >
-                    {activeService ? (
-                      <OrderDetailsScreen
-                        service={activeService}
-                        activeStep={safeActiveStep}
-                        serviceSteps={serviceSteps[activeTab]}
-                        statusStyle={statusStyle}
-                        setStatusStyle={setStatusStyle}
-                        lineStyle={lineStyle}
-                        selectedSubId={effectiveSubId}
-                        onSelectSubId={setSelectedSubId}
-                        multiServiceMode={multiServiceMode}
-                        setMultiServiceMode={setMultiServiceMode}
-                        processMode={processMode}
-                        setProcessMode={setProcessMode}
-                        isProcessExpanded={isProcessExpanded}
-                        onToggleProcessExpanded={() => setIsProcessExpanded(prev => !prev)}
-                        onSelectRawStep={handleSelectRawStep}
-                        showQRCode={showQRCode}
-                        rightSideStyle={rightSideStyle}
-                      />
-                    ) : (
-                      <PlaceholderScreen
-                        label={active.label}
-                        color={active.color}
-                        dot={active.dot}
-                        icon={active.icon}
-                        short={active.short}
-                      />
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </IPhoneShell>
+            {/* Phone Scaled Wrapper */}
+            <div
+              className="relative flex items-center justify-center shrink-0"
+              style={{
+                width: Math.round(413 * phoneScale),
+                height: Math.round(820 * phoneScale),
+              }}
+            >
+              <div
+                style={{
+                  width: 413,
+                  height: 820,
+                  transform: `scale(${phoneScale})`,
+                  transformOrigin: 'top center',
+                  flexShrink: 0,
+                }}
+              >
+                <IPhoneShell>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={activeTab}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.15, ease: 'easeInOut' }}
+                      className="flex-1 min-h-0 flex flex-col h-full"
+                    >
+                      {activeService ? (
+                        <OrderDetailsScreen
+                          service={activeService}
+                          activeStep={safeActiveStep}
+                          serviceSteps={serviceSteps[activeTab]}
+                          statusStyle={statusStyle}
+                          setStatusStyle={setStatusStyle}
+                          lineStyle={lineStyle}
+                          selectedSubId={effectiveSubId}
+                          onSelectSubId={setSelectedSubId}
+                          multiServiceMode={multiServiceMode}
+                          setMultiServiceMode={setMultiServiceMode}
+                          processMode={processMode}
+                          setProcessMode={setProcessMode}
+                          isProcessExpanded={isProcessExpanded}
+                          onToggleProcessExpanded={() => setIsProcessExpanded(prev => !prev)}
+                          onSelectRawStep={handleSelectRawStep}
+                          showQRCode={showQRCode}
+                          rightSideStyle={rightSideStyle}
+                        />
+                      ) : (
+                        <PlaceholderScreen
+                          label={active.label}
+                          color={active.color}
+                          dot={active.dot}
+                          icon={active.icon}
+                          short={active.short}
+                        />
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+                </IPhoneShell>
+              </div>
             </div>
 
             {/* Simulate panel — available for activeService when showControls is true */}
             {activeService && showControls && (
-              <div className="flex flex-col items-center justify-start py-0.5 gap-1.5 shrink-0 overflow-y-auto no-scrollbar" style={{ width: 144, height: 820 }}>
+              <div
+                className="flex flex-col items-center justify-start py-0.5 gap-1.5 shrink-0 overflow-y-auto no-scrollbar"
+                style={{
+                  width: isSmallDevice ? Math.min(340, Math.round(413 * phoneScale)) : 144,
+                  maxHeight: isSmallDevice ? 360 : 820,
+                }}
+              >
 
                 {/* Multi-Service section — visible for 2-service and 5-service */}
                 {isMultiService && (
