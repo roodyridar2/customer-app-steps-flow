@@ -2251,14 +2251,14 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
 
   return (
     <div className="mb-3 select-none">
-      <div className={`grid ${isPair ? 'grid-cols-2 gap-2' : 'grid-cols-5 gap-1.5'}`}>
+      <div className={`grid ${isPair ? 'grid-cols-2 gap-3' : 'grid-cols-5 gap-1.5'}`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
           return (
             <button
               key={sub.id}
               onClick={() => onSelect(sub.id)}
-              className="relative flex flex-col items-center justify-center py-1 rounded-xl transition-all cursor-pointer group active:scale-95"
+              className="relative flex flex-col items-center justify-center py-1.5 rounded-xl transition-all cursor-pointer group active:scale-95"
               title={sub.serviceName}
             >
               {/* Ring token */}
@@ -2285,7 +2285,7 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
               {/* Label for 2-service pair */}
               {isPair && (
                 <span
-                  className="text-[11px] mt-1 truncate max-w-full px-1 leading-none transition-colors"
+                  className="text-[11px] mt-2.5 truncate max-w-full px-1 leading-none transition-colors"
                   style={{
                     color: isSelected ? '#0F172A' : '#94A3B8',
                     fontWeight: isSelected ? 600 : 500,
@@ -2531,18 +2531,19 @@ function OrderDetailsScreen({
         {/* Status section */}
         <div>
           {(() => {
-            const showStatusMeta = isTabsMode && activeDisplayService && !['pills', 'rings', 'chips'].includes(multiServiceMode)
+            const showServiceName = isTabsMode && activeDisplayService && !['pills', 'rings', 'chips'].includes(multiServiceMode)
+            const showStepCount = isTabsMode && activeDisplayService
             return (
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-baseline gap-1.5 min-w-0">
                   <h3 className="text-[15px] font-bold text-gray-900 shrink-0">Status</h3>
-                  {showStatusMeta && (
+                  {showServiceName && (
                     <span className="text-[12px] font-medium text-slate-400 truncate">
                       · {activeDisplayService.serviceName}
                     </span>
                   )}
                 </div>
-                {showStatusMeta && (
+                {showStepCount && (
                   <span
                     className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0"
                     style={{
