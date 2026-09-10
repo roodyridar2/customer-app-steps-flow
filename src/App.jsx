@@ -2538,17 +2538,6 @@ function OrderDetailsScreen({
                 </span>
               )}
             </div>
-            {isTabsMode && activeDisplayService && (
-              <span
-                className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0"
-                style={{
-                  background: activeDisplayService.badgeColor,
-                  color: activeDisplayService.themeColor,
-                }}
-              >
-                {displaySteps.length} steps
-              </span>
-            )}
           </div>
 
           {/* Service tabs section: ONLY in 2 service or 5 service orders AND when not in default mode */}
