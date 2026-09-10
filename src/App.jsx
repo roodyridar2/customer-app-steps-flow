@@ -3325,23 +3325,6 @@ function OrderDetailsScreen({
           </AnimatePresence>
         </div>
 
-        {/* Drop-off banner for press-only and bags-shoes matching screenshot */}
-        {(activeDisplayService.id === 'press-only' || activeDisplayService.id === 'bags-shoes') && (
-          <div className="flex items-center gap-3 px-4 py-3.5" style={{ background: '#EDF2FE', borderRadius: 16 }}>
-            <div className="w-6 h-6 flex items-center justify-center shrink-0 text-slate-800">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                <rect x="8" y="2" width="9" height="14" rx="1.5" />
-                <path d="M11 13h3" />
-                <path d="M4 17l4-2 3.5 1" />
-                <path d="M3 20c2.5-.8 5.5-.8 8.5-.8h3a2 2 0 002-2" />
-              </svg>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[14px] font-bold text-gray-800 leading-tight">Drop-off</span>
-              <span className="text-[12px] text-gray-500 font-medium mt-0.5">In Person</span>
-            </div>
-          </div>
-        )}
 
         <div className="h-6" />
       </div>
