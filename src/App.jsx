@@ -1616,94 +1616,33 @@ function RightSideGraphic({
   const get3DImage = (key) => {
     switch (key) {
       case 'bags-shoes':
-        return '/3d/bags-shoes.jpg'
+        return '/3d/bags-shoes.png'
       case 'premium-care':
-        return '/3d/premium-care.jpg'
+        return '/3d/premium-care.png'
       case 'clean-press':
-        return '/3d/clean-press.jpg'
+        return '/3d/clean-press.png'
       case 'press-only':
-        return '/3d/press-only.jpg'
+        return '/3d/press-only.png'
       case 'wash-fold':
-        return '/3d/wash-fold.jpg'
+        return '/3d/wash-fold.png'
       default:
-        return '/3d/multi-service.jpg'
-    }
-  }
-
-  const get3DLabel = (key) => {
-    switch (key) {
-      case 'bags-shoes':
-        return 'Footwear'
-      case 'premium-care':
-        return 'Delicate'
-      case 'clean-press':
-        return 'Pressed'
-      case 'press-only':
-        return 'Steam'
-      case 'wash-fold':
-        return 'Fluffy'
-      default:
-        return 'Bundle'
+        return '/3d/multi-service.png'
     }
   }
 
   if (style === 'image') {
     const img3d = get3DImage(serviceKey)
-    const label3d = get3DLabel(serviceKey)
 
     return (
       <div
-        className="absolute top-0 right-0 z-20 shrink-0 flex flex-col items-center pointer-events-auto select-none"
-        style={{ width: 68, paddingTop: 2 }}
+        className="absolute top-0.5 right-0 z-20 shrink-0 flex items-center justify-center pointer-events-auto select-none"
+        style={{ width: 68, height: 68 }}
       >
-        {/* Realistic 3D Generated Image Card */}
-        <div
-          className="rounded-2xl p-1.5 bg-gradient-to-b from-white via-white to-slate-50/90 border border-slate-200/80 shadow-xs flex flex-col items-center gap-1.5 w-full text-center transition-all hover:shadow-md group"
-        >
-          {/* Main 3D render image container */}
-          <div
-            className="relative w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden shadow-2xs"
-            style={{
-              background: '#FFFFFF',
-              border: `1px solid ${themeColor}25`,
-            }}
-          >
-            <img
-              src={img3d}
-              alt={serviceName || 'Realistic 3D Care'}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-
-          {/* Labels */}
-          <div className="flex flex-col items-center gap-0.5 w-full">
-            <span
-              className="text-[9px] font-extrabold truncate max-w-full leading-tight text-slate-800"
-            >
-              {label3d}
-            </span>
-            <span className="text-[7.5px] font-semibold text-slate-400 tracking-tight leading-none">
-              3D Care
-            </span>
-          </div>
-
-          {/* Micro pill badge */}
-          <div
-            className="px-1.5 py-0.5 rounded-full text-[6.5px] font-bold tracking-wider uppercase leading-none"
-            style={{
-              background: badgeColor,
-              color: themeColor,
-              border: `1px solid ${themeColor}25`,
-            }}
-          >
-            Realistic
-          </div>
-        </div>
-
-        {/* Small sub-caption */}
-        <span className="text-center text-slate-400 font-medium leading-tight mt-1" style={{ fontSize: 8 }}>
-          Fresh & Safe
-        </span>
+        <img
+          src={img3d}
+          alt={serviceName || '3D Graphic'}
+          className="w-16 h-16 object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,0.12)] hover:scale-110 transition-transform duration-300 pointer-events-auto"
+        />
       </div>
     )
   }
