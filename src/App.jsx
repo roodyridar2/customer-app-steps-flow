@@ -1717,14 +1717,64 @@ function RightSideGraphic({
 
     return (
       <div
-        className="absolute top-0.5 right-0 z-20 shrink-0 flex items-center justify-center pointer-events-auto select-none"
-        style={{ width: 68, height: 68 }}
+        className="absolute z-20 pointer-events-none select-none flex flex-col items-center justify-center"
+        style={{
+          top: 6,
+          right: -8,
+          width: 152,
+          height: 245,
+          perspective: 1000,
+        }}
       >
-        <img
-          src={img3d}
-          alt={serviceName || '3D Graphic'}
-          className="w-16 h-16 object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,0.12)] hover:scale-110 transition-transform duration-300 pointer-events-auto"
-        />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.88, y: 10 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            y: [0, -8, 0],
+            rotateY: [-14, -7, -14],
+            rotateX: [5, 1, 5],
+            rotateZ: [0.5, -0.5, 0.5],
+          }}
+          transition={{
+            opacity: { duration: 0.3 },
+            scale: { duration: 0.4, ease: 'easeOut' },
+            y: { duration: 4.5, repeat: Infinity, ease: 'easeInOut' },
+            rotateY: { duration: 4.5, repeat: Infinity, ease: 'easeInOut' },
+            rotateX: { duration: 4.5, repeat: Infinity, ease: 'easeInOut' },
+            rotateZ: { duration: 4.5, repeat: Infinity, ease: 'easeInOut' },
+          }}
+          whileHover={{
+            scale: 1.12,
+            y: -14,
+            rotateY: -3,
+            rotateX: 0,
+            transition: { duration: 0.25 },
+          }}
+          className="relative flex flex-col items-center justify-center pointer-events-auto cursor-pointer"
+          style={{
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {/* 3D Model with layered depth drop shadows popping forward out of screen */}
+          <img
+            src={img3d}
+            alt={serviceName || '3D Graphic'}
+            className="object-contain select-none transition-transform duration-300"
+            style={{
+              width: 'auto',
+              height: 235,
+              maxHeight: 240,
+              maxWidth: 148,
+              filter: `
+                drop-shadow(-10px 22px 26px rgba(0, 0, 0, 0.26))
+                drop-shadow(-3px 8px 12px rgba(0, 0, 0, 0.14))
+                drop-shadow(0 0 16px ${themeColor}22)
+              `,
+              transform: 'translateZ(28px)',
+            }}
+          />
+        </motion.div>
       </div>
     )
   }
