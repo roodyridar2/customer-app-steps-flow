@@ -1590,55 +1590,90 @@ function RightSideGraphic({
     )
   }
 
+  const get3DImage = (key) => {
+    switch (key) {
+      case 'bags-shoes':
+        return '/3d/bags-shoes.jpg'
+      case 'premium-care':
+        return '/3d/premium-care.jpg'
+      case 'clean-press':
+        return '/3d/clean-press.jpg'
+      case 'press-only':
+        return '/3d/press-only.jpg'
+      case 'wash-fold':
+        return '/3d/wash-fold.jpg'
+      default:
+        return '/3d/multi-service.jpg'
+    }
+  }
+
+  const get3DLabel = (key) => {
+    switch (key) {
+      case 'bags-shoes':
+        return 'Footwear'
+      case 'premium-care':
+        return 'Delicate'
+      case 'clean-press':
+        return 'Pressed'
+      case 'press-only':
+        return 'Steam'
+      case 'wash-fold':
+        return 'Fluffy'
+      default:
+        return 'Bundle'
+    }
+  }
+
   if (style === 'image') {
+    const img3d = get3DImage(serviceKey)
+    const label3d = get3DLabel(serviceKey)
+
     return (
       <div
         className="absolute top-0 right-0 z-20 shrink-0 flex flex-col items-center pointer-events-auto select-none"
         style={{ width: 68, paddingTop: 2 }}
       >
-        {/* Artwork Card */}
+        {/* Realistic 3D Generated Image Card */}
         <div
-          className="rounded-2xl p-2 bg-gradient-to-b from-white via-white to-slate-50/95 border border-slate-200/90 shadow-xs flex flex-col items-center gap-1.5 w-full text-center transition-all hover:shadow-sm"
+          className="rounded-2xl p-1.5 bg-gradient-to-b from-white via-white to-slate-50/90 border border-slate-200/80 shadow-xs flex flex-col items-center gap-1.5 w-full text-center transition-all hover:shadow-md group"
         >
-          {/* Main illustration container */}
+          {/* Main 3D render image container */}
           <div
-            className="relative w-11 h-11 rounded-xl flex items-center justify-center overflow-hidden"
+            className="relative w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden shadow-2xs"
             style={{
-              background: `radial-gradient(circle at 30% 30%, #ffffff 0%, ${badgeColor} 100%)`,
-              border: `1px solid ${themeColor}30`,
-              boxShadow: `0 4px 10px -2px ${themeColor}25`,
+              background: '#FFFFFF',
+              border: `1px solid ${themeColor}25`,
             }}
           >
             <img
-              src={icon}
-              alt={serviceName}
-              className="w-7 h-7 object-contain drop-shadow-xs"
+              src={img3d}
+              alt={serviceName || 'Realistic 3D Care'}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
-            {/* Sparkle accent */}
-            <span className="absolute top-0.5 right-1 text-[7.5px] opacity-80">✨</span>
           </div>
 
           {/* Labels */}
           <div className="flex flex-col items-center gap-0.5 w-full">
             <span
-              className="text-[9.5px] font-bold truncate max-w-full leading-tight text-slate-800"
+              className="text-[9px] font-extrabold truncate max-w-full leading-tight text-slate-800"
             >
-              Pure Care
+              {label3d}
             </span>
             <span className="text-[7.5px] font-semibold text-slate-400 tracking-tight leading-none">
-              100% Eco
+              3D Care
             </span>
           </div>
 
           {/* Micro pill badge */}
           <div
-            className="px-1.5 py-0.5 rounded-full text-[7px] font-bold tracking-wide leading-none"
+            className="px-1.5 py-0.5 rounded-full text-[6.5px] font-bold tracking-wider uppercase leading-none"
             style={{
               background: badgeColor,
               color: themeColor,
+              border: `1px solid ${themeColor}25`,
             }}
           >
-            Verified
+            Realistic
           </div>
         </div>
 
@@ -1646,32 +1681,6 @@ function RightSideGraphic({
         <span className="text-center text-slate-400 font-medium leading-tight mt-1" style={{ fontSize: 8 }}>
           Fresh & Safe
         </span>
-      </div>
-    )
-  }
-
-  if (style === 'watermark') {
-    return (
-      <div
-        className="absolute top-2 right-0 z-10 pointer-events-none select-none flex flex-col items-center opacity-40 transition-opacity"
-        style={{ width: 68 }}
-      >
-        <div
-          className="w-15 h-15 rounded-full border-2 border-dashed flex flex-col items-center justify-center p-1 relative"
-          style={{ borderColor: themeColor }}
-        >
-          <img
-            src={icon}
-            alt={serviceName}
-            className="w-6 h-6 object-contain grayscale-30"
-          />
-          <span
-            className="text-[6px] font-black uppercase tracking-wider mt-0.5"
-            style={{ color: themeColor }}
-          >
-            Guaranteed
-          </span>
-        </div>
       </div>
     )
   }
@@ -3824,15 +3833,14 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Right Side style switcher (Empty, Pattern, Image, Watermark) */}
+                {/* Right Side style switcher (Empty, Pattern, 3D Image) */}
                 <div className="flex flex-col items-center gap-1 p-1.5 rounded-xl bg-white border border-gray-100 shadow-sm w-full">
                   <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">Right Side</span>
-                  <div className="grid grid-cols-2 gap-1 w-full">
+                  <div className="grid grid-cols-3 gap-0.5 w-full">
                     {[
-                      { id: 'none',      label: 'Empty' },
-                      { id: 'pattern',   label: 'Pattern' },
-                      { id: 'image',     label: 'Image' },
-                      { id: 'watermark', label: 'Watermark' },
+                      { id: 'none',    label: 'Empty' },
+                      { id: 'pattern', label: 'Pattern' },
+                      { id: 'image',   label: '3D Image' },
                     ].map(opt => {
                       const isSelected = (!showQRCode && rightSideStyle === opt.id) || (showQRCode && opt.id === 'none' && rightSideStyle === 'none')
                       return (
@@ -3842,7 +3850,7 @@ export default function App() {
                             setRightSideStyle(opt.id)
                             setShowQRCode(false)
                           }}
-                          className="py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer"
+                          className="py-1 px-0.5 rounded-md text-[8px] font-bold transition-all text-center cursor-pointer leading-tight"
                           style={{
                             background: isSelected ? '#141C3C' : '#F1F5F9',
                             color: isSelected ? '#fff' : '#64748B',
