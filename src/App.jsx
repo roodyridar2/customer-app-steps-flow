@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback, Fragment } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback, Fragment, Component } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ─── Tabs ────────────────────────────────────────────────────────────────────
@@ -3003,10 +3003,14 @@ function OrderDetailsScreen({
   useEffect(() => {
     if (service.subServiceIds && service.subServiceIds.length > 0) {
       setInternalSubId(service.subServiceIds[0])
+    } else {
+      setInternalSubId(service.id)
     }
   }, [service.id])
 
-  const activeSubId = selectedSubId ?? internalSubId
+  const activeSubId = isMultiService
+    ? (selectedSubId && service.subServiceIds?.includes(selectedSubId) ? selectedSubId : (internalSubId || service.subServiceIds?.[0] || service.id))
+    : service.id
   const handleSelectSubId = (id) => {
     setInternalSubId(id)
     if (onSelectSubId) onSelectSubId(id)
@@ -3178,7 +3182,7 @@ function OrderDetailsScreen({
           )}
 
           {/* Render selected timeline layout */}
-          <AnimatePresence mode="wait">
+          <AnimatePresence initial={false}>
             <motion.div
               key={`${currentStyle}-${service.id}-${isTabsMode ? activeSubId : 'default'}-${processMode}`}
               initial={{ opacity: 0, y: 6 }}
@@ -3352,6 +3356,53 @@ function PlaceholderScreen({ label, color, dot, icon, short }) {
   )
 }
 
+// ─── Error Boundary to protect preview from unhandled crashes ────────────────
+class PhoneErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('PhoneScreen render error:', error, errorInfo)
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.resetKey !== this.props.resetKey && this.state.hasError) {
+      this.setState({ hasError: false, error: null })
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full p-6 text-center bg-white">
+          <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mb-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <h3 className="text-[15px] font-bold text-gray-800 mb-1">Preview Refresh</h3>
+          <p className="text-[12px] text-gray-500 mb-4">{this.state.error?.message || 'Switching preview...'}</p>
+          <button
+            onClick={() => this.setState({ hasError: false, error: null })}
+            className="px-4 py-2 bg-sky-500 text-white text-[12px] font-semibold rounded-xl active:scale-95 transition-transform cursor-pointer"
+          >
+            Reload Preview
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
 // ─── iPhone Shell (iPhone 14 Pro Max: 430px × 932px inner viewport, 452px × 954px outer frame) ──
 function IPhoneShell({ children }) {
   return (
@@ -3523,9 +3574,10 @@ export default function App() {
   // Calculate dynamic scale factor so it fits small devices perfectly (iPhone 14 Pro Max base: 452 x 954)
   const phoneScale = useMemo(() => {
     if (isSmallDevice) {
-      // Available width for the phone inside the card (accounting for margins/padding)
-      const availableWidth = Math.max(280, windowDimensions.width - 32)
-      return Math.min(1, Math.max(0.40, availableWidth / 452))
+      // Scale down phone frame on mobile screens with breathing room and balanced proportions
+      const availableWidth = Math.max(240, windowDimensions.width - 48)
+      const baseScale = (availableWidth / 452) * 0.80
+      return Math.min(0.70, Math.max(0.42, baseScale))
     }
     // On tablet / small laptop screens, scale down if height or width is constrained
     const availableHeight = windowDimensions.height - 240
@@ -3718,6 +3770,21 @@ export default function App() {
     handleSetStep(step)
   }
 
+  const handleSelectTab = useCallback((tabId) => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    setSimulating(false)
+    setActiveTab(tabId)
+    const nextService = servicesData[tabId]
+    if (nextService?.subServiceIds?.length > 0) {
+      setSelectedSubId(nextService.subServiceIds[0])
+    } else {
+      setSelectedSubId(null)
+    }
+  }, [])
+
   const prevActiveTabRef = useRef(activeTab)
   // Cleanup on tab change
   useEffect(() => {
@@ -3732,7 +3799,7 @@ export default function App() {
     setSimulating(false)
     const nextService = servicesData[activeTab]
     if (nextService?.subServiceIds?.length > 0) {
-      setSelectedSubId(nextService.subServiceIds[0])
+      setSelectedSubId(prev => (nextService.subServiceIds.includes(prev) ? prev : nextService.subServiceIds[0]))
     } else {
       setSelectedSubId(null)
     }
@@ -3789,7 +3856,7 @@ export default function App() {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleSelectTab(tab.id)}
                   className="relative flex items-center gap-2 py-1.5 px-3 rounded-xl transition-all duration-200 cursor-pointer shrink-0"
                   style={{ background: isActive ? tab.color : 'transparent' }}
                 >
@@ -3826,7 +3893,7 @@ export default function App() {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleSelectTab(tab.id)}
                 className="relative flex flex-col items-center gap-1.5 w-full py-3.5 px-2.5 rounded-2xl transition-all duration-200 cursor-pointer"
                 style={{ background: isActive ? tab.color : 'transparent' }}
               >
@@ -3915,46 +3982,50 @@ export default function App() {
                 }}
               >
                 <IPhoneShell>
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                      key={activeTab}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -6 }}
-                      transition={{ duration: 0.15, ease: 'easeInOut' }}
-                      className="flex-1 min-h-0 flex flex-col h-full"
-                    >
-                      {activeService ? (
-                        <OrderDetailsScreen
-                          service={activeService}
-                          activeStep={safeActiveStep}
-                          serviceSteps={serviceSteps[activeTab]}
-                          statusStyle={statusStyle}
-                          setStatusStyle={setStatusStyle}
-                          lineStyle={lineStyle}
-                          selectedSubId={effectiveSubId}
-                          onSelectSubId={setSelectedSubId}
-                          multiServiceMode={multiServiceMode}
-                          setMultiServiceMode={setMultiServiceMode}
-                          processMode={processMode}
-                          setProcessMode={setProcessMode}
-                          isProcessExpanded={isProcessExpanded}
-                          onToggleProcessExpanded={() => setIsProcessExpanded(prev => !prev)}
-                          onSelectRawStep={handleSelectRawStep}
-                          showQRCode={showQRCode}
-                          rightSideStyle={rightSideStyle}
-                        />
-                      ) : (
-                        <PlaceholderScreen
-                          label={active.label}
-                          color={active.color}
-                          dot={active.dot}
-                          icon={active.icon}
-                          short={active.short}
-                        />
-                      )}
-                    </motion.div>
-                  </AnimatePresence>
+                  <PhoneErrorBoundary resetKey={activeTab}>
+                    <AnimatePresence initial={false}>
+                      <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.15, ease: 'easeInOut' }}
+                        className="flex-1 min-h-0 flex flex-col h-full"
+                      >
+                        {activeService ? (
+                          <OrderDetailsScreen
+                            key={activeTab}
+                            service={activeService}
+                            activeStep={safeActiveStep}
+                            serviceSteps={serviceSteps[activeTab]}
+                            statusStyle={statusStyle}
+                            setStatusStyle={setStatusStyle}
+                            lineStyle={lineStyle}
+                            selectedSubId={effectiveSubId}
+                            onSelectSubId={setSelectedSubId}
+                            multiServiceMode={multiServiceMode}
+                            setMultiServiceMode={setMultiServiceMode}
+                            processMode={processMode}
+                            setProcessMode={setProcessMode}
+                            isProcessExpanded={isProcessExpanded}
+                            onToggleProcessExpanded={() => setIsProcessExpanded(prev => !prev)}
+                            onSelectRawStep={handleSelectRawStep}
+                            showQRCode={showQRCode}
+                            rightSideStyle={rightSideStyle}
+                          />
+                        ) : (
+                          <PlaceholderScreen
+                            key={activeTab}
+                            label={active.label}
+                            color={active.color}
+                            dot={active.dot}
+                            icon={active.icon}
+                            short={active.short}
+                          />
+                        )}
+                      </motion.div>
+                    </AnimatePresence>
+                  </PhoneErrorBoundary>
                 </IPhoneShell>
               </div>
             </div>
