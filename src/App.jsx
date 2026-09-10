@@ -3983,48 +3983,37 @@ export default function App() {
               >
                 <IPhoneShell>
                   <PhoneErrorBoundary resetKey={activeTab}>
-                    <AnimatePresence initial={false}>
-                      <motion.div
+                    {activeService ? (
+                      <OrderDetailsScreen
                         key={activeTab}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.15, ease: 'easeInOut' }}
-                        className="flex-1 min-h-0 flex flex-col h-full"
-                      >
-                        {activeService ? (
-                          <OrderDetailsScreen
-                            key={activeTab}
-                            service={activeService}
-                            activeStep={safeActiveStep}
-                            serviceSteps={serviceSteps[activeTab]}
-                            statusStyle={statusStyle}
-                            setStatusStyle={setStatusStyle}
-                            lineStyle={lineStyle}
-                            selectedSubId={effectiveSubId}
-                            onSelectSubId={setSelectedSubId}
-                            multiServiceMode={multiServiceMode}
-                            setMultiServiceMode={setMultiServiceMode}
-                            processMode={processMode}
-                            setProcessMode={setProcessMode}
-                            isProcessExpanded={isProcessExpanded}
-                            onToggleProcessExpanded={() => setIsProcessExpanded(prev => !prev)}
-                            onSelectRawStep={handleSelectRawStep}
-                            showQRCode={showQRCode}
-                            rightSideStyle={rightSideStyle}
-                          />
-                        ) : (
-                          <PlaceholderScreen
-                            key={activeTab}
-                            label={active.label}
-                            color={active.color}
-                            dot={active.dot}
-                            icon={active.icon}
-                            short={active.short}
-                          />
-                        )}
-                      </motion.div>
-                    </AnimatePresence>
+                        service={activeService}
+                        activeStep={safeActiveStep}
+                        serviceSteps={serviceSteps[activeTab]}
+                        statusStyle={statusStyle}
+                        setStatusStyle={setStatusStyle}
+                        lineStyle={lineStyle}
+                        selectedSubId={effectiveSubId}
+                        onSelectSubId={setSelectedSubId}
+                        multiServiceMode={multiServiceMode}
+                        setMultiServiceMode={setMultiServiceMode}
+                        processMode={processMode}
+                        setProcessMode={setProcessMode}
+                        isProcessExpanded={isProcessExpanded}
+                        onToggleProcessExpanded={() => setIsProcessExpanded(prev => !prev)}
+                        onSelectRawStep={handleSelectRawStep}
+                        showQRCode={showQRCode}
+                        rightSideStyle={rightSideStyle}
+                      />
+                    ) : (
+                      <PlaceholderScreen
+                        key={activeTab}
+                        label={active.label}
+                        color={active.color}
+                        dot={active.dot}
+                        icon={active.icon}
+                        short={active.short}
+                      />
+                    )}
                   </PhoneErrorBoundary>
                 </IPhoneShell>
               </div>
