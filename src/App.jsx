@@ -2529,33 +2529,27 @@ function OrderDetailsScreen({
 
         {/* Status section */}
         <div>
-          {(() => {
-            const showServiceName = isTabsMode && activeDisplayService && !['pills', 'rings', 'chips'].includes(multiServiceMode)
-            const showStepCount = isTabsMode && activeDisplayService
-            return (
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-baseline gap-1.5 min-w-0">
-                  <h3 className="text-[15px] font-bold text-gray-900 shrink-0">Status</h3>
-                  {showServiceName && (
-                    <span className="text-[12px] font-medium text-slate-400 truncate">
-                      · {activeDisplayService.serviceName}
-                    </span>
-                  )}
-                </div>
-                {showStepCount && (
-                  <span
-                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0"
-                    style={{
-                      background: activeDisplayService.badgeColor,
-                      color: activeDisplayService.themeColor,
-                    }}
-                  >
-                    {displaySteps.length} steps
-                  </span>
-                )}
-              </div>
-            )
-          })()}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-baseline gap-1.5 min-w-0">
+              <h3 className="text-[15px] font-bold text-gray-900 shrink-0">Status</h3>
+              {isTabsMode && activeDisplayService && (
+                <span className="text-[12px] font-medium text-slate-400 truncate">
+                  · {activeDisplayService.serviceName}
+                </span>
+              )}
+            </div>
+            {isTabsMode && activeDisplayService && (
+              <span
+                className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0"
+                style={{
+                  background: activeDisplayService.badgeColor,
+                  color: activeDisplayService.themeColor,
+                }}
+              >
+                {displaySteps.length} steps
+              </span>
+            )}
+          </div>
 
           {/* Service tabs section: ONLY in 2 service or 5 service orders AND when not in default mode */}
           {isTabsMode && multiServiceMode === 'minimal' && (
