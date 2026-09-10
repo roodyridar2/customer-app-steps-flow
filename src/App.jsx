@@ -54,13 +54,22 @@ const STEP_DELIVERED = {
   icon: '/status/delivered.png',
 }
 
+// Common Process Steps
+const STEP_PRE_INSPECTION = {
+  id: 'pre-inspection',
+  label: 'Pre Inspection',
+  icon: '/status/specialist-inspection.png',
+  isProcess: true,
+}
+
 // 1. Wash & Fold Service Steps
-// process -> sorting, Washing & Tumble Drying, Neat Folding
+// process -> Pre Inspection, sorting, Washing & Tumble Drying, Neat Folding
 const WASH_FOLD_STEPS = [
   STEP_ORDER_PLACED,
   STEP_DRIVER_EN_ROUTE,
   STEP_COLLECTED_TRANSIT,
   STEP_ARRIVED_FACILITY,
+  STEP_PRE_INSPECTION,
   { id: 'sorting', label: 'Sorting', icon: '/status/sorted.png', isProcess: true },
   { id: 'washing-drying', label: 'Washing & Tumble Drying', icon: '/status/washed.png', isProcess: true },
   { id: 'neat-folding', label: 'Neat Folding', icon: '/status/neat-folding.png', isProcess: true },
@@ -70,12 +79,13 @@ const WASH_FOLD_STEPS = [
 ]
 
 // 2. Clean & Press Service Steps
-// process -> Itemization & Stain Check, Cleaning & Care, Pressing & Hanging
+// process -> Pre Inspection, Itemization & Stain Check, Cleaning & Care, Pressing & Hanging
 const CLEAN_PRESS_STEPS = [
   STEP_ORDER_PLACED,
   STEP_DRIVER_EN_ROUTE,
   STEP_COLLECTED_TRANSIT,
   STEP_ARRIVED_FACILITY,
+  STEP_PRE_INSPECTION,
   { id: 'itemization-stain', label: 'Itemization & Stain Check', icon: '/status/itemization-stain.png', isProcess: true },
   { id: 'cleaning-care', label: 'Cleaning & Care', icon: '/status/cleaning-care.png', isProcess: true },
   { id: 'pressing-hanging', label: 'Pressing & Hanging', icon: '/status/Iconed.png', isProcess: true },
@@ -85,12 +95,13 @@ const CLEAN_PRESS_STEPS = [
 ]
 
 // 3. Press Only Service Steps
-// process -> Itemization & Garment Prep, Steam Ironing
+// process -> Pre Inspection, Itemization & Garment Prep, Steam Ironing
 const PRESS_ONLY_STEPS = [
   STEP_ORDER_PLACED,
   STEP_DRIVER_EN_ROUTE,
   STEP_COLLECTED_TRANSIT,
   STEP_ARRIVED_FACILITY,
+  STEP_PRE_INSPECTION,
   { id: 'itemization-prep', label: 'Itemization & Garment Prep', icon: '/status/itemization-prep.png', isProcess: true },
   { id: 'steam-ironing', label: 'Steam Ironing', icon: '/status/Iconed.png', isProcess: true },
   STEP_QUALITY_CHECK,
@@ -99,12 +110,13 @@ const PRESS_ONLY_STEPS = [
 ]
 
 // 4. Bed & Bath Service Steps
-// process -> Sorting & Sanitization Prep, Thermal Sanitization Wash, Flatwork Ironing & Folding
+// process -> Pre Inspection, Sorting & Sanitization Prep, Thermal Sanitization Wash, Flatwork Ironing & Folding
 const BED_BATH_STEPS = [
   STEP_ORDER_PLACED,
   STEP_DRIVER_EN_ROUTE,
   STEP_COLLECTED_TRANSIT,
   STEP_ARRIVED_FACILITY,
+  STEP_PRE_INSPECTION,
   { id: 'sorting-sanitization', label: 'Sorting & Sanitization Prep', icon: '/status/sorting-sanitization.png', isProcess: true },
   { id: 'thermal-wash', label: 'Thermal Sanitization Wash', icon: '/status/thermal-wash.png', isProcess: true },
   { id: 'flatwork-ironing', label: 'Flatwork Ironing & Folding', icon: '/status/flatwork-iron.png', isProcess: true },
@@ -114,12 +126,13 @@ const BED_BATH_STEPS = [
 ]
 
 // 5. Bag & Shoe Care Service Steps
-// process -> Specialist Inspection, Deep Cleaning & Sole Care, Conditioning & Polishing
+// process -> Pre Inspection, Specialist Inspection, Deep Cleaning & Sole Care, Conditioning & Polishing
 const BAGS_SHOES_STEPS = [
   STEP_ORDER_PLACED,
   STEP_DRIVER_EN_ROUTE,
   STEP_COLLECTED_TRANSIT,
   STEP_ARRIVED_FACILITY,
+  STEP_PRE_INSPECTION,
   { id: 'specialist-inspection', label: 'Specialist Inspection', icon: '/status/specialist-inspection.png', isProcess: true },
   { id: 'sole-care', label: 'Deep Cleaning & Sole Care', icon: '/status/sole-care.png', isProcess: true },
   { id: 'conditioning-polishing', label: 'Conditioning & Polishing', icon: '/status/conditioning-polishing.png', isProcess: true },
@@ -129,12 +142,13 @@ const BAGS_SHOES_STEPS = [
 ]
 
 // 6. Otee Markat (Premium Care) Steps
-// process -> VIP Assessment, Quote Confirmation, Eco Solvent & Hand Cleaning, Hand-Finishing & Restoration, Premium Packaging
+// process -> Pre Inspection, VIP Assessment, Quote Confirmation, Eco Solvent & Hand Cleaning, Hand-Finishing & Restoration, Premium Packaging
 const PREMIUM_CARE_STEPS = [
   STEP_ORDER_PLACED,
   STEP_DRIVER_EN_ROUTE,
   STEP_COLLECTED_TRANSIT,
   STEP_ARRIVED_FACILITY,
+  STEP_PRE_INSPECTION,
   { id: 'vip-assessment', label: 'VIP Assessment', icon: '/status/vip-assessment.png', isProcess: true },
   { id: 'quote-confirmation', label: 'Quote Confirmation', icon: '/status/confirm.png', isProcess: true },
   { id: 'eco-cleaning', label: 'Eco Solvent & Hand Cleaning', icon: '/status/eco-cleaning.png', isProcess: true },
