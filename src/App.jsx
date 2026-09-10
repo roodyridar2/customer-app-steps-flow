@@ -1343,11 +1343,13 @@ function ProcessPillsDrawer({
 }
 
 // ─── Right Side Graphic (Empty / Pattern / Image / Watermark) ─────────────────
-function WashFoldPattern({ themeColor, badgeColor }) {
+// ─── Right Side Graphic (Empty / Pattern / Image / Watermark) ─────────────────
+function WashFoldPattern({ themeColor, badgeColor, height = 280, isExpanded = false }) {
+  const extra = isExpanded ? height - 280 : 0
   return (
-    <svg width="68" height="230" viewBox="0 0 68 230" fill="none" className="overflow-visible">
+    <svg width="68" height={height} viewBox={`0 0 68 ${height}`} fill="none" className="overflow-visible transition-all duration-300">
       {/* Gentle vertical aquatic flow rail */}
-      <line x1="34" y1="0" x2="34" y2="230" stroke={themeColor} strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.22" />
+      <line x1="34" y1="0" x2="34" y2={height} stroke={themeColor} strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.22" />
 
       {/* Fresh water droplet at top */}
       <path
@@ -1371,25 +1373,42 @@ function WashFoldPattern({ themeColor, badgeColor }) {
       <path d="M8 114 C 22 106, 46 122, 60 114" stroke={themeColor} strokeWidth="1.6" strokeOpacity="0.32" strokeLinecap="round" />
       <path d="M12 120 C 26 112, 42 128, 56 120" stroke={themeColor} strokeWidth="1" strokeOpacity="0.2" strokeDasharray="2 2" />
 
-      {/* Stacked folded textile / linen curves (Fold) */}
-      <path d="M16 142 C 26 137, 42 137, 52 142 L 50 148 C 42 144, 26 144, 18 148 Z" fill={badgeColor} stroke={themeColor} strokeWidth="1" strokeOpacity="0.3" fillOpacity="0.4" />
-      <path d="M14 150 C 24 145, 44 145, 54 150 L 52 156 C 42 152, 26 152, 16 156 Z" fill={badgeColor} stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fillOpacity="0.5" />
-      <path d="M12 158 C 24 153, 44 153, 56 158 L 54 165 C 42 161, 26 161, 14 165 Z" fill={badgeColor} stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.4" fillOpacity="0.6" />
+      {/* Mid water current */}
+      <circle cx="34" cy="142" r="3" fill={themeColor} fillOpacity="0.22" />
 
-      {/* Soft aquatic wave and ascending micro-bubbles at bottom */}
-      <path d="M10 192 C 24 185, 44 199, 58 192" stroke={themeColor} strokeWidth="1.4" strokeOpacity="0.3" strokeLinecap="round" />
-      <circle cx="34" cy="210" r="2.5" fill={themeColor} fillOpacity="0.35" />
-      <circle cx="26" cy="218" r="1.5" fill={themeColor} fillOpacity="0.25" />
-      <circle cx="42" cy="220" r="1.8" fill={themeColor} fillOpacity="0.28" />
+      {/* Expanded processing foam & water ripples */}
+      {isExpanded && (
+        <g className="transition-opacity duration-300">
+          <circle cx="48" cy="154" r="11" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.28" fill={badgeColor} fillOpacity="0.38" />
+          <path d="M44 149 A 5.5 5.5 0 0 1 53 152" stroke="#fff" strokeWidth="1.1" strokeLinecap="round" strokeOpacity="0.7" />
+          <circle cx="20" cy="176" r="7.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.22" fill={badgeColor} fillOpacity="0.3" />
+          <path d="M10 196 C 24 188, 44 204, 58 196" stroke={themeColor} strokeWidth="1.4" strokeOpacity="0.3" strokeLinecap="round" />
+          <circle cx="34" cy="214" r="2.5" fill={themeColor} fillOpacity="0.3" />
+        </g>
+      )}
+
+      {/* Stacked folded textile / linen curves (Fold) shifted down by extra */}
+      <g transform={`translate(0, ${extra})`} className="transition-transform duration-300">
+        <path d="M16 182 C 26 177, 42 177, 52 182 L 50 188 C 42 184, 26 184, 18 188 Z" fill={badgeColor} stroke={themeColor} strokeWidth="1" strokeOpacity="0.3" fillOpacity="0.4" />
+        <path d="M14 190 C 24 185, 44 185, 54 190 L 52 196 C 42 192, 26 192, 16 196 Z" fill={badgeColor} stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fillOpacity="0.5" />
+        <path d="M12 198 C 24 193, 44 193, 56 198 L 54 205 C 42 201, 26 201, 14 205 Z" fill={badgeColor} stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.4" fillOpacity="0.6" />
+
+        {/* Soft aquatic wave and ascending micro-bubbles at bottom */}
+        <path d="M10 242 C 24 235, 44 249, 58 242" stroke={themeColor} strokeWidth="1.4" strokeOpacity="0.3" strokeLinecap="round" />
+        <circle cx="34" cy="260" r="2.5" fill={themeColor} fillOpacity="0.35" />
+        <circle cx="26" cy="268" r="1.5" fill={themeColor} fillOpacity="0.25" />
+        <circle cx="42" cy="270" r="1.8" fill={themeColor} fillOpacity="0.28" />
+      </g>
     </svg>
   )
 }
 
-function CleanPressPattern({ themeColor, badgeColor }) {
+function CleanPressPattern({ themeColor, badgeColor, height = 280, isExpanded = false }) {
+  const extra = isExpanded ? height - 280 : 0
   return (
-    <svg width="68" height="230" viewBox="0 0 68 230" fill="none" className="overflow-visible">
+    <svg width="68" height={height} viewBox={`0 0 68 ${height}`} fill="none" className="overflow-visible transition-all duration-300">
       {/* Crisp vertical crease line */}
-      <line x1="34" y1="0" x2="34" y2="230" stroke={themeColor} strokeWidth="1" strokeDasharray="4 2" strokeOpacity="0.25" />
+      <line x1="34" y1="0" x2="34" y2={height} stroke={themeColor} strokeWidth="1" strokeDasharray="4 2" strokeOpacity="0.25" />
 
       {/* Classic coat hanger at top */}
       <path d="M34 16 C 34 10, 39 8, 40 12 C 41 15, 36 17, 34 19 L34 22" stroke={themeColor} strokeWidth="1.3" strokeLinecap="round" strokeOpacity="0.5" />
@@ -1407,28 +1426,46 @@ function CleanPressPattern({ themeColor, badgeColor }) {
       {/* Pristine shine star */}
       <path d="M46 114 L47.5 120.5 L54 122 L47.5 123.5 L46 130 L44.5 123.5 L38 122 L44.5 120.5 Z" fill={themeColor} fillOpacity="0.35" />
 
-      {/* Parallel pressed vertical pleat stitches */}
-      <line x1="22" y1="142" x2="22" y2="164" stroke={themeColor} strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.3" />
-      <line x1="34" y1="138" x2="34" y2="168" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.38" />
-      <line x1="46" y1="142" x2="46" y2="164" stroke={themeColor} strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.3" />
+      {/* Mid press stitch dash */}
+      <circle cx="34" cy="142" r="2" fill={themeColor} fillOpacity="0.22" />
 
-      {/* Garment quality label tag */}
-      <rect x="23" y="184" width="22" height="15" rx="3" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.3" fill={badgeColor} fillOpacity="0.4" />
-      <line x1="27" y1="190" x2="41" y2="190" stroke={themeColor} strokeWidth="0.8" strokeOpacity="0.3" />
-      <line x1="27" y1="193" x2="37" y2="193" stroke={themeColor} strokeWidth="0.8" strokeOpacity="0.25" />
-      <circle cx="34" cy="184" r="1.5" fill={themeColor} fillOpacity="0.4" />
+      {/* Expanded processing steam & pleats */}
+      {isExpanded && (
+        <g className="transition-opacity duration-300">
+          <path d="M48 152 C 56 144, 56 132, 46 128" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.28" strokeLinecap="round" />
+          <line x1="22" y1="162" x2="22" y2="194" stroke={themeColor} strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.28" />
+          <line x1="34" y1="158" x2="34" y2="198" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.35" />
+          <line x1="46" y1="162" x2="46" y2="194" stroke={themeColor} strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.28" />
+          <path d="M34 210 L35.2 214.8 L39 216 L35.2 217.2 L34 222 L32.8 217.2 L29 216 L32.8 214.8 Z" fill={themeColor} fillOpacity="0.35" />
+        </g>
+      )}
 
-      {/* Bottom star */}
-      <path d="M34 213 L35.2 216.8 L39 218 L35.2 219.2 L34 223 L32.8 219.2 L29 218 L32.8 216.8 Z" fill={themeColor} fillOpacity="0.35" />
+      {/* Shifted lower elements */}
+      <g transform={`translate(0, ${extra})`} className="transition-transform duration-300">
+        {/* Parallel pressed vertical pleat stitches */}
+        <line x1="22" y1="184" x2="22" y2="208" stroke={themeColor} strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.3" />
+        <line x1="34" y1="180" x2="34" y2="212" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.38" />
+        <line x1="46" y1="184" x2="46" y2="208" stroke={themeColor} strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.3" />
+
+        {/* Garment quality label tag */}
+        <rect x="23" y="228" width="22" height="15" rx="3" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.3" fill={badgeColor} fillOpacity="0.4" />
+        <line x1="27" y1="234" x2="41" y2="234" stroke={themeColor} strokeWidth="0.8" strokeOpacity="0.3" />
+        <line x1="27" y1="237" x2="37" y2="237" stroke={themeColor} strokeWidth="0.8" strokeOpacity="0.25" />
+        <circle cx="34" cy="228" r="1.5" fill={themeColor} fillOpacity="0.4" />
+
+        {/* Bottom star */}
+        <path d="M34 258 L35.2 261.8 L39 263 L35.2 264.2 L34 268 L32.8 264.2 L29 263 L32.8 261.8 Z" fill={themeColor} fillOpacity="0.35" />
+      </g>
     </svg>
   )
 }
 
-function PressOnlyPattern({ themeColor, badgeColor }) {
+function PressOnlyPattern({ themeColor, badgeColor, height = 280, isExpanded = false }) {
+  const extra = isExpanded ? height - 280 : 0
   return (
-    <svg width="68" height="230" viewBox="0 0 68 230" fill="none" className="overflow-visible">
+    <svg width="68" height={height} viewBox={`0 0 68 ${height}`} fill="none" className="overflow-visible transition-all duration-300">
       {/* Warm steam vertical dashed guide rail */}
-      <line x1="34" y1="0" x2="34" y2="230" stroke={themeColor} strokeWidth="1" strokeDasharray="3 3" strokeOpacity="0.25" />
+      <line x1="34" y1="0" x2="34" y2={height} stroke={themeColor} strokeWidth="1" strokeDasharray="3 3" strokeOpacity="0.25" />
 
       {/* Steam Iron silhouette at top */}
       <path d="M34 10 L49 34 C 49 36, 47 38, 44 38 L24 38 C 21 38, 19 36, 19 34 Z" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.4" fill={badgeColor} fillOpacity="0.5" strokeLinejoin="round" />
@@ -1443,31 +1480,48 @@ function PressOnlyPattern({ themeColor, badgeColor }) {
       <path d="M26 48 C 20 60, 32 72, 26 84 C 20 96, 32 108, 26 120" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.3" strokeLinecap="round" />
       <path d="M42 54 C 48 66, 36 78, 42 90 C 48 102, 36 114, 42 126" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.3" strokeLinecap="round" />
 
-      {/* Horizontal crisp press crease lines (smoothing effect) */}
-      <line x1="12" y1="144" x2="56" y2="144" stroke={themeColor} strokeWidth="1.6" strokeOpacity="0.4" strokeLinecap="round" />
-      <line x1="18" y1="152" x2="50" y2="152" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.3" strokeLinecap="round" />
-      <line x1="24" y1="160" x2="44" y2="160" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.22" strokeLinecap="round" />
+      {/* Mid steam guide */}
+      <circle cx="34" cy="142" r="2.5" fill={themeColor} fillOpacity="0.22" />
 
-      {/* Heat radiating warmth sunburst */}
-      <circle cx="34" cy="188" r="4.5" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
-      <circle cx="34" cy="188" r="1.5" fill={themeColor} fillOpacity="0.45" />
-      <line x1="34" y1="179" x2="34" y2="182" stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
-      <line x1="34" y1="194" x2="34" y2="197" stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
-      <line x1="25" y1="188" x2="28" y2="188" stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
-      <line x1="40" y1="188" x2="43" y2="188" stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
+      {/* Expanded steam ironing elements */}
+      {isExpanded && (
+        <g className="transition-opacity duration-300">
+          <path d="M26 145 C 20 157, 32 169, 26 181" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.28" strokeLinecap="round" />
+          <path d="M42 151 C 48 163, 36 175, 42 187" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.28" strokeLinecap="round" />
+          <line x1="16" y1="202" x2="52" y2="202" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.3" strokeLinecap="round" />
+          <circle cx="34" cy="216" r="2.5" fill={themeColor} fillOpacity="0.35" />
+        </g>
+      )}
 
-      {/* Bottom crease triangle */}
-      <path d="M16 215 L34 223 L52 215" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.3" strokeLinecap="round" />
+      {/* Shifted lower elements */}
+      <g transform={`translate(0, ${extra})`} className="transition-transform duration-300">
+        {/* Horizontal crisp press crease lines (smoothing effect) */}
+        <line x1="12" y1="188" x2="56" y2="188" stroke={themeColor} strokeWidth="1.6" strokeOpacity="0.4" strokeLinecap="round" />
+        <line x1="18" y1="196" x2="50" y2="196" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.3" strokeLinecap="round" />
+        <line x1="24" y1="204" x2="44" y2="204" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.22" strokeLinecap="round" />
+
+        {/* Heat radiating warmth sunburst */}
+        <circle cx="34" cy="236" r="4.5" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+        <circle cx="34" cy="236" r="1.5" fill={themeColor} fillOpacity="0.45" />
+        <line x1="34" y1="227" x2="34" y2="230" stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
+        <line x1="34" y1="242" x2="34" y2="245" stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
+        <line x1="25" y1="236" x2="28" y2="236" stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
+        <line x1="40" y1="236" x2="43" y2="236" stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
+
+        {/* Bottom crease triangle */}
+        <path d="M16 265 L34 273 L52 265" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.3" strokeLinecap="round" />
+      </g>
     </svg>
   )
 }
 
-function BagsShoesPattern({ themeColor, badgeColor }) {
+function BagsShoesPattern({ themeColor, badgeColor, height = 280, isExpanded = false }) {
+  const extra = isExpanded ? height - 280 : 0
   return (
-    <svg width="68" height="230" viewBox="0 0 68 230" fill="none" className="overflow-visible">
+    <svg width="68" height={height} viewBox={`0 0 68 ${height}`} fill="none" className="overflow-visible transition-all duration-300">
       {/* Handcrafted artisan saddle-stitching down both sides */}
-      <line x1="14" y1="0" x2="14" y2="230" stroke={themeColor} strokeWidth="1" strokeDasharray="3 3" strokeOpacity="0.25" />
-      <line x1="54" y1="0" x2="54" y2="230" stroke={themeColor} strokeWidth="1" strokeDasharray="3 3" strokeOpacity="0.25" />
+      <line x1="14" y1="0" x2="14" y2={height} stroke={themeColor} strokeWidth="1" strokeDasharray="3 3" strokeOpacity="0.25" />
+      <line x1="54" y1="0" x2="54" y2={height} stroke={themeColor} strokeWidth="1" strokeDasharray="3 3" strokeOpacity="0.25" />
 
       {/* Handbag silhouette with arched handle */}
       <path d="M27 18 C 27 8, 41 8, 41 18" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.45" fill="none" />
@@ -1479,30 +1533,48 @@ function BagsShoesPattern({ themeColor, badgeColor }) {
       <circle cx="34" cy="76" r="2" fill={badgeColor} stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
       <circle cx="34" cy="104" r="2" fill={badgeColor} stroke={themeColor} strokeWidth="1" strokeOpacity="0.4" />
 
-      {/* Footwear contour curve & heel */}
-      <path d="M18 144 C 28 138, 38 138, 50 148 C 44 156, 30 156, 18 152 Z" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.38" fill={badgeColor} fillOpacity="0.4" strokeLinejoin="round" />
-      <path d="M18 152 L22 162 L26 162 L26 153" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" fill="none" />
+      {/* Mid stitch accent */}
+      <circle cx="34" cy="142" r="2.5" fill={themeColor} fillOpacity="0.25" />
 
-      {/* Criss-cross shoe lacing */}
-      <circle cx="27" cy="178" r="1.8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.4" />
-      <circle cx="41" cy="178" r="1.8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.4" />
-      <circle cx="27" cy="190" r="1.8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.4" />
-      <circle cx="41" cy="190" r="1.8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.4" />
-      <line x1="27" y1="178" x2="41" y2="190" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" />
-      <line x1="41" y1="178" x2="27" y2="190" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" />
+      {/* Expanded artisan shoe & bag care lattice */}
+      {isExpanded && (
+        <g className="transition-opacity duration-300">
+          <path d="M20 142 L48 170 M48 142 L20 170" stroke={themeColor} strokeWidth="1" strokeOpacity="0.22" />
+          <circle cx="34" cy="156" r="2" fill={badgeColor} stroke={themeColor} strokeWidth="1" strokeOpacity="0.38" />
+          <circle cx="27" cy="184" r="2" stroke={themeColor} strokeWidth="1" strokeOpacity="0.3" fill={badgeColor} />
+          <circle cx="41" cy="184" r="2" stroke={themeColor} strokeWidth="1" strokeOpacity="0.3" fill={badgeColor} />
+          <path d="M22 208 C 30 200, 38 200, 46 208" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.3" strokeLinecap="round" fill="none" />
+        </g>
+      )}
 
-      {/* Luxury belt buckle */}
-      <rect x="25" y="206" width="18" height="13" rx="3" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.4" fill={badgeColor} fillOpacity="0.4" />
-      <line x1="34" y1="206" x2="34" y2="219" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.5" />
+      {/* Shifted lower elements */}
+      <g transform={`translate(0, ${extra})`} className="transition-transform duration-300">
+        {/* Footwear contour curve & heel */}
+        <path d="M18 184 C 28 178, 38 178, 50 188 C 44 196, 30 196, 18 192 Z" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.38" fill={badgeColor} fillOpacity="0.4" strokeLinejoin="round" />
+        <path d="M18 192 L22 202 L26 202 L26 193" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" fill="none" />
+
+        {/* Criss-cross shoe lacing */}
+        <circle cx="27" cy="216" r="1.8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.4" />
+        <circle cx="41" cy="216" r="1.8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.4" />
+        <circle cx="27" cy="228" r="1.8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.4" />
+        <circle cx="41" cy="228" r="1.8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.4" />
+        <line x1="27" y1="216" x2="41" y2="228" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" />
+        <line x1="41" y1="216" x2="27" y2="228" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" />
+
+        {/* Luxury belt buckle */}
+        <rect x="25" y="248" width="18" height="13" rx="3" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.4" fill={badgeColor} fillOpacity="0.4" />
+        <line x1="34" y1="248" x2="34" y2="261" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.5" />
+      </g>
     </svg>
   )
 }
 
-function PremiumCarePattern({ themeColor, badgeColor }) {
+function PremiumCarePattern({ themeColor, badgeColor, height = 280, isExpanded = false }) {
+  const extra = isExpanded ? height - 280 : 0
   return (
-    <svg width="68" height="230" viewBox="0 0 68 230" fill="none" className="overflow-visible">
+    <svg width="68" height={height} viewBox={`0 0 68 ${height}`} fill="none" className="overflow-visible transition-all duration-300">
       {/* Center regal filigree rail */}
-      <line x1="34" y1="0" x2="34" y2="230" stroke={themeColor} strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
+      <line x1="34" y1="0" x2="34" y2={height} stroke={themeColor} strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
 
       {/* Royal Crown / Tiara Crest at top */}
       <path d="M18 34 L21 21 L27 28 L34 16 L41 28 L47 21 L50 34 Z" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.45" fill={badgeColor} fillOpacity="0.5" strokeLinejoin="round" />
@@ -1524,23 +1596,42 @@ function PremiumCarePattern({ themeColor, badgeColor }) {
       <path d="M46 102 L47.5 111 L56 114 L47.5 117 L46 126 L44.5 117 L36 114 L44.5 111 Z" fill={themeColor} fillOpacity="0.38" />
       <path d="M22 131 L23 136 L28 138 L23 140 L22 145 L21 140 L16 138 L21 136 Z" fill={themeColor} fillOpacity="0.32" />
 
-      {/* Flowing Silk Ribbon Heraldic Banner */}
-      <path d="M14 168 C 26 158, 42 178, 54 168 C 42 178, 26 158, 14 168 Z" fill={badgeColor} stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.4" fillOpacity="0.5" />
-      <path d="M16 174 C 28 164, 40 184, 52 174" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.3" fill="none" strokeDasharray="1.5 2" />
+      {/* Mid sparkle */}
+      <circle cx="34" cy="144" r="2.5" fill={themeColor} fillOpacity="0.25" />
 
-      {/* Royal Crest Seal Rings */}
-      <circle cx="34" cy="210" r="13" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.35" strokeDasharray="3 2" fill={badgeColor} fillOpacity="0.3" />
-      <circle cx="34" cy="210" r="8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.3" />
-      <path d="M34 206 L34.8 209.2 L38 210 L34.8 210.8 L34 214 L33.2 210.8 L30 210 L33.2 209.2 Z" fill={themeColor} fillOpacity="0.45" />
+      {/* Expanded royal ribbon & sparkle elements */}
+      {isExpanded && (
+        <g className="transition-opacity duration-300">
+          <path d="M34 160 L35.5 166 L41 167.5 L35.5 169 L34 175 L32.5 169 L27 167.5 L32.5 166 Z" fill={themeColor} fillOpacity="0.36" />
+          <path d="M14 194 C 26 184, 42 204, 54 194" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" fill="none" strokeDasharray="2 2" />
+          <circle cx="34" cy="210" r="3" fill={badgeColor} stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" />
+        </g>
+      )}
+
+      {/* Shifted lower elements */}
+      <g transform={`translate(0, ${extra})`} className="transition-transform duration-300">
+        {/* Flowing Silk Ribbon Heraldic Banner */}
+        <path d="M14 184 C 26 174, 42 194, 54 184 C 42 194, 26 174, 14 184 Z" fill={badgeColor} stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.4" fillOpacity="0.5" />
+        <path d="M16 190 C 28 180, 40 200, 52 190" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.3" fill="none" strokeDasharray="1.5 2" />
+
+        {/* Royal Crest Seal Rings */}
+        <circle cx="34" cy="236" r="13" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.35" strokeDasharray="3 2" fill={badgeColor} fillOpacity="0.3" />
+        <circle cx="34" cy="236" r="8" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.3" />
+        <path d="M34 232 L34.8 235.2 L38 236 L34.8 236.8 L34 240 L33.2 236.8 L30 236 L33.2 235.2 Z" fill={themeColor} fillOpacity="0.45" />
+
+        {/* Accent star */}
+        <path d="M34 265 L35 268 L38 269 L35 270 L34 273 L33 270 L30 269 L33 268 Z" fill={themeColor} fillOpacity="0.35" />
+      </g>
     </svg>
   )
 }
 
-function MultiServicePattern({ themeColor, badgeColor }) {
+function MultiServicePattern({ themeColor, badgeColor, height = 280, isExpanded = false }) {
+  const extra = isExpanded ? height - 280 : 0
   return (
-    <svg width="68" height="230" viewBox="0 0 68 230" fill="none" className="overflow-visible">
+    <svg width="68" height={height} viewBox={`0 0 68 ${height}`} fill="none" className="overflow-visible transition-all duration-300">
       {/* Subtle vertical dashed rail */}
-      <line x1="34" y1="0" x2="34" y2="230" stroke={themeColor} strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
+      <line x1="34" y1="0" x2="34" y2={height} stroke={themeColor} strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
 
       {/* Interlocking synergy rings at top */}
       <circle cx="34" cy="22" r="9" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
@@ -1562,27 +1653,45 @@ function MultiServicePattern({ themeColor, badgeColor }) {
         <circle cx="0" cy="0" r="2.5" fill={themeColor} fillOpacity="0.4" />
       </g>
 
-      {/* Sparkle 2 */}
-      <g transform="translate(44, 144)">
-        <path d="M6 0L7.2 4.2L11.4 5.4L7.2 6.6L6 10.8L4.8 6.6L0.6 5.4L4.8 4.2Z" fill={themeColor} fillOpacity="0.35" />
+      {/* Mid harmony accent */}
+      <circle cx="34" cy="144" r="2.5" fill={themeColor} fillOpacity="0.22" />
+
+      {/* Expanded synergy multi-service elements */}
+      {isExpanded && (
+        <g className="transition-opacity duration-300">
+          <circle cx="34" cy="156" r="8" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.28" fill={badgeColor} fillOpacity="0.35" />
+          <g transform="translate(20, 178)">
+            <path d="M6 0L7.2 4.2L11.4 5.4L7.2 6.6L6 10.8L4.8 6.6L0.6 5.4L4.8 4.2Z" fill={themeColor} fillOpacity="0.35" />
+          </g>
+          <path d="M12 202 C 26 194, 42 210, 56 202" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.26" strokeLinecap="round" />
+        </g>
+      )}
+
+      {/* Shifted lower elements */}
+      <g transform={`translate(0, ${extra})`} className="transition-transform duration-300">
+        {/* Sparkle 2 */}
+        <g transform="translate(44, 184)">
+          <path d="M6 0L7.2 4.2L11.4 5.4L7.2 6.6L6 10.8L4.8 6.6L0.6 5.4L4.8 4.2Z" fill={themeColor} fillOpacity="0.35" />
+        </g>
+
+        {/* Soft bubble ring */}
+        <circle cx="22" cy="216" r="13" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.22" fill={badgeColor} fillOpacity="0.3" />
+        <circle cx="20" cy="214" r="5" stroke={themeColor} strokeWidth="0.8" strokeOpacity="0.18" />
+
+        {/* Decorative bottom wave & star */}
+        <path d="M10 248 C 25 241, 43 255, 58 248" stroke={themeColor} strokeWidth="1.5" strokeOpacity="0.3" strokeLinecap="round" />
+        <circle cx="34" cy="264" r="2.5" fill={themeColor} fillOpacity="0.35" />
       </g>
-
-      {/* Soft bubble ring */}
-      <circle cx="22" cy="172" r="13" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.22" fill={badgeColor} fillOpacity="0.3" />
-      <circle cx="20" cy="170" r="5" stroke={themeColor} strokeWidth="0.8" strokeOpacity="0.18" />
-
-      {/* Decorative bottom wave & star */}
-      <path d="M10 204 C 25 197, 43 211, 58 204" stroke={themeColor} strokeWidth="1.5" strokeOpacity="0.3" strokeLinecap="round" />
-      <circle cx="34" cy="220" r="2.5" fill={themeColor} fillOpacity="0.35" />
     </svg>
   )
 }
 
-function BedBathPattern({ themeColor, badgeColor }) {
+function BedBathPattern({ themeColor, badgeColor, height = 280, isExpanded = false }) {
+  const extra = isExpanded ? height - 280 : 0
   return (
-    <svg width="68" height="230" viewBox="0 0 68 230" fill="none" className="overflow-visible">
+    <svg width="68" height={height} viewBox={`0 0 68 ${height}`} fill="none" className="overflow-visible transition-all duration-300">
       {/* Center rail */}
-      <line x1="34" y1="0" x2="34" y2="230" stroke={themeColor} strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
+      <line x1="34" y1="0" x2="34" y2={height} stroke={themeColor} strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
 
       {/* Folded plush towel stack at top */}
       <rect x="20" y="20" width="28" height="7" rx="3.5" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.4" fill={badgeColor} fillOpacity="0.5" />
@@ -1598,19 +1707,34 @@ function BedBathPattern({ themeColor, badgeColor }) {
       <path d="M14 112 C 26 102, 42 122, 54 112" stroke={themeColor} strokeWidth="1.5" strokeOpacity="0.38" strokeLinecap="round" />
       <path d="M16 120 C 28 110, 40 130, 52 120" stroke={themeColor} strokeWidth="1" strokeOpacity="0.25" strokeDasharray="1.5 2" />
 
-      {/* Crisp cotton flower / botanical hygiene emblem */}
-      <g transform="translate(34, 152)">
-        <circle cx="0" cy="-6" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
-        <circle cx="6" cy="0" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
-        <circle cx="0" cy="6" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
-        <circle cx="-6" cy="0" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
-        <circle cx="0" cy="0" r="2.5" fill={themeColor} fillOpacity="0.45" />
-      </g>
+      {/* Mid spa droplet */}
+      <circle cx="34" cy="144" r="2.5" fill={themeColor} fillOpacity="0.25" />
 
-      {/* Soft bath waves at bottom */}
-      <path d="M12 188 C 24 180, 44 196, 56 188" stroke={themeColor} strokeWidth="1.4" strokeOpacity="0.3" strokeLinecap="round" />
-      <path d="M16 196 C 26 190, 42 202, 52 196" stroke={themeColor} strokeWidth="1" strokeOpacity="0.22" strokeDasharray="2 2" />
-      <circle cx="34" cy="214" r="3" fill={themeColor} fillOpacity="0.3" />
+      {/* Expanded bed & bath linen ripples */}
+      {isExpanded && (
+        <g className="transition-opacity duration-300">
+          <rect x="20" y="152" width="28" height="7" rx="3.5" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+          <circle cx="44" cy="176" r="5.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.3" fill={badgeColor} fillOpacity="0.35" />
+          <path d="M12 198 C 24 190, 44 206, 56 198" stroke={themeColor} strokeWidth="1.3" strokeOpacity="0.3" strokeLinecap="round" />
+        </g>
+      )}
+
+      {/* Shifted lower elements */}
+      <g transform={`translate(0, ${extra})`} className="transition-transform duration-300">
+        {/* Crisp cotton flower / botanical hygiene emblem */}
+        <g transform="translate(34, 196)">
+          <circle cx="0" cy="-6" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+          <circle cx="6" cy="0" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+          <circle cx="0" cy="6" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+          <circle cx="-6" cy="0" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+          <circle cx="0" cy="0" r="2.5" fill={themeColor} fillOpacity="0.45" />
+        </g>
+
+        {/* Soft bath waves at bottom */}
+        <path d="M12 238 C 24 230, 44 246, 56 238" stroke={themeColor} strokeWidth="1.4" strokeOpacity="0.3" strokeLinecap="round" />
+        <circle cx="34" cy="256" r="2.5" fill={themeColor} fillOpacity="0.35" />
+        <circle cx="24" cy="264" r="1.5" fill={themeColor} fillOpacity="0.25" />
+      </g>
     </svg>
   )
 }
@@ -1623,6 +1747,9 @@ function RightSideGraphic({
   badgeColor = '#EFF6FF',
   serviceIcons = [],
   serviceName = '',
+  isProcessExpanded = false,
+  processDesign = 'drawer',
+  subStepsCount = 3,
 }) {
   const icon = serviceIcons[0] || '/service/Wash and fold.png'
 
@@ -1650,34 +1777,44 @@ function RightSideGraphic({
     serviceKey = 'wash-fold'
   }
 
+  const extraHeight = isProcessExpanded
+    ? processDesign === 'segments'
+      ? 40
+      : processDesign === 'pills'
+      ? 48
+      : subStepsCount * 36 + 10
+    : 0
+  const basePatternHeight = 280
+  const patternHeight = basePatternHeight + extraHeight
+
   const renderPattern = () => {
     switch (serviceKey) {
       case 'bags-shoes':
-        return <BagsShoesPattern themeColor={themeColor} badgeColor={badgeColor} />
+        return <BagsShoesPattern themeColor={themeColor} badgeColor={badgeColor} height={patternHeight} isExpanded={isProcessExpanded} />
       case 'premium-care':
-        return <PremiumCarePattern themeColor={themeColor} badgeColor={badgeColor} />
+        return <PremiumCarePattern themeColor={themeColor} badgeColor={badgeColor} height={patternHeight} isExpanded={isProcessExpanded} />
       case 'bed-bath':
-        return <BedBathPattern themeColor={themeColor} badgeColor={badgeColor} />
+        return <BedBathPattern themeColor={themeColor} badgeColor={badgeColor} height={patternHeight} isExpanded={isProcessExpanded} />
       case 'clean-press':
-        return <CleanPressPattern themeColor={themeColor} badgeColor={badgeColor} />
+        return <CleanPressPattern themeColor={themeColor} badgeColor={badgeColor} height={patternHeight} isExpanded={isProcessExpanded} />
       case 'press-only':
-        return <PressOnlyPattern themeColor={themeColor} badgeColor={badgeColor} />
+        return <PressOnlyPattern themeColor={themeColor} badgeColor={badgeColor} height={patternHeight} isExpanded={isProcessExpanded} />
       case 'wash-fold':
-        return <WashFoldPattern themeColor={themeColor} badgeColor={badgeColor} />
+        return <WashFoldPattern themeColor={themeColor} badgeColor={badgeColor} height={patternHeight} isExpanded={isProcessExpanded} />
       default:
-        return <MultiServicePattern themeColor={themeColor} badgeColor={badgeColor} />
+        return <MultiServicePattern themeColor={themeColor} badgeColor={badgeColor} height={patternHeight} isExpanded={isProcessExpanded} />
     }
   }
 
   if (style === 'pattern') {
     return (
       <div
-        className="absolute top-0 right-0 z-10 pointer-events-none select-none flex flex-col items-center"
+        className="absolute top-0 right-0 z-10 pointer-events-none select-none flex flex-col items-center transition-all duration-300"
         style={{ width: 70, paddingTop: 2 }}
       >
-        {/* Decorative badge tag - dot inside care removed per user request */}
+        {/* Decorative badge tag */}
         <div
-          className="px-2 py-0.5 rounded-full text-[8px] font-bold tracking-wider uppercase mb-1.5 flex items-center justify-center shadow-2xs"
+          className="px-2 py-0.5 rounded-full text-[8px] font-bold tracking-wider uppercase mb-1.5 flex items-center justify-center shadow-2xs shrink-0"
           style={{
             background: badgeColor,
             color: themeColor,
@@ -1687,7 +1824,7 @@ function RightSideGraphic({
           <span>Care</span>
         </div>
 
-        {/* Distinct pattern reflecting the specific service */}
+        {/* Distinct pattern reflecting the specific service, expanding dynamically */}
         {renderPattern()}
       </div>
     )
@@ -1717,12 +1854,12 @@ function RightSideGraphic({
 
     return (
       <div
-        className="absolute z-20 pointer-events-none select-none flex flex-col items-center justify-center"
+        className="absolute z-20 pointer-events-none select-none flex flex-col items-end justify-center"
         style={{
-          top: 6,
-          right: -8,
-          width: 152,
-          height: 245,
+          top: 8,
+          right: -32,
+          width: 172,
+          height: 250,
           perspective: 1000,
         }}
       >
@@ -1732,8 +1869,8 @@ function RightSideGraphic({
             opacity: 1,
             scale: 1,
             y: [0, -8, 0],
-            rotateY: [-14, -7, -14],
-            rotateX: [5, 1, 5],
+            rotateY: [-12, -6, -12],
+            rotateX: [4, 1, 4],
             rotateZ: [0.5, -0.5, 0.5],
           }}
           transition={{
@@ -1745,33 +1882,29 @@ function RightSideGraphic({
             rotateZ: { duration: 4.5, repeat: Infinity, ease: 'easeInOut' },
           }}
           whileHover={{
-            scale: 1.12,
-            y: -14,
-            rotateY: -3,
+            scale: 1.08,
+            y: -12,
+            rotateY: -2,
             rotateX: 0,
             transition: { duration: 0.25 },
           }}
-          className="relative flex flex-col items-center justify-center pointer-events-auto cursor-pointer"
+          className="relative flex flex-col items-end justify-center pointer-events-auto cursor-pointer"
           style={{
             transformStyle: 'preserve-3d',
           }}
         >
-          {/* 3D Model with layered depth drop shadows popping forward out of screen */}
+          {/* 3D Model shifted more to right edge with reduced, ultra-clean shadow */}
           <img
             src={img3d}
             alt={serviceName || '3D Graphic'}
             className="object-contain select-none transition-transform duration-300"
             style={{
               width: 'auto',
-              height: 235,
-              maxHeight: 240,
-              maxWidth: 148,
-              filter: `
-                drop-shadow(-10px 22px 26px rgba(0, 0, 0, 0.26))
-                drop-shadow(-3px 8px 12px rgba(0, 0, 0, 0.14))
-                drop-shadow(0 0 16px ${themeColor}22)
-              `,
-              transform: 'translateZ(28px)',
+              height: 240,
+              maxHeight: 250,
+              maxWidth: 164,
+              filter: 'drop-shadow(-2px 5px 8px rgba(0, 0, 0, 0.07)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.03))',
+              transform: 'translateZ(26px)',
             }}
           />
         </motion.div>
@@ -2163,6 +2296,9 @@ function StatusList({
           badgeColor={badgeColor}
           serviceIcons={serviceIcons}
           serviceName={serviceName}
+          isProcessExpanded={isProcessExpanded}
+          processDesign={processDesign}
+          subStepsCount={subCount}
         />
       )}
     </div>
@@ -2652,6 +2788,9 @@ function StatusStepper({
           badgeColor={badgeColor}
           serviceIcons={serviceIcons}
           serviceName={serviceName}
+          isProcessExpanded={isProcessExpanded}
+          processDesign={processDesign}
+          subStepsCount={subCount}
         />
       )}
     </div>
