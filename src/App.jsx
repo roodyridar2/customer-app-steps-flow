@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, Fragment } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ─── Tabs ────────────────────────────────────────────────────────────────────
@@ -998,94 +998,74 @@ function ProcessSubStepsDrawer({
   const activeSubStepIndex = rawActiveStep - startIndex
 
   return (
-    <div className="ml-6 mr-0 my-1 p-2 rounded-xl bg-slate-50/95 border border-slate-200/80 shadow-xs select-none">
-      <div className="flex items-center justify-between pb-1 mb-1.5 border-b border-slate-200/60 px-1">
-        <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">
-          Process Details ({subSteps.length} Steps)
-        </span>
-        <span className="text-[9.5px] font-bold text-sky-600 font-mono">
-          {rawActiveStep > endIndex
-            ? `${subSteps.length} / ${subSteps.length}`
-            : rawActiveStep < startIndex
-            ? `0 / ${subSteps.length}`
-            : `${activeSubStepIndex + 1} / ${subSteps.length}`}
-        </span>
-      </div>
+    <div className="ml-8 mr-1 my-1 pl-3 select-none border-l-1.5 border-slate-200/80 space-y-1">
+      {subSteps.map((sub, sIdx) => {
+        const isSubDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
+        const isSubCurrent = rawActiveStep >= startIndex && rawActiveStep <= endIndex && activeSubStepIndex === sIdx
 
-      <div className="space-y-1">
-        {subSteps.map((sub, sIdx) => {
-          const isSubDone = rawActiveStep > endIndex || activeSubStepIndex > sIdx
-          const isSubCurrent = rawActiveStep >= startIndex && rawActiveStep <= endIndex && activeSubStepIndex === sIdx
-
-          return (
-            <div
-              key={sub.label}
-              onClick={(e) => {
-                e.stopPropagation()
-                if (onSelectRawStep) onSelectRawStep(startIndex + sIdx)
-              }}
-              className={`flex items-center justify-between px-2 py-1 rounded-lg transition-colors cursor-pointer ${
-                isSubCurrent
-                  ? 'bg-white shadow-xs border border-sky-200/80 ring-1 ring-sky-100'
-                  : isSubDone
-                  ? 'bg-white/70 border border-slate-200/50'
-                  : 'hover:bg-white/60'
-              }`}
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                {/* Status indicator */}
-                <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0">
-                  {isSubDone ? (
-                    <div className="w-3.5 h-3.5 rounded-full bg-sky-500 flex items-center justify-center">
-                      <svg viewBox="0 0 12 12" className="w-2 h-2 text-white fill-none stroke-current stroke-2">
-                        <path d="M2.5 6.5l2.5 2.5 4.5-5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                  ) : isSubCurrent ? (
-                    <div className="relative w-3.5 h-3.5 flex items-center justify-center">
-                      <span className="absolute w-3.5 h-3.5 rounded-full bg-sky-400 opacity-40 animate-ping" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
-                    </div>
-                  ) : (
-                    <div className="w-2.5 h-2.5 rounded-full border border-slate-300 bg-white" />
-                  )}
-                </div>
-
-                {/* Sub-step icon */}
-                <div className="w-4 h-4 flex items-center justify-center shrink-0">
-                  {sub.icon ? (
-                    <img src={sub.icon} alt="" className="w-3.5 h-3.5 object-contain" />
-                  ) : (
-                    <DriedSVG dim={!isSubDone && !isSubCurrent} />
-                  )}
-                </div>
-
-                {/* Sub-step label */}
-                <span
-                  className="text-[11.5px] truncate transition-colors"
-                  style={{
-                    color: isSubCurrent ? '#0F172A' : isSubDone ? '#475569' : '#94A3B8',
-                    fontWeight: isSubCurrent ? 600 : 400,
-                  }}
-                >
-                  {sub.label}
-                </span>
+        return (
+          <div
+            key={sub.label}
+            onClick={(e) => {
+              e.stopPropagation()
+              if (onSelectRawStep) onSelectRawStep(startIndex + sIdx)
+            }}
+            className="flex items-center justify-between py-1 px-1.5 rounded-lg transition-colors cursor-pointer hover:bg-slate-50/80 group"
+            style={{ height: 24 }}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              {/* Status indicator */}
+              <div className="w-3 h-3 flex items-center justify-center shrink-0">
+                {isSubDone ? (
+                  <div className="w-2 h-2 rounded-full bg-sky-500" />
+                ) : isSubCurrent ? (
+                  <div className="relative w-2.5 h-2.5 flex items-center justify-center">
+                    <span className="absolute w-2.5 h-2.5 rounded-full bg-sky-400 opacity-40 animate-ping" />
+                    <span className="w-2 h-2 rounded-full bg-sky-500" />
+                  </div>
+                ) : (
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors" />
+                )}
               </div>
 
-              {/* Right micro badge */}
+              {/* Sub-step icon */}
+              <div className="w-4 h-4 flex items-center justify-center shrink-0">
+                {sub.icon ? (
+                  <img
+                    src={sub.icon}
+                    alt=""
+                    className="w-3.5 h-3.5 object-contain transition-opacity"
+                    style={{ opacity: isSubCurrent || isSubDone ? 1 : 0.35 }}
+                  />
+                ) : (
+                  <DriedSVG dim={!isSubDone && !isSubCurrent} />
+                )}
+              </div>
+
+              {/* Sub-step label */}
               <span
-                className="text-[9px] px-1.5 py-0.5 rounded font-medium shrink-0"
+                className="text-[12px] truncate transition-colors"
                 style={{
-                  background: isSubCurrent ? '#EFF6FF' : isSubDone ? '#F1F5F9' : 'transparent',
-                  color: isSubCurrent ? '#0284C7' : isSubDone ? '#64748B' : '#CBD5E1',
+                  color: isSubCurrent ? '#0F172A' : isSubDone ? '#475569' : '#94A3B8',
+                  fontWeight: isSubCurrent ? 600 : 400,
                 }}
               >
-                {isSubCurrent ? 'Active' : isSubDone ? 'Done' : 'Queued'}
+                {sub.label}
               </span>
             </div>
-          )
-        })}
-      </div>
+
+            {/* Right status text */}
+            <span
+              className="text-[10px] font-medium transition-colors"
+              style={{
+                color: isSubCurrent ? '#0284C7' : isSubDone ? '#64748B' : '#CBD5E1',
+              }}
+            >
+              {isSubCurrent ? 'Active' : isSubDone ? 'Done' : ''}
+            </span>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -1240,7 +1220,7 @@ function ProcessSegmentsView({
   )
 }
 
-// ─── Process Design 3: Pills (Interactive horizontal chips with live status) ─────
+// ─── Process Design 3: Pills (Clean Minimal Text Steps with 1-Tap Switching) ─────
 function ProcessPillsView({
   step,
   safeRawActive,
@@ -1325,62 +1305,73 @@ function ProcessPillsView({
         </span>
       </div>
 
-      {/* Horizontal Pills Row */}
-      <div className="flex items-center gap-1 mt-1 overflow-x-auto no-scrollbar py-0.5 max-w-full">
+      {/* Horizontal Simple Text Row (No heavy pill backgrounds) */}
+      <div className="flex items-center gap-1.5 mt-0.5 select-none overflow-x-auto no-scrollbar py-0.5">
         {step.subSteps.map((sub, sIdx) => {
           const isDone = safeRawActive > step.endIndex || activeSubStepIndex > sIdx
           const isActive = safeRawActive >= step.startIndex && safeRawActive <= step.endIndex && activeSubStepIndex === sIdx
 
           return (
-            <button
-              key={sub.label}
-              onClick={(e) => {
-                e.stopPropagation()
-                onSelectRawStep?.(step.startIndex + sIdx)
-              }}
-              className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8.5px] font-semibold transition-all cursor-pointer select-none shrink-0 ${
-                isActive
-                  ? 'bg-sky-500 text-white shadow-xs ring-1 ring-sky-200'
-                  : isDone
-                  ? 'bg-slate-100 text-slate-600 border border-slate-200/80 hover:bg-slate-200/70'
-                  : 'bg-white text-slate-400 border border-slate-200/60 hover:border-slate-300'
-              }`}
-            >
-              {isDone && (
-                <svg viewBox="0 0 12 12" className="w-2 h-2 fill-none stroke-current stroke-2">
-                  <path d="M2.5 6.5l2.5 2.5 4.5-5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+            <Fragment key={sub.label}>
+              {sIdx > 0 && (
+                <span className="text-[9px] text-slate-300 font-normal select-none shrink-0">
+                  ·
+                </span>
               )}
-              {isActive && (
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
-              )}
-              <span>{sub.label}</span>
-            </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onSelectRawStep?.(step.startIndex + sIdx)
+                }}
+                className="relative py-0.5 cursor-pointer select-none transition-all group shrink-0 active:scale-95"
+              >
+                <span
+                  className={`text-[10.5px] tracking-tight transition-colors ${
+                    isActive
+                      ? 'text-sky-600 font-bold'
+                      : isDone
+                      ? 'text-slate-600 font-medium group-hover:text-slate-900'
+                      : 'text-slate-400 font-normal group-hover:text-slate-500'
+                  }`}
+                >
+                  {isDone ? '✓ ' : ''}{sub.label}
+                </span>
+
+                {/* Subtle active underline indicator */}
+                {isActive && (
+                  <motion.div
+                    layoutId="process-text-underline"
+                    className="absolute -bottom-0.5 left-0 right-0 h-[1.5px] bg-sky-500 rounded-full"
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  />
+                )}
+              </button>
+            </Fragment>
           )
         })}
       </div>
 
-      {/* Expanded contextual live detail card */}
+      {/* Expanded contextual live detail (Clean text, no heavy card background) */}
       <AnimatePresence>
         {isProcessExpanded && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.18 }}
             className="overflow-hidden"
           >
-            <div className="mt-1.5 px-2 py-1 rounded-lg bg-sky-50/80 border border-sky-100/90 flex items-center justify-between text-[9.5px]">
+            <div className="mt-1 flex items-center justify-between text-[10px] text-slate-500 pt-0.5 border-t border-slate-100/90">
               <div className="flex items-center gap-1.5 truncate">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping shrink-0" />
-                <span className="font-bold text-sky-950 shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0" />
+                <span className="font-semibold text-sky-950 shrink-0">
                   {currentSub ? currentSub.label : 'Status'}:
                 </span>
-                <span className="text-slate-600 truncate">
+                <span className="text-slate-600 truncate text-[9.5px]">
                   {subNotes[Math.max(0, Math.min(activeSubStepIndex, subNotes.length - 1))]}
                 </span>
               </div>
-              <span className="text-[9px] font-mono font-bold text-sky-600 shrink-0 ml-1.5">
+              <span className="text-[9px] font-mono font-medium text-sky-600 shrink-0 ml-1.5">
                 {activeSubStepIndex >= 0 ? `${activeSubStepIndex + 1}/${step.subSteps.length}` : 'Done'}
               </span>
             </div>
@@ -1410,8 +1401,8 @@ function StatusList({
 
   const effectiveDrawerHeight = useMemo(() => {
     if (processDesign === 'segments') return 28
-    if (processDesign === 'pills') return 34
-    return subCount * 26 + 38
+    if (processDesign === 'pills') return 20
+    return subCount * 28 + 4
   }, [processDesign, subCount])
 
   const stepTops = useMemo(() => {
@@ -1676,8 +1667,8 @@ function StatusStepper({
 
   const effectiveDrawerHeight = useMemo(() => {
     if (processDesign === 'segments') return 28
-    if (processDesign === 'pills') return 34
-    return subCount * 26 + 38
+    if (processDesign === 'pills') return 20
+    return subCount * 28 + 4
   }, [processDesign, subCount])
 
   const stepTops = useMemo(() => {
