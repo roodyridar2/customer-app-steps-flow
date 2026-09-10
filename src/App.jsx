@@ -1221,14 +1221,6 @@ function ProcessPillsView({
   badgeBorder = '#E2E8F0',
 }) {
   const activeSubStepIndex = safeRawActive - step.startIndex
-  const currentSub = step.subSteps[Math.max(0, Math.min(activeSubStepIndex, step.subSteps.length - 1))]
-
-  const subNotes = [
-    'Sorting fabrics & colors',
-    'Eco wash cycle at 30°C',
-    'Gentle low-heat drying',
-    'Hand steam-pressed & hung',
-  ]
 
   return (
     <div className="flex flex-col flex-1 min-w-0 justify-center">
@@ -1263,7 +1255,7 @@ function ProcessPillsView({
           >
             <path d="M6 9l6 6 6-6" />
           </svg>
-          {isCurrent && overlap && serviceIcons.length > 0 && (
+          {isProcessExpanded && isCurrent && serviceIcons.length > 0 && (
             <div className="flex items-center -space-x-1.5 shrink-0 ml-0.5">
               {serviceIcons.map((icon, idx) => (
                 <div
@@ -1324,34 +1316,6 @@ function ProcessPillsView({
           )
         })}
       </div>
-
-      {/* Expanded contextual live detail (Clean text, no heavy card background) */}
-      <AnimatePresence>
-        {isProcessExpanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.18 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-1 flex items-center justify-between text-[10px] text-slate-500 pt-0.5 border-t border-slate-100/90">
-              <div className="flex items-center gap-1.5 truncate">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0" />
-                <span className="font-semibold text-sky-950 shrink-0">
-                  {currentSub ? currentSub.label : 'Status'}:
-                </span>
-                <span className="text-slate-600 truncate text-[9.5px]">
-                  {subNotes[Math.max(0, Math.min(activeSubStepIndex, subNotes.length - 1))]}
-                </span>
-              </div>
-              <span className="text-[9px] font-mono font-medium text-sky-600 shrink-0 ml-1.5">
-                {activeSubStepIndex >= 0 ? `${activeSubStepIndex + 1}/${step.subSteps.length}` : 'Done'}
-              </span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }
@@ -1366,6 +1330,8 @@ function StatusList({
   isProcessExpanded = false,
   onToggleProcessExpanded,
   onSelectRawStep,
+  serviceIcons = [],
+  badgeBorder = '#E2E8F0',
 }) {
   const ROW_H = 38
   const processGroup = steps.find(s => s.isProcessGroup)
@@ -1375,7 +1341,7 @@ function StatusList({
 
   const effectiveDrawerHeight = useMemo(() => {
     if (processDesign === 'segments') return 28
-    if (processDesign === 'pills') return 20
+    if (processDesign === 'pills') return 0
     return subCount * 28 + 4
   }, [processDesign, subCount])
 
@@ -1432,6 +1398,8 @@ function StatusList({
                       onSelectRawStep={onSelectRawStep}
                       isCurrent={isCurrent}
                       isComplete={isComplete}
+                      serviceIcons={serviceIcons}
+                      badgeBorder={badgeBorder}
                     />
                   </div>
                 </div>
@@ -1464,6 +1432,8 @@ function StatusList({
                       onSelectRawStep={onSelectRawStep}
                       isCurrent={isCurrent}
                       isComplete={isComplete}
+                      serviceIcons={serviceIcons}
+                      badgeBorder={badgeBorder}
                     />
                   </div>
                 </div>
@@ -1629,7 +1599,7 @@ function StatusStepper({
 
   const effectiveDrawerHeight = useMemo(() => {
     if (processDesign === 'segments') return 28
-    if (processDesign === 'pills') return 20
+    if (processDesign === 'pills') return 0
     return subCount * 28 + 4
   }, [processDesign, subCount])
 
@@ -2497,6 +2467,8 @@ function OrderDetailsScreen({
                   isProcessExpanded={isProcessExpanded}
                   onToggleProcessExpanded={onToggleProcessExpanded}
                   onSelectRawStep={onSelectRawStep}
+                  serviceIcons={activeDisplayService.serviceIcons}
+                  badgeBorder={activeDisplayService.badgeBorder}
                 />
               )}
               {currentStyle === 'stepper' && (
