@@ -440,25 +440,25 @@ function QualityCheckSVG({ dim }) {
 function StatusBar() {
   return (
     <div
-      className="shrink-0 flex items-center justify-between px-5"
-      style={{ height: 44, paddingTop: 12 }}
+      className="shrink-0 flex items-center justify-between px-7"
+      style={{ height: 48, paddingTop: 14 }}
     >
       {/* Time — left */}
-      <span className="text-[13px] font-bold text-black" style={{ zIndex: 30, position: 'relative' }}>
+      <span className="text-[14px] font-bold text-black" style={{ zIndex: 30, position: 'relative' }}>
         9:41
       </span>
 
       {/* Icons — right */}
       <div className="flex items-center gap-1.5 text-black" style={{ zIndex: 30, position: 'relative' }}>
         {/* Wifi */}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-[14px] h-[14px]">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-[15px] h-[15px]">
           <path d="M1.5 8.5a13 13 0 0121 0" strokeLinecap="round"/>
           <path d="M5 12a10 10 0 0114 0" strokeLinecap="round"/>
           <path d="M8.5 15.5a6 6 0 017 0" strokeLinecap="round"/>
           <circle cx="12" cy="19" r="1" fill="currentColor"/>
         </svg>
         {/* Signal bars */}
-        <svg viewBox="0 0 18 14" fill="currentColor" className="w-[14px] h-[11px]">
+        <svg viewBox="0 0 18 14" fill="currentColor" className="w-[15px] h-[12px]">
           <rect x="0" y="9"  width="3" height="5"  rx="0.5"/>
           <rect x="5" y="6"  width="3" height="8"  rx="0.5"/>
           <rect x="10" y="3" width="3" height="11" rx="0.5"/>
@@ -466,7 +466,7 @@ function StatusBar() {
         </svg>
         {/* Battery */}
         <div className="flex items-center" style={{ gap: 1 }}>
-          <div className="relative border border-black rounded-[3px]" style={{ width: 22, height: 11 }}>
+          <div className="relative border border-black rounded-[3.5px]" style={{ width: 23, height: 11.5 }}>
             <div className="absolute rounded-[2px] bg-black" style={{ left: 2, top: 2, bottom: 2, right: '25%' }}/>
           </div>
           <div className="bg-black rounded-r-[2px]" style={{ width: 2, height: 5 }}/>
@@ -3369,36 +3369,36 @@ function PlaceholderScreen({ label, color, dot, icon, short }) {
   )
 }
 
-// ─── iPhone Shell (393px × 800px inner — standard iPhone 14 Pro / 15 / 16 viewport) ──
+// ─── iPhone Shell (iPhone 14 Pro Max: 430px × 932px inner viewport, 452px × 954px outer frame) ──
 function IPhoneShell({ children }) {
   return (
-    <div className="relative shrink-0" style={{ width: 413, height: 820 }}>
+    <div className="relative shrink-0" style={{ width: 452, height: 954 }}>
       {/* Volume buttons */}
-      <div className="absolute rounded-l-sm" style={{ left: -5, top: 110, width: 4, height: 36, background: '#555' }} />
-      <div className="absolute rounded-l-sm" style={{ left: -5, top: 158, width: 4, height: 36, background: '#555' }} />
-      <div className="absolute rounded-l-sm" style={{ left: -5, top: 206, width: 4, height: 36, background: '#555' }} />
+      <div className="absolute rounded-l-sm" style={{ left: -5, top: 130, width: 4, height: 44, background: '#555' }} />
+      <div className="absolute rounded-l-sm" style={{ left: -5, top: 188, width: 4, height: 44, background: '#555' }} />
+      <div className="absolute rounded-l-sm" style={{ left: -5, top: 246, width: 4, height: 44, background: '#555' }} />
       {/* Power button */}
-      <div className="absolute rounded-r-sm" style={{ right: -5, top: 150, width: 4, height: 60, background: '#555' }} />
+      <div className="absolute rounded-r-sm" style={{ right: -5, top: 180, width: 4, height: 72, background: '#555' }} />
 
       {/* Frame */}
       <div
-        className="rounded-[48px] overflow-hidden"
+        className="rounded-[56px] overflow-hidden"
         style={{
-          width: 413,
-          height: 820,
-          padding: 10,
+          width: 452,
+          height: 954,
+          padding: 11,
           background: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 100%)',
           boxShadow: '0 0 0 1px #444, inset 0 0 0 1px #333, 0 40px 80px rgba(0,0,0,0.4)',
         }}
       >
         <div
-          className="rounded-[40px] overflow-hidden bg-white relative flex flex-col"
-          style={{ width: 393, height: 800 }}
+          className="rounded-[46px] overflow-hidden bg-white relative flex flex-col"
+          style={{ width: 430, height: 932 }}
         >
           {/* Dynamic Island — overlays the status bar center */}
           <div
-            className="absolute z-20"
-            style={{ top: 11, left: '50%', transform: 'translateX(-50%)', width: 116, height: 30, background: '#000', borderRadius: 20 }}
+            className="absolute z-20 pointer-events-none"
+            style={{ top: 12, left: '50%', transform: 'translateX(-50%)', width: 125, height: 35, background: '#000', borderRadius: 22 }}
           />
 
           {/* Status bar sits at the very top, same row as Dynamic Island */}
@@ -3408,6 +3408,9 @@ function IPhoneShell({ children }) {
           <div className="flex-1 min-h-0 flex flex-col relative overflow-hidden h-full">
             {children}
           </div>
+
+          {/* Home indicator bar */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-36 h-1 rounded-full bg-slate-900/25 z-30 pointer-events-none" />
         </div>
       </div>
     </div>
@@ -3534,19 +3537,19 @@ export default function App() {
 
   const isSmallDevice = windowDimensions.width < 768
 
-  // Calculate dynamic scale factor so it fits small devices perfectly
+  // Calculate dynamic scale factor so it fits small devices perfectly (iPhone 14 Pro Max base: 452 x 954)
   const phoneScale = useMemo(() => {
     if (isSmallDevice) {
       // Available width for the phone inside the card (accounting for margins/padding)
-      const availableWidth = Math.max(280, windowDimensions.width - 24)
-      return Math.min(1, Math.max(0.45, availableWidth / 413))
+      const availableWidth = Math.max(280, windowDimensions.width - 32)
+      return Math.min(1, Math.max(0.40, availableWidth / 452))
     }
     // On tablet / small laptop screens, scale down if height or width is constrained
-    const availableHeight = windowDimensions.height - 180
-    const scaleH = availableHeight < 820 ? availableHeight / 820 : 1
-    const availableWidth = windowDimensions.width - 240
-    const scaleW = availableWidth < 540 ? availableWidth / 540 : 1
-    return Math.min(1, Math.max(0.7, Math.min(scaleH, scaleW)))
+    const availableHeight = windowDimensions.height - 240
+    const scaleH = availableHeight < 954 ? availableHeight / 954 : 1
+    const availableWidth = windowDimensions.width - 280
+    const scaleW = availableWidth < 600 ? availableWidth / 600 : 1
+    return Math.min(1, Math.max(0.60, Math.min(scaleH, scaleW)))
   }, [isSmallDevice, windowDimensions.width, windowDimensions.height])
 
   // Keyboard shortcut 'c' to toggle developer controls
@@ -3753,20 +3756,20 @@ export default function App() {
   }, [activeTab])
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-start py-4 sm:py-8 px-2 sm:px-6 overflow-x-hidden overflow-y-auto" style={{ background: '#F0F4F8' }}>
+    <div className="min-h-screen w-full flex flex-col items-center justify-start py-6 sm:py-10 px-3 sm:px-8 overflow-x-hidden overflow-y-auto" style={{ background: '#F0F4F8' }}>
 
       {/* Page title */}
-      <div className="mb-3 sm:mb-6 text-center shrink-0">
+      <div className="mb-4 sm:mb-7 text-center shrink-0">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800 tracking-tight">Order Flow</h1>
         <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Select a service to preview</p>
       </div>
 
       {/* Main card */}
       <div
-        className="flex flex-col md:flex-row rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl sm:shadow-2xl my-auto w-full max-w-full md:max-w-none md:w-auto"
+        className="flex flex-col md:flex-row rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl sm:shadow-2xl mx-auto my-auto mb-6 sm:mb-10 w-full max-w-full md:max-w-none md:w-auto"
         style={{
           background: '#fff',
-          minHeight: isSmallDevice ? 'auto' : Math.round(945 * phoneScale),
+          minHeight: isSmallDevice ? 'auto' : Math.round(1100 * phoneScale),
         }}
       >
 
@@ -3883,14 +3886,14 @@ export default function App() {
 
         {/* ── Right: phone + simulate ── */}
         <div
-          className="flex-1 flex flex-col items-center justify-center px-3 sm:px-8 py-3 sm:py-5 gap-3 sm:gap-4 h-full transition-all duration-300 w-full min-w-0"
+          className="flex-1 flex flex-col items-center justify-center px-4 sm:px-10 pt-6 sm:pt-10 pb-6 sm:pb-8 gap-3 sm:gap-4 h-full transition-all duration-300 w-full min-w-0"
           style={{
             background: `linear-gradient(135deg, ${active.color}80 0%, #fff 60%)`,
             minWidth: (!isSmallDevice && !showControls) ? 540 : 'auto',
           }}
         >
           {/* Label above phone */}
-          <div className="flex items-center gap-2.5 mb-2.5 sm:mb-5">
+          <div className="flex items-center justify-center gap-2.5 mb-3 sm:mb-6 mx-auto">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center overflow-hidden" style={{ background: active.color }}>
               {active.icon
                 ? <img src={active.icon} alt="" className="w-7 h-7 object-contain" />
@@ -3905,26 +3908,26 @@ export default function App() {
 
           {/* Phone + Simulate side by side */}
           <div
-            className="flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-6 shrink-0"
+            className="flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-6 shrink-0 w-full mx-auto"
             style={{
-              height: isSmallDevice ? 'auto' : Math.round(820 * phoneScale),
+              height: isSmallDevice ? 'auto' : Math.round(954 * phoneScale),
             }}
           >
 
             {/* Phone Scaled Wrapper */}
             <div
-              className="relative flex items-center justify-center shrink-0"
+              className="relative flex items-center justify-center shrink-0 mx-auto"
               style={{
-                width: Math.round(413 * phoneScale),
-                height: Math.round(820 * phoneScale),
+                width: Math.round(452 * phoneScale),
+                height: Math.round(954 * phoneScale),
               }}
             >
               <div
                 style={{
-                  width: 413,
-                  height: 820,
+                  width: 452,
+                  height: 954,
                   transform: `scale(${phoneScale})`,
-                  transformOrigin: 'top center',
+                  transformOrigin: 'center center',
                   flexShrink: 0,
                 }}
               >
@@ -3978,8 +3981,8 @@ export default function App() {
               <div
                 className="flex flex-col items-center justify-start py-0.5 gap-1.5 shrink-0 overflow-y-auto no-scrollbar"
                 style={{
-                  width: isSmallDevice ? Math.min(340, Math.round(413 * phoneScale)) : 144,
-                  maxHeight: isSmallDevice ? 360 : 820,
+                  width: isSmallDevice ? Math.min(360, Math.round(452 * phoneScale)) : 144,
+                  maxHeight: isSmallDevice ? 360 : Math.round(954 * phoneScale),
                 }}
               >
 
