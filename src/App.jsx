@@ -2,72 +2,155 @@ import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback, Fra
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ─── Tabs ────────────────────────────────────────────────────────────────────
+// ─── Tabs ────────────────────────────────────────────────────────────────────
 const tabs = [
   { id: 'wash-fold',    label: 'Wash & Fold',   short: 'Wash',    icon: '/service/Wash and fold.png',   color: '#DBEAFE', dot: '#3B82F6' },
   { id: 'clean-press',  label: 'Clean & Press', short: 'Clean',   icon: '/service/clean and press.png', color: '#DCFCE7', dot: '#22C55E' },
   { id: 'press-only',   label: 'Press Only',    short: 'Press',   icon: '/service/press only.png',      color: '#FEF9C3', dot: '#EAB308' },
+  { id: 'bed-bath',     label: 'Bed & Bath',    short: 'Bed',     icon: '/service/bed-bath.png',        color: '#E0F2FE', dot: '#0284C7' },
   { id: 'bags-shoes',   label: 'Bags & Shoes',  short: 'Bags',    icon: '/service/bags and shoes.png',  color: '#FCE7F3', dot: '#EC4899' },
   { id: 'premium-care', label: 'Premium Care',  short: 'Premium', icon: '/service/premium care.png',    color: '#EDE9FE', dot: '#8B5CF6' },
   { id: '5-service',    label: '5 Service',     short: '×5',      icon: null,                           color: '#CCFBF1', dot: '#14B8A6' },
 ]
 
 // ─── Status steps definitions from assets/screens ────────────────────────────
-const ALL_STEPS = {
-  received:       { label: 'Received',         icon: '/status/recived.png' },
-  confirmed:      { label: 'Confirmed',        icon: '/status/confirm.png' },
-  sorted:         { label: 'Sorted',           icon: '/status/sorted.png' },
-  washed:         { label: 'Washed',           icon: '/status/washed.png' },
-  dried:          { label: 'Dried',            icon: null, isDried: true },
-  ironed:         { label: 'Ironed',           icon: '/status/Iconed.png' },
-  qualityCheck:   { label: 'Quality check',    icon: '/status/quality-check.png', isQualityCheck: true },
-  packed:         { label: 'Packed',           icon: '/status/packed.png' },
-  outForDelivery: { label: 'Out for delivery', icon: '/status/out-of-delivery.png' },
-  completed:      { label: 'Completed',        icon: '/status/recivedpng.png' },
+// Common Pre-Process Steps
+const STEP_ORDER_PLACED = {
+  id: 'order-placed',
+  label: 'Order Placed',
+  icon: '/status/order-placed.png',
+}
+const STEP_DRIVER_EN_ROUTE = {
+  id: 'driver-en-route',
+  label: 'Driver En Route',
+  icon: '/status/driver-en-route.png',
+}
+const STEP_COLLECTED_TRANSIT = {
+  id: 'collected-transit',
+  label: 'Collected & In Transit',
+  icon: '/status/collected-transit.png',
+}
+const STEP_ARRIVED_FACILITY = {
+  id: 'arrived-facility',
+  label: 'Arrived at Facility',
+  icon: '/status/arrived-facility.png',
 }
 
-const NINE_STEPS = [
-  ALL_STEPS.received,
-  ALL_STEPS.confirmed,
-  ALL_STEPS.sorted,
-  ALL_STEPS.washed,
-  ALL_STEPS.dried,
-  ALL_STEPS.ironed,
-  ALL_STEPS.qualityCheck,
-  ALL_STEPS.packed,
-  ALL_STEPS.outForDelivery,
-  ALL_STEPS.completed,
+// Common Post-Process Steps
+const STEP_QUALITY_CHECK = {
+  id: 'quality-check',
+  label: 'Quality Check',
+  icon: '/status/quality-check.png',
+  isQualityCheck: true,
+}
+const STEP_OUT_FOR_DELIVERY = {
+  id: 'out-for-delivery',
+  label: 'Out for Delivery',
+  icon: '/status/out-of-delivery.png',
+}
+const STEP_DELIVERED = {
+  id: 'delivered',
+  label: 'Delivered',
+  icon: '/status/delivered.png',
+}
+
+// 1. Wash & Fold Service Steps
+// process -> sorting, Washing & Tumble Drying, Neat Folding
+const WASH_FOLD_STEPS = [
+  STEP_ORDER_PLACED,
+  STEP_DRIVER_EN_ROUTE,
+  STEP_COLLECTED_TRANSIT,
+  STEP_ARRIVED_FACILITY,
+  { id: 'sorting', label: 'Sorting', icon: '/status/sorted.png', isProcess: true },
+  { id: 'washing-drying', label: 'Washing & Tumble Drying', icon: '/status/washed.png', isProcess: true },
+  { id: 'neat-folding', label: 'Neat Folding', icon: '/status/neat-folding.png', isProcess: true },
+  STEP_QUALITY_CHECK,
+  STEP_OUT_FOR_DELIVERY,
+  STEP_DELIVERED,
 ]
 
+// 2. Clean & Press Service Steps
+// process -> Itemization & Stain Check, Cleaning & Care, Pressing & Hanging
+const CLEAN_PRESS_STEPS = [
+  STEP_ORDER_PLACED,
+  STEP_DRIVER_EN_ROUTE,
+  STEP_COLLECTED_TRANSIT,
+  STEP_ARRIVED_FACILITY,
+  { id: 'itemization-stain', label: 'Itemization & Stain Check', icon: '/status/itemization-stain.png', isProcess: true },
+  { id: 'cleaning-care', label: 'Cleaning & Care', icon: '/status/cleaning-care.png', isProcess: true },
+  { id: 'pressing-hanging', label: 'Pressing & Hanging', icon: '/status/Iconed.png', isProcess: true },
+  STEP_QUALITY_CHECK,
+  STEP_OUT_FOR_DELIVERY,
+  STEP_DELIVERED,
+]
+
+// 3. Press Only Service Steps
+// process -> Itemization & Garment Prep, Steam Ironing
 const PRESS_ONLY_STEPS = [
-  ALL_STEPS.received,
-  ALL_STEPS.confirmed,
-  ALL_STEPS.sorted,
-  ALL_STEPS.ironed,
-  ALL_STEPS.qualityCheck,
-  ALL_STEPS.packed,
-  ALL_STEPS.outForDelivery,
-  ALL_STEPS.completed,
+  STEP_ORDER_PLACED,
+  STEP_DRIVER_EN_ROUTE,
+  STEP_COLLECTED_TRANSIT,
+  STEP_ARRIVED_FACILITY,
+  { id: 'itemization-prep', label: 'Itemization & Garment Prep', icon: '/status/itemization-prep.png', isProcess: true },
+  { id: 'steam-ironing', label: 'Steam Ironing', icon: '/status/Iconed.png', isProcess: true },
+  STEP_QUALITY_CHECK,
+  STEP_OUT_FOR_DELIVERY,
+  STEP_DELIVERED,
 ]
 
+// 4. Bed & Bath Service Steps
+// process -> Sorting & Sanitization Prep, Thermal Sanitization Wash, Flatwork Ironing & Folding
+const BED_BATH_STEPS = [
+  STEP_ORDER_PLACED,
+  STEP_DRIVER_EN_ROUTE,
+  STEP_COLLECTED_TRANSIT,
+  STEP_ARRIVED_FACILITY,
+  { id: 'sorting-sanitization', label: 'Sorting & Sanitization Prep', icon: '/status/sorting-sanitization.png', isProcess: true },
+  { id: 'thermal-wash', label: 'Thermal Sanitization Wash', icon: '/status/thermal-wash.png', isProcess: true },
+  { id: 'flatwork-ironing', label: 'Flatwork Ironing & Folding', icon: '/status/flatwork-iron.png', isProcess: true },
+  STEP_QUALITY_CHECK,
+  STEP_OUT_FOR_DELIVERY,
+  STEP_DELIVERED,
+]
+
+// 5. Bag & Shoe Care Service Steps
+// process -> Specialist Inspection, Deep Cleaning & Sole Care, Conditioning & Polishing
 const BAGS_SHOES_STEPS = [
-  ALL_STEPS.received,
-  ALL_STEPS.confirmed,
-  ALL_STEPS.sorted,
-  ALL_STEPS.dried,
-  ALL_STEPS.qualityCheck,
-  ALL_STEPS.packed,
-  ALL_STEPS.outForDelivery,
-  ALL_STEPS.completed,
+  STEP_ORDER_PLACED,
+  STEP_DRIVER_EN_ROUTE,
+  STEP_COLLECTED_TRANSIT,
+  STEP_ARRIVED_FACILITY,
+  { id: 'specialist-inspection', label: 'Specialist Inspection', icon: '/status/specialist-inspection.png', isProcess: true },
+  { id: 'sole-care', label: 'Deep Cleaning & Sole Care', icon: '/status/sole-care.png', isProcess: true },
+  { id: 'conditioning-polishing', label: 'Conditioning & Polishing', icon: '/status/conditioning-polishing.png', isProcess: true },
+  STEP_QUALITY_CHECK,
+  STEP_OUT_FOR_DELIVERY,
+  STEP_DELIVERED,
 ]
 
-// Fallback steps reference
-const steps = NINE_STEPS
+// 6. Otee Markat (Premium Care) Steps
+// process -> VIP Assessment & Quote Confirmation, Eco Solvent & Hand Cleaning, Hand-Finishing & Restoration, Premium Packaging
+const PREMIUM_CARE_STEPS = [
+  STEP_ORDER_PLACED,
+  STEP_DRIVER_EN_ROUTE,
+  STEP_COLLECTED_TRANSIT,
+  STEP_ARRIVED_FACILITY,
+  { id: 'vip-assessment', label: 'VIP Assessment & Quote Confirmation', icon: '/status/vip-assessment.png', isProcess: true },
+  { id: 'eco-cleaning', label: 'Eco Solvent & Hand Cleaning', icon: '/status/eco-cleaning.png', isProcess: true },
+  { id: 'hand-restoration', label: 'Hand-Finishing & Restoration', icon: '/status/hand-restoration.png', isProcess: true },
+  { id: 'premium-packaging', label: 'Premium Packaging', icon: '/status/packed.png', isProcess: true },
+  STEP_QUALITY_CHECK,
+  STEP_OUT_FOR_DELIVERY,
+  STEP_DELIVERED,
+]
 
-// ─── Process Compaction Helpers (sorted, washed, dried, ironed) ───────────────
-const PROCESS_STEP_LABELS = ['Sorted', 'Washed', 'Dried', 'Ironed']
+// Backward-compatibility references
+const NINE_STEPS = WASH_FOLD_STEPS
+const steps = WASH_FOLD_STEPS
 
+// ─── Process Compaction Helpers ───────────────────────────────────────────────
 function isProcessStep(step) {
-  return step ? PROCESS_STEP_LABELS.includes(step.label) : false
+  return Boolean(step && step.isProcess)
 }
 
 function buildProcessSteps(rawSteps, isCompact) {
@@ -114,7 +197,7 @@ function buildProcessSteps(rawSteps, isCompact) {
     subSteps,
     startIndex,
     endIndex,
-    icon: '/status/washed.png',
+    icon: subSteps[0]?.icon || '/status/washed.png',
   }
 
   const displaySteps = [...before, processGroup, ...after]
@@ -158,7 +241,7 @@ const servicesData = {
     badgeColor: '#EFF6FF',
     badgeBorder: '#BFDBFE',
     badgeText: '#1B2F6E',
-    steps: NINE_STEPS,
+    steps: WASH_FOLD_STEPS,
   },
   'clean-press': {
     id: 'clean-press',
@@ -173,7 +256,7 @@ const servicesData = {
     badgeColor: '#F0FDF4',
     badgeBorder: '#BBF7D0',
     badgeText: '#166534',
-    steps: NINE_STEPS,
+    steps: CLEAN_PRESS_STEPS,
   },
   'press-only': {
     id: 'press-only',
@@ -189,6 +272,21 @@ const servicesData = {
     badgeBorder: '#FEF08A',
     badgeText: '#854D0E',
     steps: PRESS_ONLY_STEPS,
+  },
+  'bed-bath': {
+    id: 'bed-bath',
+    title: 'Bed and Bath',
+    serviceName: 'Bed & Bath',
+    price: '18,500',
+    currency: 'IQD',
+    status: 'Pending',
+    serviceIcons: ['/service/bed-bath.png'],
+    accentColor: '#0EA5E9',
+    themeColor: '#0284C7',
+    badgeColor: '#F0F9FF',
+    badgeBorder: '#BAE6FD',
+    badgeText: '#0369A1',
+    steps: BED_BATH_STEPS,
   },
   'bags-shoes': {
     id: 'bags-shoes',
@@ -218,7 +316,7 @@ const servicesData = {
     badgeColor: '#F5F3FF',
     badgeBorder: '#DDD6FE',
     badgeText: '#5B21B6',
-    steps: NINE_STEPS,
+    steps: PREMIUM_CARE_STEPS,
   },
   '2-service': {
     id: '2-service',
@@ -234,7 +332,7 @@ const servicesData = {
     badgeColor: '#FFFBEB',
     badgeBorder: '#FDE68A',
     badgeText: '#92400E',
-    steps: NINE_STEPS,
+    steps: WASH_FOLD_STEPS,
   },
   '5-service': {
     id: '5-service',
@@ -256,7 +354,7 @@ const servicesData = {
     badgeColor: '#F0FDFA',
     badgeBorder: '#99F6E4',
     badgeText: '#115E59',
-    steps: NINE_STEPS,
+    steps: WASH_FOLD_STEPS,
   },
 }
 
@@ -1539,6 +1637,43 @@ function MultiServicePattern({ themeColor, badgeColor }) {
   )
 }
 
+function BedBathPattern({ themeColor, badgeColor }) {
+  return (
+    <svg width="68" height="230" viewBox="0 0 68 230" fill="none" className="overflow-visible">
+      {/* Center rail */}
+      <line x1="34" y1="0" x2="34" y2="230" stroke={themeColor} strokeWidth="1" strokeDasharray="2 3" strokeOpacity="0.25" />
+
+      {/* Folded plush towel stack at top */}
+      <rect x="20" y="20" width="28" height="7" rx="3.5" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.4" fill={badgeColor} fillOpacity="0.5" />
+      <rect x="22" y="29" width="24" height="7" rx="3.5" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.4" fill={badgeColor} fillOpacity="0.5" />
+      <rect x="18" y="38" width="32" height="7" rx="3.5" stroke={themeColor} strokeWidth="1.2" strokeOpacity="0.4" fill={badgeColor} fillOpacity="0.5" />
+
+      {/* Spa water droplets / bubbles */}
+      <circle cx="26" cy="62" r="5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+      <circle cx="44" cy="74" r="7" stroke={themeColor} strokeWidth="1.1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+      <circle cx="28" cy="88" r="4" stroke={themeColor} strokeWidth="0.9" strokeOpacity="0.3" fill={badgeColor} fillOpacity="0.3" />
+
+      {/* Soft textile wave / linen ripple */}
+      <path d="M14 112 C 26 102, 42 122, 54 112" stroke={themeColor} strokeWidth="1.5" strokeOpacity="0.38" strokeLinecap="round" />
+      <path d="M16 120 C 28 110, 40 130, 52 120" stroke={themeColor} strokeWidth="1" strokeOpacity="0.25" strokeDasharray="1.5 2" />
+
+      {/* Crisp cotton flower / botanical hygiene emblem */}
+      <g transform="translate(34, 152)">
+        <circle cx="0" cy="-6" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+        <circle cx="6" cy="0" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+        <circle cx="0" cy="6" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+        <circle cx="-6" cy="0" r="4.5" stroke={themeColor} strokeWidth="1" strokeOpacity="0.35" fill={badgeColor} fillOpacity="0.4" />
+        <circle cx="0" cy="0" r="2.5" fill={themeColor} fillOpacity="0.45" />
+      </g>
+
+      {/* Soft bath waves at bottom */}
+      <path d="M12 188 C 24 180, 44 196, 56 188" stroke={themeColor} strokeWidth="1.4" strokeOpacity="0.3" strokeLinecap="round" />
+      <path d="M16 196 C 26 190, 42 202, 52 196" stroke={themeColor} strokeWidth="1" strokeOpacity="0.22" strokeDasharray="2 2" />
+      <circle cx="34" cy="214" r="3" fill={themeColor} fillOpacity="0.3" />
+    </svg>
+  )
+}
+
 // ─── Right Side Graphic (Empty / Pattern / Image / Watermark) ─────────────────
 function RightSideGraphic({
   style = 'none',
@@ -1564,6 +1699,8 @@ function RightSideGraphic({
     serviceKey = 'bags-shoes'
   } else if (sId.includes('premium') || sName.includes('premium') || sIcon.includes('premium')) {
     serviceKey = 'premium-care'
+  } else if (sId.includes('bed') || sId.includes('bath') || sName.includes('bed') || sName.includes('bath') || sIcon.includes('bed') || sIcon.includes('bath')) {
+    serviceKey = 'bed-bath'
   } else if (sId.includes('clean') || sName.includes('clean') || sIcon.includes('clean')) {
     serviceKey = 'clean-press'
   } else if (sId.includes('press') || sName.includes('press') || sIcon.includes('press')) {
@@ -1578,6 +1715,8 @@ function RightSideGraphic({
         return <BagsShoesPattern themeColor={themeColor} badgeColor={badgeColor} />
       case 'premium-care':
         return <PremiumCarePattern themeColor={themeColor} badgeColor={badgeColor} />
+      case 'bed-bath':
+        return <BedBathPattern themeColor={themeColor} badgeColor={badgeColor} />
       case 'clean-press':
         return <CleanPressPattern themeColor={themeColor} badgeColor={badgeColor} />
       case 'press-only':
@@ -1619,6 +1758,8 @@ function RightSideGraphic({
         return '/3d/bags-shoes.png'
       case 'premium-care':
         return '/3d/premium-care.png'
+      case 'bed-bath':
+        return '/3d/bed-bath.png'
       case 'clean-press':
         return '/3d/clean-press.png'
       case 'press-only':
@@ -3256,6 +3397,7 @@ export default function App() {
       'wash-fold': urlStep !== null ? urlStep : 1,
       'clean-press': urlStep !== null ? urlStep : 1,
       'press-only': urlStep !== null ? urlStep : 1,
+      'bed-bath': urlStep !== null ? urlStep : 1,
       'bags-shoes': urlStep !== null ? urlStep : 1,
       'premium-care': urlStep !== null ? urlStep : 1,
       '2-service': {
