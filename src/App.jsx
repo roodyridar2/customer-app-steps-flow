@@ -1826,7 +1826,7 @@ function StatusList({
   isTabsMode = false,
   multiServiceMode = 'minimal',
   showQRCode = false,
-  rightSideStyle = 'pattern',
+  rightSideStyle = 'none',
   themeColor = '#3B82F6',
   badgeColor = '#EFF6FF',
 }) {
@@ -2229,7 +2229,7 @@ function StatusStepper({
   isTabsMode = false,
   multiServiceMode = 'minimal',
   showQRCode = false,
-  rightSideStyle = 'pattern',
+  rightSideStyle = 'none',
   themeColor = '#3B82F6',
 }) {
   const ROW_H = 48
@@ -2964,7 +2964,7 @@ function OrderDetailsScreen({
   onToggleProcessExpanded,
   onSelectRawStep,
   showQRCode = false,
-  rightSideStyle = 'pattern',
+  rightSideStyle = 'none',
 }) {
   const [internalStatusStyle, setInternalStatusStyle] = useState('list')
   const currentStyle = propStatusStyle ?? internalStatusStyle
@@ -3491,9 +3491,9 @@ export default function App() {
   const [rightSideStyle,   setRightSideStyle]   = useState(() => {
     if (typeof window !== 'undefined') {
       const p = new URLSearchParams(window.location.search)
-      return p.get('rightSide') || 'pattern'
+      return p.get('rightSide') || 'none'
     }
-    return 'pattern'
+    return 'none'
   })
   const [simulating,       setSimulating]       = useState(false)
   const [selectedSubId,    setSelectedSubId]    = useState(null)
