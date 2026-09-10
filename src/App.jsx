@@ -2717,7 +2717,7 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
     <div
       className={`p-1.5 rounded-2xl bg-slate-100/90 grid ${
         isPair ? 'grid-cols-2' : 'grid-cols-5'
-      } gap-1.5 mb-3.5 select-none`}
+      } gap-1.5 mb-4 select-none`}
     >
       {subServices.map((sub) => {
         const isSelected = sub.id === activeSubId
@@ -2725,7 +2725,7 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
           <button
             key={sub.id}
             onClick={() => onSelect(sub.id)}
-            className="relative flex items-center justify-center py-2 px-2.5 rounded-xl transition-all select-none cursor-pointer active:scale-95"
+            className="relative flex items-center justify-center py-2.5 px-3 rounded-xl transition-all select-none cursor-pointer active:scale-95"
             title={sub.serviceName}
           >
             {isSelected && (
@@ -2736,7 +2736,7 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
               />
             )}
             <div
-              className="relative z-10 w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all"
+              className="relative z-10 w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all"
               style={{
                 background: isSelected ? sub.badgeColor : 'transparent',
               }}
@@ -2744,13 +2744,13 @@ function ServiceTabsBar({ subServices = [], activeSubId, onSelect }) {
               <img
                 src={sub.serviceIcons[0]}
                 alt={sub.serviceName}
-                className="w-6 h-6 object-contain transition-opacity"
-                style={{ opacity: isSelected ? 1 : 0.55 }}
+                className="w-7.5 h-7.5 object-contain transition-opacity"
+                style={{ opacity: isSelected ? 1 : 0.6 }}
               />
             </div>
             {isPair && (
               <span
-                className="relative z-10 text-[13px] ml-2 font-semibold truncate transition-colors"
+                className="relative z-10 text-[14px] ml-2.5 font-semibold truncate transition-colors"
                 style={{ color: isSelected ? '#0F172A' : '#64748B' }}
               >
                 {sub.serviceName}
@@ -2768,7 +2768,7 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
   return (
-    <div className="relative border-b border-slate-100/90 mb-3.5 select-none">
+    <div className="relative border-b border-slate-100/90 mb-4 select-none">
       <div className={`grid ${isPair ? 'grid-cols-2' : 'grid-cols-5'} gap-0`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
@@ -2776,28 +2776,28 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
             <button
               key={sub.id}
               onClick={() => onSelect(sub.id)}
-              className="relative flex flex-col items-center justify-center pt-2 pb-3 transition-all select-none cursor-pointer group active:scale-95"
+              className="relative flex flex-col items-center justify-center pt-2.5 pb-3.5 transition-all select-none cursor-pointer group active:scale-95"
               title={sub.serviceName}
             >
               {/* Icon */}
               <div
-                className="w-10 h-10 flex items-center justify-center transition-all duration-200"
+                className="w-12 h-12 flex items-center justify-center transition-all duration-200"
                 style={{
-                  transform: isSelected ? 'scale(1.1)' : 'scale(0.95)',
+                  transform: isSelected ? 'scale(1.12)' : 'scale(0.96)',
                 }}
               >
                 <img
                   src={sub.serviceIcons[0]}
                   alt={sub.serviceName}
-                  className="w-7 h-7 object-contain transition-opacity duration-200"
-                  style={{ opacity: isSelected ? 1 : 0.4 }}
+                  className="w-8.5 h-8.5 object-contain transition-opacity duration-200"
+                  style={{ opacity: isSelected ? 1 : 0.55 }}
                 />
               </div>
 
               {/* Label only for 2 services pair */}
               {isPair && (
                 <span
-                  className="text-[13px] mt-1.5 truncate max-w-full px-1 leading-none transition-colors"
+                  className="text-[14px] mt-1.5 truncate max-w-full px-1 leading-none transition-colors"
                   style={{
                     color: isSelected ? '#0F172A' : '#94A3B8',
                     fontWeight: isSelected ? 600 : 500,
@@ -2811,10 +2811,10 @@ function ServiceMinimalTabsBar({ subServices = [], activeSubId, onSelect }) {
               {isSelected && (
                 <motion.div
                   layoutId="service-minimal-indicator"
-                  className="absolute bottom-0 h-[3px] rounded-full"
+                  className="absolute bottom-0 h-[3.5px] rounded-full"
                   style={{
                     background: sub.themeColor,
-                    width: isPair ? 48 : 32,
+                    width: isPair ? 56 : 40,
                   }}
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
@@ -2832,20 +2832,20 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
   return (
-    <div className="mb-3.5 select-none">
-      <div className={`grid ${isPair ? 'grid-cols-2 gap-4' : 'grid-cols-5 gap-2'}`}>
+    <div className="mb-4 select-none">
+      <div className={`grid ${isPair ? 'grid-cols-2 gap-4' : 'grid-cols-5 gap-2.5'}`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
           return (
             <button
               key={sub.id}
               onClick={() => onSelect(sub.id)}
-              className="relative flex flex-col items-center justify-center py-2 rounded-xl transition-all cursor-pointer group active:scale-95"
+              className="relative flex flex-col items-center justify-center py-2.5 rounded-xl transition-all cursor-pointer group active:scale-95"
               title={sub.serviceName}
             >
               {/* Ring token */}
               <div
-                className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 ${
+                className={`w-13 h-13 rounded-full flex items-center justify-center transition-all duration-200 ${
                   isSelected
                     ? 'ring-2 ring-offset-2'
                     : 'border border-slate-200/80 bg-slate-50/60 group-hover:border-slate-300'
@@ -2853,21 +2853,21 @@ function ServiceRingTabsBar({ subServices = [], activeSubId, onSelect }) {
                 style={{
                   '--tw-ring-color': sub.themeColor,
                   background: isSelected ? sub.badgeColor : undefined,
-                  transform: isSelected ? 'scale(1.06)' : 'scale(0.95)',
+                  transform: isSelected ? 'scale(1.08)' : 'scale(0.96)',
                 }}
               >
                 <img
                   src={sub.serviceIcons[0]}
                   alt={sub.serviceName}
-                  className="w-6 h-6 object-contain transition-opacity duration-200"
-                  style={{ opacity: isSelected ? 1 : 0.4 }}
+                  className="w-7.5 h-7.5 object-contain transition-opacity duration-200"
+                  style={{ opacity: isSelected ? 1 : 0.55 }}
                 />
               </div>
 
               {/* Label for 2-service pair */}
               {isPair && (
                 <span
-                  className="text-[13px] mt-2 truncate max-w-full px-1 leading-none transition-colors"
+                  className="text-[14px] mt-2 truncate max-w-full px-1 leading-none transition-colors"
                   style={{
                     color: isSelected ? '#0F172A' : '#94A3B8',
                     fontWeight: isSelected ? 600 : 500,
@@ -2889,8 +2889,8 @@ function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
   const isPair = subServices.length === 2
 
   return (
-    <div className="mb-3.5 select-none">
-      <div className={`grid ${isPair ? 'grid-cols-2 gap-3' : 'grid-cols-5 gap-2'}`}>
+    <div className="mb-4 select-none">
+      <div className={`grid ${isPair ? 'grid-cols-2 gap-3' : 'grid-cols-5 gap-2.5'}`}>
         {subServices.map((sub) => {
           const isSelected = sub.id === activeSubId
           return (
@@ -2902,25 +2902,25 @@ function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
             >
               <div
                 className={`relative flex items-center justify-center transition-all duration-200 ${
-                  isPair ? 'py-2 px-3 gap-2 rounded-full' : 'h-10 rounded-full'
+                  isPair ? 'py-2.5 px-3.5 gap-2 rounded-full' : 'h-12 rounded-full'
                 }`}
                 style={{
                   borderWidth: '1.5px',
                   borderStyle: 'solid',
                   borderColor: isSelected ? sub.themeColor : 'rgba(226, 232, 240, 0.9)',
                   background: isSelected ? sub.badgeColor : '#FAFAFA',
-                  transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                  transform: isSelected ? 'scale(1.03)' : 'scale(1)',
                 }}
               >
                 <img
                   src={sub.serviceIcons[0]}
                   alt={sub.serviceName}
-                  className="w-5 h-5 object-contain transition-opacity duration-200"
-                  style={{ opacity: isSelected ? 1 : 0.4 }}
+                  className="w-6.5 h-6.5 object-contain transition-opacity duration-200"
+                  style={{ opacity: isSelected ? 1 : 0.55 }}
                 />
                 {isPair && (
                   <span
-                    className="text-[13px] truncate leading-none transition-colors"
+                    className="text-[14px] truncate leading-none transition-colors"
                     style={{
                       color: isSelected ? '#0F172A' : '#94A3B8',
                       fontWeight: isSelected ? 600 : 500,
@@ -3710,16 +3710,16 @@ export default function App() {
         {/* ── Left sidebar ── */}
         <div
           className="flex flex-col gap-1 p-3 shrink-0"
-          style={{ width: 150, background: '#F8FAFC', borderRight: '1px solid #E9EEF4' }}
+          style={{ width: 165, background: '#F8FAFC', borderRight: '1px solid #E9EEF4' }}
         >
           {/* Header */}
           <div className="flex items-center gap-2 px-2 py-3 mb-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#1B2F6E' }}>
+            <div className="w-7.5 h-7.5 rounded-lg flex items-center justify-center" style={{ background: '#1B2F6E' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-4 h-4">
                 <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round"/>
               </svg>
             </div>
-            <span className="text-[13px] font-bold text-gray-700">Services</span>
+            <span className="text-[13.5px] font-bold text-gray-700">Services</span>
           </div>
 
           {/* Tab items */}
@@ -3729,30 +3729,30 @@ export default function App() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className="relative flex flex-col items-center gap-1.5 w-full py-3 px-2 rounded-2xl transition-all duration-200"
+                className="relative flex flex-col items-center gap-1.5 w-full py-3.5 px-2.5 rounded-2xl transition-all duration-200 cursor-pointer"
                 style={{ background: isActive ? tab.color : 'transparent' }}
               >
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-accent"
                     className="absolute left-0 top-3 bottom-3 rounded-r-full"
-                    style={{ width: 3, background: tab.dot }}
+                    style={{ width: 3.5, background: tab.dot }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
                 <div
-                  className="w-11 h-11 rounded-2xl flex items-center justify-center overflow-hidden transition-all duration-200"
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center overflow-hidden transition-all duration-200"
                   style={{
                     background:  isActive ? '#fff' : '#F1F5F9',
                     boxShadow:   isActive ? `0 2px 8px ${tab.dot}30` : 'none',
                   }}
                 >
                   {tab.icon
-                    ? <img src={tab.icon} alt={tab.label} className="w-9 h-9 object-contain" />
-                    : <span className="text-lg font-bold" style={{ color: tab.dot }}>{tab.short}</span>
+                    ? <img src={tab.icon} alt={tab.label} className="w-10 h-10 object-contain" />
+                    : <span className="text-xl font-bold" style={{ color: tab.dot }}>{tab.short}</span>
                   }
                 </div>
-                <span className="text-[11px] font-semibold leading-tight text-center"
+                <span className="text-[12px] font-semibold leading-tight text-center"
                   style={{ color: isActive ? '#1e293b' : '#94A3B8' }}>
                   {tab.label}
                 </span>
