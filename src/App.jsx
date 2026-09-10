@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useMemo, Fragment } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback, Fragment } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ─── Tabs ────────────────────────────────────────────────────────────────────
@@ -1442,11 +1442,16 @@ function StatusList({
             )
           }
 
+          const rawStepIndex = processGroup
+            ? (i < processGroupIndex ? i : processGroup.endIndex + 1 + (i - processGroupIndex - 1))
+            : i
+
           return (
             <div
               key={step.label}
               ref={el => (rowRefs.current[i] = el)}
-              className="relative flex items-center gap-3"
+              onClick={() => onSelectRawStep && onSelectRawStep(rawStepIndex)}
+              className="relative flex items-center gap-3 cursor-pointer group select-none"
               style={{ height: ROW_H }}
             >
               {/* Spacer column where the line runs */}
@@ -1875,11 +1880,16 @@ function StatusStepper({
             )
           }
 
+          const rawStepIndex = processGroup
+            ? (i < processGroupIndex ? i : processGroup.endIndex + 1 + (i - processGroupIndex - 1))
+            : i
+
           return (
             <div
               key={step.label}
               ref={el => (rowRefs.current[i] = el)}
-              className="relative flex items-center gap-2.5"
+              onClick={() => onSelectRawStep && onSelectRawStep(rawStepIndex)}
+              className="relative flex items-center gap-2.5 cursor-pointer group select-none"
               style={{ height: ROW_H }}
             >
               {/* Spacer column where the straight line runs */}
@@ -2254,6 +2264,7 @@ function ServiceGhostChipsBar({ subServices = [], activeSubId, onSelect }) {
 function OrderDetailsScreen({
   service = servicesData['wash-fold'],
   activeStep,
+  serviceSteps,
   statusStyle: propStatusStyle,
   setStatusStyle: propSetStatusStyle,
   lineStyle = 'solid',
@@ -2297,7 +2308,11 @@ function OrderDetailsScreen({
     : service
 
   const stepsList = activeDisplayService.steps || NINE_STEPS
-  const safeActiveStep = Math.min(activeStep, stepsList.length - 1)
+  const currentStepNum = (isMultiService && serviceSteps && typeof serviceSteps[activeSubId] === 'number')
+    ? serviceSteps[activeSubId]
+    : activeStep
+
+  const safeActiveStep = Math.min(currentStepNum, stepsList.length - 1)
   const currentStep = stepsList[safeActiveStep] || stepsList[0]
 
   // Process compaction grouping
@@ -2677,13 +2692,35 @@ export default function App() {
     }
     return '2-service'
   })
-  const [activeStep,       setActiveStep]       = useState(() => {
-    if (typeof window !== 'undefined') {
-      const p = new URLSearchParams(window.location.search)
-      const s = p.get('step')
-      if (s !== null) return parseInt(s, 10)
+  const [simulateScope,    setSimulateScope]    = useState('all') // 'all' | 'active'
+  const [serviceSteps,     setServiceSteps]     = useState(() => {
+    const urlStep = (() => {
+      if (typeof window !== 'undefined') {
+        const p = new URLSearchParams(window.location.search)
+        const s = p.get('step')
+        if (s !== null) return parseInt(s, 10)
+      }
+      return null
+    })()
+
+    return {
+      'wash-fold': urlStep !== null ? urlStep : 1,
+      'clean-press': urlStep !== null ? urlStep : 1,
+      'press-only': urlStep !== null ? urlStep : 1,
+      'bags-shoes': urlStep !== null ? urlStep : 1,
+      'premium-care': urlStep !== null ? urlStep : 1,
+      '2-service': {
+        'wash-fold': urlStep !== null ? urlStep : 3,
+        'clean-press': 1,
+      },
+      '5-service': {
+        'wash-fold': urlStep !== null ? urlStep : 4,
+        'press-only': 3,
+        'clean-press': 2,
+        'bags-shoes': 1,
+        'premium-care': 0,
+      },
     }
-    return 1
   })
   const [statusStyle,      setStatusStyle]      = useState('overlap')
   const [lineStyle,        setLineStyle]        = useState('numbers')
@@ -2724,28 +2761,182 @@ export default function App() {
   const activeSubService = (isTabsMode && effectiveSubId) ? servicesData[effectiveSubId] : null
 
   const currentSteps = activeSubService?.steps || activeService?.steps || NINE_STEPS
-  const safeActiveStep = Math.min(activeStep, currentSteps.length - 1)
+
+  // Active step for currently selected view
+  const currentActiveStep = useMemo(() => {
+    if (isMultiService) {
+      const subId = effectiveSubId || activeService?.subServiceIds?.[0]
+      return serviceSteps[activeTab]?.[subId] ?? 0
+    }
+    return typeof serviceSteps[activeTab] === 'number' ? serviceSteps[activeTab] : 0
+  }, [isMultiService, activeTab, effectiveSubId, serviceSteps, activeService])
+
+  const safeActiveStep = Math.min(currentActiveStep, currentSteps.length - 1)
+
+  const handleSetStep = useCallback((newStep, targetSubId = null) => {
+    setServiceSteps(prev => {
+      if (isMultiService) {
+        const subId = targetSubId || effectiveSubId || activeService?.subServiceIds?.[0]
+        return {
+          ...prev,
+          [activeTab]: {
+            ...(prev[activeTab] || {}),
+            [subId]: newStep,
+          },
+        }
+      }
+      return {
+        ...prev,
+        [activeTab]: newStep,
+      }
+    })
+  }, [isMultiService, activeTab, effectiveSubId, activeService])
+
+  const handleReset = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    setSimulating(false)
+    setServiceSteps(prev => {
+      if (isMultiService && activeService?.subServiceIds) {
+        const resetSubMap = {}
+        activeService.subServiceIds.forEach(id => {
+          resetSubMap[id] = 0
+        })
+        return {
+          ...prev,
+          [activeTab]: resetSubMap,
+        }
+      }
+      return {
+        ...prev,
+        [activeTab]: 0,
+      }
+    })
+  }, [isMultiService, activeTab, activeService])
 
   function startSimulate() {
     if (simulating) {
-      clearInterval(intervalRef.current)
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
       setSimulating(false)
-      setActiveStep(0)
+      // Paused: DO NOT reset step!
       return
     }
-    setActiveStep(0)
-    setSimulating(true)
-    let step = 0
-    intervalRef.current = setInterval(() => {
-      step += 1
-      if (step >= currentSteps.length) {
-        clearInterval(intervalRef.current)
-        setSimulating(false)
-        setTimeout(() => setActiveStep(0), 1200)
-        return
+
+    if (isMultiService && simulateScope === 'all') {
+      const subIds = activeService?.subServiceIds || []
+      const currentMap = { ...(serviceSteps[activeTab] || {}) }
+
+      // If all finished, restart them from 0
+      const allFinished = subIds.every(id => {
+        const total = (servicesData[id]?.steps?.length || 9) - 1
+        return (currentMap[id] ?? 0) >= total
+      })
+
+      if (allFinished) {
+        subIds.forEach(id => {
+          currentMap[id] = 0
+        })
+        setServiceSteps(prev => ({
+          ...prev,
+          [activeTab]: { ...currentMap },
+        }))
       }
-      setActiveStep(step)
-    }, 1400)
+
+      setSimulating(true)
+
+      // Distinct speed & stagger for each subservice so each service moves separately
+      const speedConfig = [
+        { interval: 3, offset: 0 }, // sub 0 (Wash & Fold): every 3 ticks (1.2s)
+        { interval: 4, offset: 1 }, // sub 1 (Clean & Press): every 4 ticks (1.6s)
+        { interval: 3, offset: 2 }, // sub 2 (Press Only): every 3 ticks (1.2s)
+        { interval: 5, offset: 2 }, // sub 3 (Bags & Shoes): every 5 ticks (2.0s)
+        { interval: 4, offset: 3 }, // sub 4 (Premium Care): every 4 ticks (1.6s)
+      ]
+
+      let tick = 0
+      const stepsState = { ...currentMap }
+
+      intervalRef.current = setInterval(() => {
+        tick += 1
+        let hasAnyUpdate = false
+        let allNowFinished = true
+
+        subIds.forEach((id, index) => {
+          const total = (servicesData[id]?.steps?.length || 9) - 1
+          const cur = stepsState[id] ?? 0
+          if (cur < total) {
+            allNowFinished = false
+            const cfg = speedConfig[index % speedConfig.length]
+            if ((tick + cfg.offset) % cfg.interval === 0) {
+              stepsState[id] = cur + 1
+              hasAnyUpdate = true
+            }
+          }
+        })
+
+        if (hasAnyUpdate) {
+          setServiceSteps(prev => ({
+            ...prev,
+            [activeTab]: { ...stepsState },
+          }))
+        }
+
+        if (allNowFinished) {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
+          setSimulating(false)
+          // Finished: Keep at final step! DO NOT reset!
+        }
+      }, 400)
+
+    } else {
+      // Single service OR simulate active tab only
+      const targetSubId = isMultiService ? effectiveSubId : null
+      const targetService = targetSubId ? servicesData[targetSubId] : activeService
+      const stepsCount = targetService?.steps?.length || 9
+
+      const currentVal = isMultiService
+        ? (serviceSteps[activeTab]?.[targetSubId] ?? 0)
+        : (serviceSteps[activeTab] ?? 0)
+
+      let nextStep = currentVal >= stepsCount - 1 ? 0 : currentVal
+      if (currentVal >= stepsCount - 1) {
+        handleSetStep(0, targetSubId)
+      }
+
+      setSimulating(true)
+      intervalRef.current = setInterval(() => {
+        nextStep += 1
+        if (nextStep >= stepsCount) {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
+          setSimulating(false)
+          // Finished: Keep at final step! DO NOT reset!
+          return
+        }
+        handleSetStep(nextStep, targetSubId)
+      }, 1400)
+    }
+  }
+
+  const handleSelectRawStep = (step) => {
+    if (simulating) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+      setSimulating(false)
+    }
+    handleSetStep(step)
   }
 
   const prevActiveTabRef = useRef(activeTab)
@@ -2755,9 +2946,11 @@ export default function App() {
       return
     }
     prevActiveTabRef.current = activeTab
-    clearInterval(intervalRef.current)
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
     setSimulating(false)
-    setActiveStep(0)
     const nextService = servicesData[activeTab]
     if (nextService?.subServiceIds?.length > 0) {
       setSelectedSubId(nextService.subServiceIds[0])
@@ -2877,7 +3070,8 @@ export default function App() {
                     {activeService ? (
                       <OrderDetailsScreen
                         service={activeService}
-                        activeStep={activeStep}
+                        activeStep={safeActiveStep}
+                        serviceSteps={serviceSteps[activeTab]}
                         statusStyle={statusStyle}
                         setStatusStyle={setStatusStyle}
                         lineStyle={lineStyle}
@@ -2889,7 +3083,7 @@ export default function App() {
                         setProcessMode={setProcessMode}
                         isProcessExpanded={isProcessExpanded}
                         onToggleProcessExpanded={() => setIsProcessExpanded(prev => !prev)}
-                        onSelectRawStep={setActiveStep}
+                        onSelectRawStep={handleSelectRawStep}
                       />
                     ) : (
                       <PlaceholderScreen
@@ -2907,12 +3101,12 @@ export default function App() {
 
             {/* Simulate panel — available for activeService */}
             {activeService && (
-              <div className="flex flex-col items-center justify-start py-1 gap-2 shrink-0 overflow-y-auto no-scrollbar" style={{ width: 140, height: 640 }}>
+              <div className="flex flex-col items-center justify-start py-0.5 gap-1.5 shrink-0 overflow-y-auto no-scrollbar" style={{ width: 140, height: 640 }}>
 
                 {/* Multi-Service section — visible for 2-service and 5-service */}
                 {isMultiService && (
-                  <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm w-full">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Multi-Service</span>
+                  <div className="flex flex-col items-center gap-1 p-1.5 rounded-xl bg-white border border-gray-100 shadow-sm w-full">
+                    <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">Multi-Service</span>
                     <div className="grid grid-cols-2 gap-1 w-full">
                       {[
                         { id: 'minimal', label: 'Underline' },
@@ -2924,7 +3118,7 @@ export default function App() {
                         <button
                           key={opt.id}
                           onClick={() => setMultiServiceMode(opt.id)}
-                          className={`py-1 px-1 rounded-lg text-[9px] font-bold transition-all text-center cursor-pointer ${
+                          className={`py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer ${
                             opt.span === 2 ? 'col-span-2' : ''
                           }`}
                           style={{
@@ -2940,14 +3134,14 @@ export default function App() {
                 )}
 
                 {/* Status layout switcher — compact 2x2 grid */}
-                <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm w-full">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Layout</span>
+                <div className="flex flex-col items-center gap-1 p-1.5 rounded-xl bg-white border border-gray-100 shadow-sm w-full">
+                  <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">Layout</span>
                   <div className="grid grid-cols-2 gap-1 w-full">
                     {styleOptions.map(opt => (
                       <button
                         key={opt.id}
                         onClick={() => setStatusStyle(opt.id)}
-                        className="py-1 px-0.5 rounded-lg text-[9px] font-bold transition-all text-center leading-tight cursor-pointer"
+                        className="py-0.5 px-0.5 rounded-md text-[9px] font-bold transition-all text-center leading-tight cursor-pointer"
                         style={{
                           background: statusStyle === opt.id ? '#141C3C' : '#F1F5F9',
                           color: statusStyle === opt.id ? '#fff' : '#64748B',
@@ -2960,8 +3154,8 @@ export default function App() {
                 </div>
 
                 {/* Process compaction switcher (Default, Drawer, Segments, Pills) */}
-                <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm w-full">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Process</span>
+                <div className="flex flex-col items-center gap-1 p-1.5 rounded-xl bg-white border border-gray-100 shadow-sm w-full">
+                  <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">Process</span>
                   <div className="grid grid-cols-2 gap-1 w-full">
                     {[
                       { id: 'default',  label: 'Default' },
@@ -2974,7 +3168,7 @@ export default function App() {
                         <button
                           key={opt.id}
                           onClick={() => setProcessMode(opt.id)}
-                          className="py-1 px-1 rounded-lg text-[9px] font-bold transition-all text-center cursor-pointer"
+                          className="py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer"
                           style={{
                             background: isActive ? '#141C3C' : '#F1F5F9',
                             color: isActive ? '#fff' : '#64748B',
@@ -2996,14 +3190,14 @@ export default function App() {
                 </div>
 
                 {/* Line style switcher (changes line globally across styles) */}
-                <div className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white border border-gray-100 shadow-sm w-full">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Line Style</span>
+                <div className="flex flex-col items-center gap-1 p-1.5 rounded-xl bg-white border border-gray-100 shadow-sm w-full">
+                  <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">Line Style</span>
                   <div className="grid grid-cols-2 gap-1 w-full">
                     {lineStyles.map((opt, i) => (
                       <button
                         key={opt.id}
                         onClick={() => setLineStyle(opt.id)}
-                        className={`py-1 px-1 rounded-lg text-[10px] font-bold transition-all text-center ${
+                        className={`py-0.5 px-1 rounded-md text-[9.5px] font-bold transition-all text-center ${
                           i === lineStyles.length - 1 && lineStyles.length % 2 !== 0 ? 'col-span-2' : ''
                         }`}
                         style={{
@@ -3017,74 +3211,117 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Simulate button */}
-                <motion.button
-                  onClick={startSimulate}
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.93 }}
-                  className="flex flex-col items-center gap-1.5 px-4 py-2.5 rounded-2xl text-white font-bold text-xs w-full cursor-pointer shadow-xs"
-                  style={{
-                    background: simulating
-                      ? 'linear-gradient(135deg, #0EA5E9, #0284C7)'
-                      : 'linear-gradient(135deg, #38BDF8, #0EA5E9)',
-                  }}
-                >
-                  {simulating ? (
-                    <motion.svg
-                      viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"
-                      animate={{ rotate: [0, 180, 360] }}
-                      transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-                    >
-                      <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/>
-                    </motion.svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                      <path d="M8 5.14v14l11-7-11-7z"/>
-                    </svg>
+                {/* Simulate & Reset controls */}
+                <div className="flex flex-col items-center gap-1.5 p-1.5 rounded-xl bg-white border border-gray-100 shadow-sm w-full">
+                  <div className="flex items-center justify-between w-full px-0.5">
+                    <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-wider">Simulate</span>
+                    {isMultiService && (
+                      <span className="text-[8.5px] font-semibold text-slate-400">
+                        {simulateScope === 'all' ? 'All' : 'Active'}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Multi-service simulate scope switcher */}
+                  {isMultiService && (
+                    <div className="grid grid-cols-2 gap-1 w-full">
+                      <button
+                        onClick={() => setSimulateScope('all')}
+                        className="py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer"
+                        style={{
+                          background: simulateScope === 'all' ? '#141C3C' : '#F1F5F9',
+                          color: simulateScope === 'all' ? '#fff' : '#64748B',
+                        }}
+                      >
+                        All
+                      </button>
+                      <button
+                        onClick={() => setSimulateScope('active')}
+                        className="py-0.5 px-1 rounded-md text-[9px] font-bold transition-all text-center cursor-pointer"
+                        style={{
+                          background: simulateScope === 'active' ? '#141C3C' : '#F1F5F9',
+                          color: simulateScope === 'active' ? '#fff' : '#64748B',
+                        }}
+                      >
+                        Active
+                      </button>
+                    </div>
                   )}
-                  <span>{simulating ? 'Stop' : 'Simulate'}</span>
-                </motion.button>
 
-                {/* Step progress bar with fixed height container so 7 vs 9 dots never changes height */}
-                <div className="flex flex-col gap-[4px] items-center justify-center shrink-0" style={{ height: 75 }}>
-                  {currentSteps.map((s, i) => (
-                    <motion.div
-                      key={s.label}
-                      animate={{
-                        width:      i === safeActiveStep ? 24 : 8,
-                        background: i < safeActiveStep  ? '#0EA5E9'
-                                  : i === safeActiveStep ? '#38BDF8'
-                                  : '#E5E7EB',
-                        opacity: i <= safeActiveStep ? 1 : 0.4,
+                  <div className="grid grid-cols-2 gap-1.5 w-full">
+                    {/* Simulate / Stop button */}
+                    <motion.button
+                      onClick={startSimulate}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl text-white font-bold text-[10.5px] cursor-pointer shadow-xs select-none"
+                      style={{
+                        background: simulating
+                          ? 'linear-gradient(135deg, #EF4444, #DC2626)'
+                          : 'linear-gradient(135deg, #38BDF8, #0EA5E9)',
                       }}
-                      transition={{ duration: 0.35, type: 'spring', stiffness: 300, damping: 24 }}
-                      className="rounded-full"
-                      style={{ height: 5 }}
-                    />
-                  ))}
-                </div>
-
-                {/* Step label with fixed height container */}
-                <div className="h-7 flex items-center justify-center shrink-0">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={`${activeTab}-${effectiveSubId || ''}-${safeActiveStep}`}
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{    opacity: 0, y: -4 }}
-                      transition={{ duration: 0.15 }}
-                      className="text-center"
                     >
-                      <div className="text-[10.5px] font-bold leading-tight" style={{ color: '#0EA5E9' }}>
+                      {simulating ? (
+                        <motion.svg
+                          viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"
+                          animate={{ scale: [1, 1.15, 1] }}
+                          transition={{ duration: 1, repeat: Infinity }}
+                        >
+                          <rect x="6" y="6" width="12" height="12" rx="2" />
+                        </motion.svg>
+                      ) : (
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                          <path d="M8 5.14v14l11-7-11-7z"/>
+                        </svg>
+                      )}
+                      <span>{simulating ? 'Stop' : 'Simulate'}</span>
+                    </motion.button>
+
+                    {/* Reset button */}
+                    <motion.button
+                      onClick={handleReset}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl font-bold text-[10.5px] cursor-pointer shadow-xs select-none bg-slate-100 hover:bg-slate-200 text-slate-700 active:bg-slate-300 transition-colors"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        <path d="M3 3v5h5" />
+                      </svg>
+                      <span>Reset</span>
+                    </motion.button>
+                  </div>
+
+                  {/* Step progress & label inside card */}
+                  <div className="flex flex-col gap-1 w-full pt-1.5 border-t border-slate-100">
+                    <div className="flex items-center justify-between w-full">
+                      <span className="text-[10px] font-bold text-sky-600 truncate max-w-[80px]">
                         {processMode !== 'default' && isProcessStep(currentSteps[safeActiveStep])
-                          ? `Process · ${currentSteps[safeActiveStep]?.label}`
+                          ? currentSteps[safeActiveStep]?.label
                           : (currentSteps[safeActiveStep]?.label || '')}
-                      </div>
-                      <div className="text-[9.5px] text-gray-400 font-mono">
-                        {safeActiveStep + 1} / {currentSteps.length}
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
+                      </span>
+                      <span className="text-[9px] font-mono font-medium text-slate-400 shrink-0">
+                        {safeActiveStep + 1}/{currentSteps.length}
+                      </span>
+                    </div>
+
+                    {/* Horizontal step dashes */}
+                    <div className="flex items-center gap-[2.5px] w-full">
+                      {currentSteps.map((s, i) => (
+                        <motion.div
+                          key={s.label}
+                          animate={{
+                            background: i < safeActiveStep  ? '#0EA5E9'
+                                      : i === safeActiveStep ? '#38BDF8'
+                                      : '#E2E8F0',
+                            height: i === safeActiveStep ? 4.5 : 3.5,
+                          }}
+                          transition={{ duration: 0.2 }}
+                          className="flex-1 rounded-full"
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
